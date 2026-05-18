@@ -31,9 +31,21 @@ public class SecurityConfig {
             .cors(cors -> cors.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-              /** Endpoints públicos */
-              .requestMatchers("/api/auth/**").permitAll()
+              /** 
+               * Endpoints PÚBLICOS (NO requieren token)
+               */ 
+              .requestMatchers("/api/auth/register").permitAll()
+              .requestMatchers("/api/auth/login").permitAll()
+              .requestMatchers("/api/auth/forgot-password").permitAll()
+              .requestMatchers("/api/auth/reset-password").permitAll()
               .requestMatchers("/actuator/health").permitAll()
+              
+              /** 
+               * Endpoints PROTEGIDOS (requieren token) 
+               */ 
+              .requestMatchers("/api/auth/logout").authenticated()
+              .requestMatchers("/api/auth/validate").authenticated()
+            
               .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

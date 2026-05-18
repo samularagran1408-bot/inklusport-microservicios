@@ -34,7 +34,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       String path = request.getRequestURI();
       
       /** Saltar filtro para endpoints públicos */
-      if (path.startsWith("/api/auth/") || path.startsWith("/actuator/")) {
+      if (path.equals("/api/auth/register") ||
+          path.equals("/api/auth/login") ||
+          path.equals("/api/auth/forgot-password") ||
+          path.equals("/api/auth/reset-password") ||
+          path.startsWith("/actuator")) {
           filterChain.doFilter(request, response);
           return;
       }

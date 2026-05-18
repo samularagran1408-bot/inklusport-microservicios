@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 
 @RestController
@@ -56,8 +57,14 @@ public class AuthController {
 
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
-      passwordResetService.forgotPassword(request);
-      return ResponseEntity.ok().build();
+      try {
+        passwordResetService.forgotPassword(request);
+        return ResponseEntity.ok().build();
+      } catch (Exception e) {
+          e.printStackTrace();  
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+              .body(Map.of("message", e.getMessage())); 
+      }
     }
 
     @PostMapping("/reset-password")
@@ -68,7 +75,7 @@ public class AuthController {
 
     @GetMapping("/validate")
     public ResponseEntity<?> validateToken(@RequestHeader(value = "Authorization", required = false) String authHeader) {
-      if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+      if (authHeader == null ) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body("Token no proporcionado o formato inválido");
       }
@@ -78,7 +85,7 @@ public class AuthController {
       
       /** Validar token */ 
       if (jwtTokenProvider.validateToken(token)) {
-          return ResponseEntity.ok().build();
+          return ResponseEntity.ok(Map.of("valid", true));
       } else {
           return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
               .body("Token inválido o expirado");
