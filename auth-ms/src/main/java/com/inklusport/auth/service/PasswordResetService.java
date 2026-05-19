@@ -1,7 +1,8 @@
 package com.inklusport.auth.service;
 
-import com.inklusport.auth.dto.ForgotPasswordRequest;
-import com.inklusport.auth.dto.ResetPasswordRequest;
+import com.inklusport.auth.config.InvalidResetTokenException;
+import com.inklusport.auth.dto.request.ForgotPasswordRequest;
+import com.inklusport.auth.dto.request.ResetPasswordRequest;
 import com.inklusport.auth.entity.AuthUser;
 import com.inklusport.auth.entity.PasswordResetToken;
 import com.inklusport.auth.repository.AuthUserRepository;
@@ -31,18 +32,13 @@ public class PasswordResetService {
   @Value("${server.url:http://localhost:3001}")
   private String serverUrl;
 
-  /**
-   * Restablece la contraseña de un usuario
-   * @param request
-   */
   @Transactional
   public void forgotPassword(ForgotPasswordRequest request) {
-    AuthUser user = authUserRepository.findByEmail(request.getEmail())
-              .orElse(null);
+    AuthUser user = authUserRepository.findByEmail(request.getEmail()).orElse(null);
 
     if (user == null) {
-        log.info("Solicitud de recuperación para email no registrado: {}", request.getEmail());
-        return;
+      log.info("Solicitud de recuperación para email no registrado: {}", request.getEmail());
+      return;
     }
 
     tokenRepository.deleteByUserId(user.getId());
@@ -64,15 +60,15 @@ public class PasswordResetService {
   @Transactional
   public void resetPassword(ResetPasswordRequest request) {
     PasswordResetToken token = tokenRepository.findByTokenAndUsedFalse(request.getToken())
-                        .orElseThrow(() -> new RuntimeException("Token inválido o expirado"));
-    
+            .orElseThrow(() -> new InvalidResetTokenException("Token inválido o expirado"));
+
     if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
-      throw new RuntimeException("Token expirado");
+      throw new InvalidResetTokenException("Token expirado");
     }
 
-    AuthUser user = authUserRepository.findById(token.getUserId()) 
-              .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-    
+    AuthUser user = authUserRepository.findById(token.getUserId())
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
     user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
     authUserRepository.save(user);
 
@@ -80,20 +76,14 @@ public class PasswordResetService {
     tokenRepository.save(token);
   }
 
-  /**
-   * Restablece la contraseña utilizando el token
-   * @param request
-   * @param email
-   * @param token
-   */
   private void sendResetEmail(String email, String token) {
-        String resetUrl = serverUrl + "/api/auth/reset-password?token=" + token;
-        
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("Recuperación de contraseña - InkluSport");
-        message.setText("Haz clic en el siguiente enlace para restablecer tu contraseña:\n\n" + resetUrl + "\n\nEste enlace expirará en 24 horas.\n\nSi no solicitaste este cambio, ignora este mensaje.");
-        
-        mailSender.send(message);
-    }
+    String resetUrl = serverUrl + "/api/auth/reset-password?token=" + token;
+
+    SimpleMailMessage message = new SimpleMailMessage();
+    message.setTo(email);
+    message.setSubject("Recuperación de contraseña - InkluSport");
+    message.setText("Haz clic en el siguiente enlace para restablecer tu contraseña:\n\n" + resetUrl + "\n\nEste enlace expirará en 24 horas.\n\nSi no solicitaste este cambio, ignora este mensaje.");
+
+    mailSender.send(message);
+  }
 }
