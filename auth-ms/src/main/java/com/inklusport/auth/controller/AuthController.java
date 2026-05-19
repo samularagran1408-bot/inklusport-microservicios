@@ -1,11 +1,11 @@
-package com.inklusport.auth.Controller;
+package com.inklusport.auth.controller;
 
-import com.inklusport.auth.dto.AuthResponse;
-import com.inklusport.auth.dto.ErrorResponse;
-import com.inklusport.auth.dto.ForgotPasswordRequest;
-import com.inklusport.auth.dto.LoginRequest;
-import com.inklusport.auth.dto.RegisterRequest;
-import com.inklusport.auth.dto.ResetPasswordRequest;
+import com.inklusport.auth.dto.request.ForgotPasswordRequest;
+import com.inklusport.auth.dto.request.LoginRequest;
+import com.inklusport.auth.dto.request.RegisterRequest;
+import com.inklusport.auth.dto.request.ResetPasswordRequest;
+import com.inklusport.auth.dto.response.AuthResponse;
+import com.inklusport.auth.dto.response.ErrorResponse;
 import com.inklusport.auth.security.JwtTokenProvider;
 import com.inklusport.auth.service.AuthService;
 import com.inklusport.auth.service.PasswordResetService;
@@ -59,7 +59,6 @@ public class AuthController {
       passwordResetService.forgotPassword(request);
       return ResponseEntity.ok().build();
     } catch (Exception e) {
-      e.printStackTrace();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(Map.of("message", e.getMessage()));
     }
@@ -73,19 +72,19 @@ public class AuthController {
 
   @GetMapping("/validate")
   public ResponseEntity<?> validateToken(@RequestHeader(value = "Authorization", required = false) String authHeader) {
-    if (authHeader == null) {
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body("Token no proporcionado o formato inválido");
+          .body(Map.of("valid", false, "message", "Token no proporcionado o formato inválido"));
     }
 
     String token = authHeader.substring(7);
 
     if (jwtTokenProvider.validateToken(token)) {
-      return ResponseEntity.ok(Map.of("valid", true));
-    } else {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body("Token inválido o expirado");
+      return ResponseEntity.ok(Map.of("valid", true, "email", jwtTokenProvider.getEmailFromToken(token)));
     }
+
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        .body(Map.of("valid", false, "message", "Token inválido o expirado"));
   }
 
   private String getClientIp(HttpServletRequest request) {
