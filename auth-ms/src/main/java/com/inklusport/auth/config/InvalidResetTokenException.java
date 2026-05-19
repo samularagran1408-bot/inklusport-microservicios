@@ -1,4 +1,4 @@
-package com.inklusport.auth.exception;
+package com.inklusport.auth.config;
 
 public class InvalidResetTokenException extends RuntimeException {
 

@@ -1,4 +1,4 @@
-package com.inklusport.auth.config;
+package com.inklusport.auth.filter;
 
 import com.inklusport.auth.security.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-  /** Inyectar el Proveedor de tokens JWT */
   private final JwtTokenProvider jwtTokenProvider;
 
   @Override
@@ -32,8 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           throws ServletException, IOException {
 
       String path = request.getRequestURI();
-      
-      /** Saltar filtro para endpoints públicos */
+
       if (path.equals("/api/auth/register") ||
           path.equals("/api/auth/login") ||
           path.equals("/api/auth/forgot-password") ||

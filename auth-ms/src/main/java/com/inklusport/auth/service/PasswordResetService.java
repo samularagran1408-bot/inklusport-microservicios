@@ -1,7 +1,7 @@
 package com.inklusport.auth.service;
 
-import com.inklusport.auth.dto.request.ForgotPasswordRequest;
-import com.inklusport.auth.dto.request.ResetPasswordRequest;
+import com.inklusport.auth.dto.ForgotPasswordRequest;
+import com.inklusport.auth.dto.ResetPasswordRequest;
 import com.inklusport.auth.entity.AuthUser;
 import com.inklusport.auth.entity.PasswordResetToken;
 import com.inklusport.auth.repository.AuthUserRepository;
