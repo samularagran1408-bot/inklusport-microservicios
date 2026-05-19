@@ -38,6 +38,12 @@ jwt:
   secret: inklusport2024superSecretKeyForJWTtokenGenerationWith512bitsAlgorithmHS512
   expiration: 86400000
 
+app:
+  password-reset:
+    mail-enabled: false
+    expose-token-in-response: true
+    token-expiry-hours: 24
+
 logging:
   level:
     com.inklusport.auth: DEBUG

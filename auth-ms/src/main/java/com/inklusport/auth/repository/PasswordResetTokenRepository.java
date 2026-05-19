@@ -14,7 +14,7 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
     
   Optional<PasswordResetToken> findByTokenAndUsedFalse(String token);
   
-  @Modifying
+  @Modifying(clearAutomatically = true)
   @Transactional
   @Query("DELETE FROM PasswordResetToken t WHERE t.userId = :userId")
   void deleteByUserId(String userId);

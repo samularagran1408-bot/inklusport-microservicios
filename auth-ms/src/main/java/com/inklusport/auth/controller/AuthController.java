@@ -6,6 +6,8 @@ import com.inklusport.auth.dto.request.RegisterRequest;
 import com.inklusport.auth.dto.request.ResetPasswordRequest;
 import com.inklusport.auth.dto.response.AuthResponse;
 import com.inklusport.auth.dto.response.ErrorResponse;
+import com.inklusport.auth.dto.response.ForgotPasswordResponse;
+import com.inklusport.auth.dto.response.ResetPasswordResponse;
 import com.inklusport.auth.security.JwtTokenProvider;
 import com.inklusport.auth.service.AuthService;
 import com.inklusport.auth.service.PasswordResetService;
@@ -54,20 +56,15 @@ public class AuthController {
   }
 
   @PostMapping("/forgot-password")
-  public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
-    try {
-      passwordResetService.forgotPassword(request);
-      return ResponseEntity.ok().build();
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(Map.of("message", e.getMessage()));
-    }
+  public ResponseEntity<ForgotPasswordResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+    ForgotPasswordResponse response = passwordResetService.forgotPassword(request);
+    return ResponseEntity.ok(response);
   }
 
   @PostMapping("/reset-password")
-  public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
-    passwordResetService.resetPassword(request);
-    return ResponseEntity.ok().build();
+  public ResponseEntity<ResetPasswordResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+    ResetPasswordResponse response = passwordResetService.resetPassword(request);
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/validate")
