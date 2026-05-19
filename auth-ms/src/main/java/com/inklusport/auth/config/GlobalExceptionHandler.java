@@ -1,6 +1,6 @@
-package com.inklusport.auth.exception;
+package com.inklusport.auth.config;
 
-import com.inklusport.auth.dto.response.ErrorResponse;
+import com.inklusport.auth.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
         String message = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getDefaultMessage())
                 .collect(Collectors.joining(", "));
-        
+
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
