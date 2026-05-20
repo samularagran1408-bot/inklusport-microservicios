@@ -1,38 +1,37 @@
 package com.inklusport.sports.dto.request;
 
 import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Data
 public class EventRequest {
 
-    @NotBlank(message = "El deporte es obligatorio")
-    private String sportId;
+    @NotNull(message = "El ID del deporte es obligatorio")
+    private Long sportId;
 
-    @NotBlank(message = "El título es obligatorio")
-    @Size(max = 200)
-    private String title;
+    @NotBlank(message = "El nombre del evento es obligatorio")
+    private String name;
 
     private String description;
 
-    @Size(max = 255)
+    @NotNull(message = "La fecha del evento es obligatoria")
+    @Future(message = "La fecha debe ser futura")
+    private LocalDate eventDate;
+
+    @NotNull(message = "La hora del evento es obligatoria")
+    private LocalTime eventTime;
+
     private String location;
 
-    @NotNull(message = "La fecha de inicio es obligatoria")
-    @Future(message = "La fecha de inicio debe ser futura")
-    private LocalDateTime startDate;
-
-    @NotNull(message = "La fecha de fin es obligatoria")
-    @Future(message = "La fecha de fin debe ser futura")
-    private LocalDateTime endDate;
-
     @NotNull(message = "El cupo máximo es obligatorio")
-    @Min(value = 1, message = "Debe haber al menos un participante")
-    private Integer maxParticipants;
+    @Positive(message = "El cupo máximo debe ser mayor a 0")
+    private Integer maxCapacity;
+
+    private String status; // draft, active, cancelled, finished
 }

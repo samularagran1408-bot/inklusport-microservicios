@@ -1,9 +1,9 @@
 package com.inklusport.sports.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -20,17 +20,26 @@ public class EventRegistration {
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private String id = UUID.randomUUID().toString();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
-
     @Column(name = "user_id", columnDefinition = "CHAR(36)", nullable = false)
     private String userId;
 
-    @Column(name = "status", length = 50)
-    private String status = "CONFIRMED";
+    @ManyToOne
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
 
     @CreationTimestamp
-    @Column(name = "registered_at")
-    private LocalDateTime registeredAt;
+    @Column(name = "registration_date")
+    private LocalDateTime registrationDate;
+
+    @Column(name = "attended")
+    private Boolean attended = false;
+
+    @Column(name = "waitlist_position")
+    private Integer waitlistPosition;
+
+    @Column(name = "qr_code", columnDefinition = "TEXT")
+    private String qrCode;
+
+    @OneToOne(mappedBy = "registration", cascade = CascadeType.ALL)
+    private EventAttendance attendance;
 }

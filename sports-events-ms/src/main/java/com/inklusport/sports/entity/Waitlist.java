@@ -1,9 +1,9 @@
 package com.inklusport.sports.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -20,17 +20,31 @@ public class Waitlist {
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private String id = UUID.randomUUID().toString();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
-
     @Column(name = "user_id", columnDefinition = "CHAR(36)", nullable = false)
     private String userId;
 
-    @Column(name = "position", nullable = false)
-    private Integer position;
+    @ManyToOne
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
 
     @CreationTimestamp
-    @Column(name = "added_at")
-    private LocalDateTime addedAt;
+    @Column(name = "requested_at")
+    private LocalDateTime requestedAt;
+
+    @Column(name = "notified_at")
+    private LocalDateTime notifiedAt;
+
+    @Column(name = "notified")
+    private Boolean notified = false;
+
+    @Column(name = "position")
+    private Integer position;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private WaitlistStatus status = WaitlistStatus.waiting;
+
+    public enum WaitlistStatus {
+        waiting, offered, accepted, expired
+    }
 }

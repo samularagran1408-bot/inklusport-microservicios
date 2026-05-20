@@ -1,12 +1,16 @@
 package com.inklusport.sports.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -20,32 +24,49 @@ public class Event {
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private String id = UUID.randomUUID().toString();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "sport_id", nullable = false)
     private Sport sport;
 
-    @Column(name = "title", length = 200, nullable = false)
-    private String title;
+    @Column(name = "name", nullable = false, length = 150)
+    private String name;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "event_date", nullable = false)
+    private LocalDate eventDate;
+
+    @Column(name = "event_time", nullable = false)
+    private LocalTime eventTime;
+
     @Column(name = "location", length = 255)
     private String location;
 
-    @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate;
+    @Column(name = "max_capacity", nullable = false)
+    private Integer maxCapacity;
 
-    @Column(name = "end_date", nullable = false)
-    private LocalDateTime endDate;
+    @Column(name = "available_capacity", nullable = false)
+    private Integer availableCapacity;
 
-    @Column(name = "max_participants", nullable = false)
-    private Integer maxParticipants;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private EventStatus status = EventStatus.draft;
 
-    @Column(name = "status", length = 50)
-    private String status = "SCHEDULED";
+    @Column(name = "created_by", columnDefinition = "CHAR(36)")
+    private String createdBy;
 
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EventRegistration> registrations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Waitlist> waitlist = new ArrayList<>();
+
+    public enum EventStatus {
+        draft, active, cancelled, finished
+    }
 }

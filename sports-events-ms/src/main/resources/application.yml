@@ -1,31 +1,26 @@
+# src/main/resources/application.yml
+
 spring:
   application:
     name: sports-events-ms
-
+  
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/sports_events_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:}
+    url: jdbc:mysql://localhost:3308/sports_events_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: root123
     driver-class-name: com.mysql.cj.jdbc.Driver
-
+  
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
     properties:
       hibernate:
-        format_sql: true
+        format-sql: true
         dialect: org.hibernate.dialect.MySQLDialect
 
 server:
-  port: ${SERVER_PORT:3003}
-
-users:
-  service:
-    url: ${USERS_SERVICE_URL:http://localhost:3002}
-
-jwt:
-  secret: ${JWT_SECRET:inklusport2024superSecretKeyForJWTtokenGenerationWith512bitsAlgorithmHS512}
+  port: 3003
 
 logging:
   level:
