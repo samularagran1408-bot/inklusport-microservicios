@@ -2,15 +2,15 @@ package com.inklusport.sports.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
-
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
 public class DisabilityResponse {
-
-    private String id;
+    private Long id;
     private String name;
     private String description;
-    private LocalDateTime createdAt;
+    private String category;
+    private Boolean isActive;
+    private List<Long> sportIds;
 }

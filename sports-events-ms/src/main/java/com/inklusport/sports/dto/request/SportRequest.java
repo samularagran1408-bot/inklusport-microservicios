@@ -8,8 +8,14 @@ import lombok.Data;
 public class SportRequest {
 
     @NotBlank(message = "El nombre del deporte es obligatorio")
-    @Size(max = 100)
+    @Size(min = 3, max = 100, message = "El nombre debe tener entre 3 y 100 caracteres")
     private String name;
 
     private String description;
+
+    private String difficulty;
+
+    private String requiredMaterials;
+
+    private Boolean isActive = true;
 }

@@ -2,18 +2,18 @@ package com.inklusport.sports.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
-
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Data
 @Builder
 public class CalendarEventResponse {
-
     private String id;
     private String title;
-    private String sportName;
+    private LocalDate startDate;
+    private LocalTime startTime;
     private String location;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private String status;
+    private String sportName;
+    private Integer availableCapacity;
+    private Integer maxCapacity;
 }

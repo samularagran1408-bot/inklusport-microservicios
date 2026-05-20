@@ -1,11 +1,9 @@
 package com.inklusport.sports.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.UUID;
+import lombok.AllArgsConstructor;
 
 @Entity
 @Table(name = "sport_disability")
@@ -14,15 +12,19 @@ import java.util.UUID;
 @AllArgsConstructor
 public class SportDisability {
 
-    @Id
-    @Column(name = "id", columnDefinition = "CHAR(36)")
-    private String id = UUID.randomUUID().toString();
+    @EmbeddedId
+    private SportDisabilityId id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sport_id", nullable = false)
+    @ManyToOne
+    @MapsId("sportId")
+    @JoinColumn(name = "sport_id")
     private Sport sport;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "disability_id", nullable = false)
+    @ManyToOne
+    @MapsId("disabilityId")
+    @JoinColumn(name = "disability_id")
     private Disability disability;
+
+    @Column(name = "adaptations", nullable = false, columnDefinition = "TEXT")
+    private String adaptations;
 }
