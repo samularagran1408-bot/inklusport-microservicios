@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -50,8 +49,7 @@ public class AuthService {
 
     logLoginAttempt(request.getEmail(), ipAddress, true);
 
-    List<String> roles = List.of("USUARIO");
-    String token = jwtTokenProvider.generateToken(user.getEmail(), roles);
+    String token = jwtTokenProvider.generateToken(user.getEmail());
 
     log.info("Nuevo usuario registrado: {}", user.getEmail());
 
@@ -61,7 +59,6 @@ public class AuthService {
             .id(null)
             .nombre(request.getNombre())
             .email(user.getEmail())
-            .roles(roles)
             .build();
   }
 
@@ -81,9 +78,7 @@ public class AuthService {
     }
 
     authUserRepository.updateLastLogin(request.getEmail(), LocalDateTime.now());
-
-    List<String> roles = List.of("USUARIO");
-    String token = jwtTokenProvider.generateToken(user.getEmail(), roles);
+    String token = jwtTokenProvider.generateToken(user.getEmail());
 
     log.info("Usuario autenticado: {}", user.getEmail());
 
@@ -93,7 +88,6 @@ public class AuthService {
             .id(null)
             .nombre(null)
             .email(user.getEmail())
-            .roles(roles)
             .build();
   }
 

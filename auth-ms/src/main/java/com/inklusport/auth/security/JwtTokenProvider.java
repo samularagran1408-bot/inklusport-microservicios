@@ -33,13 +33,12 @@ public class JwtTokenProvider {
    * @param roles
    * @return
    */
-  public String generateToken(String email, List<String> roles) {
+  public String generateToken(String email) {
     Date now = new Date();
     Date expiryDate = new Date(now.getTime() + jwtExpiration);
 
     return Jwts.builder()
       .setSubject(email)
-      .claim("roles", roles)
       .setIssuedAt(now)
       .setExpiration(expiryDate)
       .signWith(key(), SignatureAlgorithm.HS512)
