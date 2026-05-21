@@ -1,4 +1,4 @@
-﻿package com.inklusport.users.entity;
+package com.inklusport.users.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

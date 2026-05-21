@@ -1,4 +1,4 @@
-﻿package com.inklusport.users;
+package com.inklusport.users;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

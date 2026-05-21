@@ -1,4 +1,4 @@
-﻿package com.inklusport.users.repository;
+package com.inklusport.users.repository;
 
 import com.inklusport.users.entity.UserActivity;
 import org.springframework.data.jpa.repository.JpaRepository;
