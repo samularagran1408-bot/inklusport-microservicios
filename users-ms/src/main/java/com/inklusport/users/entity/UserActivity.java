@@ -1,4 +1,4 @@
-﻿package com.inklusport.users.entity;
+package com.inklusport.users.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -19,9 +19,6 @@ public class UserActivity {
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private String id = UUID.randomUUID().toString();
-
-    @Column(name = "user_id", columnDefinition = "CHAR(36)", nullable = false)
-    private String userId;
 
     @Column(name = "action", length = 100, nullable = false)
     private String action;

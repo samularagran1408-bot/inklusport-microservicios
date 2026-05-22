@@ -1,4 +1,4 @@
-﻿package com.inklusport.users.client;
+package com.inklusport.users.client;
 
 public class AuthServiceClient {
 }
