@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserActivityService {
 
+    /**
+     * Se inyectan dependencias importadas de los repositorios
+     */
     private final UserActivityRepository userActivityRepository;
     private final UserRepository userRepository;
 

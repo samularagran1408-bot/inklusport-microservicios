@@ -27,6 +27,12 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final ObjectMapper objectMapper;
 
+    /**
+     * Configuración de seguridad para endpoints punlicos o no autenticados
+     * @param http
+     * @return
+     * @throws Exception
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
@@ -52,6 +58,15 @@ public class SecurityConfig {
                 .build();
     }
 
+    /**
+     * Escribe un error en el response con formato JSON
+     * @param response
+     * @param path
+     * @param status
+     * @param error
+     * @param message
+     * @throws java.io.IOException
+     */
     private void writeError(HttpServletResponse response, String path, int status,
                             String error, String message) throws java.io.IOException {
         response.setStatus(status);

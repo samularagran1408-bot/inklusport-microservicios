@@ -14,9 +14,15 @@ import java.util.List;
 @Slf4j
 public class JwtTokenProvider {
 
+    /**
+     * La clave secreta para firmar los tokens
+     */
     @Value("${jwt.secret}")
     private String jwtSecret;
 
+    /**
+     * La expiración del token 
+     */
     @Value("${jwt.expiration}")
     private Long jwtExpiration;
 
@@ -24,6 +30,12 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
+    /**
+     * Genera un token JWT para el usuario autenticado
+     * @param email
+     * @param roles
+     * @return
+     */
     public String generateToken(String email, List<String> roles) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpiration);
@@ -37,6 +49,11 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    /**
+     * Obtiene el email del token para poder autenticar (sirve tabien para MS Users)
+     * @param token
+     * @return
+     */
     public String getEmailFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key())
@@ -46,6 +63,11 @@ public class JwtTokenProvider {
         return claims.getSubject();
     }
 
+    /**
+     * Obtiene los roles del token para poder autorizar (sirve tabien para MS Users)
+     * @param token
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public List<String> getRolesFromToken(String token) {
         try {
@@ -61,6 +83,11 @@ public class JwtTokenProvider {
         }
     }
 
+    /**
+     * Valida el token JWT para asegurarse de que es correcto y no ha expirado
+     * @param token
+     * @return
+     */
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(token);
