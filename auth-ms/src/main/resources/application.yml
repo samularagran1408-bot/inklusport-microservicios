@@ -44,6 +44,10 @@ app:
     expose-token-in-response: true
     token-expiry-hours: 24
 
+users:
+  service:
+    url: http://localhost:3002
+
 logging:
   level:
     com.inklusport.auth: DEBUG
