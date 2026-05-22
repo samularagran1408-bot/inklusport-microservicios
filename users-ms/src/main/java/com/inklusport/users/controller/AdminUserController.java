@@ -71,6 +71,12 @@ public class AdminUserController {
         }
     }
 
+    @GetMapping("/roles-by-email")
+    public ResponseEntity<List<String>> getUserRoles(@RequestParam String email) {
+        List<String> roles = roleService.getUserRoles(email);
+        return ResponseEntity.ok(roles);
+    }
+
     @DeleteMapping("/{email}/roles/{roleId}")
     public ResponseEntity<?> removeRole(@PathVariable String email, @PathVariable Long roleId) {
         try {

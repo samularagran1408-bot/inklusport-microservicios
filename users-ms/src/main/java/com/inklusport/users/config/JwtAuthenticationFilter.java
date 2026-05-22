@@ -32,7 +32,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        // Saltar filtro para endpoints públicos
         if (path.startsWith("/actuator")) {
             filterChain.doFilter(request, response);
             return;
@@ -48,18 +47,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 roles = List.of();
             }
 
+            // Agregar prefijo ROLE_ para que Spring Security lo reconozca
             List<SimpleGrantedAuthority> authorities = roles.stream()
-                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                    .map(this::toAuthority)
                     .collect(Collectors.toList());
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(email, null, authorities);
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.debug("Usuario autenticado: {}", email);
+            log.info("Usuario autenticado: {} con roles: {}", email, roles);
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private SimpleGrantedAuthority toAuthority(String role) {
+        String normalized = role == null ? "" : role.trim().toUpperCase();
+        if (normalized.startsWith("ROLE_")) {
+            normalized = normalized.substring(5);
+        }
+        return new SimpleGrantedAuthority("ROLE_" + normalized);
     }
 
     private String extractToken(HttpServletRequest request) {

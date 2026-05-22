@@ -69,13 +69,10 @@ public class RoleService {
     }
 
     @Transactional(readOnly = true)
-    public List<String> getUserRoles(String userEmail) {
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-        return userRoleRepository.findRoleIdsByUserId(user.getId()).stream()
-                .map(String::valueOf)
-                .collect(Collectors.toList());
+    public List<String> getUserRoles(String email) {
+        return userRepository.findByEmail(email)
+                .map(user -> userRoleRepository.findRoleNamesByUserId(user.getId()))
+                .orElse(List.of());
     }
 
     private RoleResponse convertToResponse(Role role) {

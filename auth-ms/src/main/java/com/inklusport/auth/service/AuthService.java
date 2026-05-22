@@ -1,5 +1,6 @@
 package com.inklusport.auth.service;
 
+import com.inklusport.auth.client.UserServiceClient;
 import com.inklusport.auth.config.EmailAlreadyRegisteredException;
 import com.inklusport.auth.dto.request.LoginRequest;
 import com.inklusport.auth.dto.request.RegisterRequest;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,7 @@ public class AuthService {
   private final LoginAttemptRepository loginAttemptRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtTokenProvider jwtTokenProvider;
+  private final UserServiceClient userServiceClient;
 
   @Value("${security.rate-limit.max-attempts:5}")
   private int maxAttempts;
@@ -77,10 +80,28 @@ public class AuthService {
       throw new RuntimeException("Credenciales inválidas");
     }
 
-    authUserRepository.updateLastLogin(request.getEmail(), LocalDateTime.now());
-    String token = jwtTokenProvider.generateToken(user.getEmail());
+    log.info("Email del usuario: {}", request.getEmail());
+
+    
 
     log.info("Usuario autenticado: {}", user.getEmail());
+
+    List<String> roles;
+    try {
+        roles = userServiceClient.getUserRoles(request.getEmail());
+    } catch (Exception e) {
+        log.warn("No se pudieron obtener roles desde Users MS: {}", e.getMessage());
+        roles = List.of();
+    }
+    log.info("Roles obtenidos desde Users MS: {}", roles);
+
+    if (roles == null || roles.isEmpty()) {
+        log.warn("Sin roles en Users MS, asignando USUARIO por defecto");
+        roles = List.of("USUARIO");
+    }
+
+    authUserRepository.updateLastLogin(request.getEmail(), LocalDateTime.now());
+    String token = jwtTokenProvider.generateToken(user.getEmail(), roles);
 
     return AuthResponse.builder()
             .token(token)

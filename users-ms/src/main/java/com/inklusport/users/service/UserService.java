@@ -111,9 +111,7 @@ public class UserService {
     }
 
     private UserProfileResponse convertToResponse(User user) {
-        List<String> roles = userRoleRepository.findRoleIdsByUserId(user.getId()).stream()
-                .map(String::valueOf)
-                .collect(Collectors.toList());
+        List<String> roles = userRoleRepository.findRoleNamesByUserId(user.getId());
 
         return UserProfileResponse.builder()
                 .id(user.getId())
