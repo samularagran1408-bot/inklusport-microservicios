@@ -8,8 +8,9 @@ Monorepositorio de microservicios Spring Boot para Inklusport.
 |---------|-------------|
 | `eureka-server` | Registro de servicios |
 | `api-gateway` | API Gateway |
-| `auth-ms` | Autenticación |
-| `users-ms` | Usuarios |
+| `ink-ms-common` | Librería compartida (entidades, repos, DTOs; sin YAML) |
+| `ink-ms-auth` | Autenticación |
+| `ink-ms-users` | Usuarios |
 | `sports-events-ms` | Eventos deportivos |
 | `accessibility-ms` | Accesibilidad |
 | `admin-ms` | Administración |
@@ -25,12 +26,26 @@ Monorepositorio de microservicios Spring Boot para Inklusport.
 
 ## Arranque local
 
-Cada servicio se construye desde su carpeta:
+Desde la **raíz** del monorepo (instala `ink-ms-common` y arranca un servicio):
 
 ```bash
-cd <nombre-servicio>
-mvn spring-boot:run
+# Compilar todo el módulo activo
+mvn clean install -DskipTests
+
+# Auth (puerto 3001)
+mvn spring-boot:run -pl ink-ms-auth
+
+# Users (puerto 3002)
+mvn spring-boot:run -pl ink-ms-users
 ```
+
+Solo la librería compartida:
+
+```bash
+mvn clean install -pl ink-ms-common -am -DskipTests
+```
+
+Ver `ink-ms-common/README.md` para probar el JAR sin levantar un microservicio.
 
 Con Docker Compose (cuando configures los servicios en `docker-compose.yml`):
 
