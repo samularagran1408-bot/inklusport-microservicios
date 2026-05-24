@@ -8,7 +8,7 @@ Monorepositorio de microservicios Spring Boot para Inklusport.
 |---------|-------------|
 | `eureka-server` | Registro de servicios |
 | `api-gateway` | API Gateway |
-| `ink-ms-common` | Librería compartida (entidades, repos, DTOs; sin YAML) |
+| `ink-ms-common` | Librería compartida (DTOs; sin YAML ni JPA) |
 | `ink-ms-auth` | Autenticación |
 | `ink-ms-users` | Usuarios |
 | `sports-events-ms` | Eventos deportivos |
