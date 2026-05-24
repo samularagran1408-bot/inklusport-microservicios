@@ -5,8 +5,10 @@ Librería compartida del monorepo (JAR, **no** es una aplicación ejecutable).
 ## Contenido
 
 - `com.inklusport.common.*` — DTOs transversales (p. ej. `ErrorResponse`)
-- `com.inklusport.auth.*` — entidades, repositorios y DTOs de autenticación
-- `com.inklusport.users.*` — entidades, repositorios y DTOs de usuarios
+- `com.inklusport.auth.dto.*` — DTOs de autenticación
+- `com.inklusport.users.dto.*` — DTOs de usuarios
+
+Las entidades y repositorios JPA viven en cada microservicio (`ink-ms-auth`, `ink-ms-users`), no en esta librería.
 
 No incluye `application.yml`, `application.properties` ni clase `@SpringBootApplication`.
 
@@ -23,8 +25,8 @@ El JAR queda en `ink-ms-common/target/ink-ms-common-1.0.0.jar`.
 ## Verificar que el JAR contiene las clases
 
 ```bash
-jar tf ink-ms-common/target/ink-ms-common-1.0.0.jar | findstr "User.class"
 jar tf ink-ms-common/target/ink-ms-common-1.0.0.jar | findstr "ErrorResponse.class"
+jar tf ink-ms-common/target/ink-ms-common-1.0.0.jar | findstr "LoginRequest.class"
 ```
 
 ## Usar en un microservicio
@@ -38,11 +40,4 @@ En el `pom.xml` del MS:
 </dependency>
 ```
 
-En la aplicación Spring Boot, activar escaneo JPA de la librería:
-
-```java
-@EntityScan("com.inklusport.users.entity")
-@EnableJpaRepositories("com.inklusport.users.repository")
-```
-
-La configuración (BD, JWT, puertos) sigue viviendo **solo** en cada `ink-ms-*` con su `application.yml`.
+La configuración (BD, JWT, puertos) y el modelo de persistencia (entidades, repositorios) viven **solo** en cada `ink-ms-*` con su `application.yml`.
