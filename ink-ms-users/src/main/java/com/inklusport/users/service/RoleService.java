@@ -22,6 +22,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RoleService {
 
+    /**
+     * Inyecta dependencias importadas de los repositorios
+     */
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;

@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserService {
 
+    /**
+     * Se inyectan dependencias importadas de los repositorios
+     */
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
 
