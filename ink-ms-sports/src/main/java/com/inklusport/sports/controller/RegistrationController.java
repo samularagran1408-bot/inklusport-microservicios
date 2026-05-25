@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,9 +27,11 @@ public class RegistrationController {
      * POST /api/registrations
      */
     @PostMapping
-    public ResponseEntity<?> registerToEvent(@RequestHeader("X-User-Id") String userId,
-                                              @Valid @RequestBody RegistrationRequest request) {
+    public ResponseEntity<?> registerToEvent(@AuthenticationPrincipal String email,
+                                            @Valid @RequestBody RegistrationRequest request) {
         try {
+            // Obtener userId desde UserServiceClient usando el email
+            String userId = userServiceClient.getUserIdByEmail(email).get("userId");
             RegistrationResponse response = registrationService.registerToEvent(userId, request);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {

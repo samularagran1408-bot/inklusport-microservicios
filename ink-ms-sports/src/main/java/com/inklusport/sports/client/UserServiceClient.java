@@ -3,12 +3,16 @@ package com.inklusport.sports.client;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
-@FeignClient(name = "users-ms", url = "${users.service.url}")
+@FeignClient(name = "ink-ms-users", url = "${users.service.url}")
 public interface UserServiceClient {
 
     @GetMapping("/api/users/{id}")
     Map<String, Object> getUserById(@PathVariable("id") String id);
+
+    @GetMapping("/api/internal/users/id-by-email")
+    Map<String, String> getUserIdByEmail(@RequestParam("email") String email);
 }
