@@ -1,0 +1,35 @@
+# src/main/resources/application.yml
+
+spring:
+  application:
+    name: sports-events-ms
+  
+  datasource:
+    url: jdbc:mysql://localhost:3306/sports_events_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: 
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format-sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+server:
+  port: 3003
+
+jwt:
+  secret: inklusport2024superSecretKeyForJWTtokenGenerationWith512bitsAlgorithmHS512
+  expiration: 86400000
+
+users:
+  service:
+    url: http://localhost:3002  # URL del Users MS 
+
+logging:
+  level:
+    com.inklusport.sports: DEBUG
