@@ -38,4 +38,14 @@ public interface EventRegistrationRepository extends JpaRepository<EventRegistra
     @Transactional
     @Query("DELETE FROM EventRegistration e WHERE e.event.id = :eventId")
     void deleteByEventId(@Param("eventId") String eventId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Event e SET e.availableCapacity = e.availableCapacity - 1 WHERE e.id = :eventId AND e.availableCapacity > 0")
+    int decrementAvailableCapacity(@Param("eventId") String eventId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Event e SET e.availableCapacity = e.availableCapacity + 1 WHERE e.id = :eventId")
+    int incrementAvailableCapacity(@Param("eventId") String eventId);
 }

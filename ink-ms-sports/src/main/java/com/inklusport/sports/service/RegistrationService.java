@@ -43,12 +43,14 @@ public class RegistrationService {
         Event event = eventRepository.findById(request.getEventId())
                 .orElseThrow(() -> new RuntimeException("Evento no encontrado con ID: " + request.getEventId()));
 
-        /** Verificar si el evento está activo */
         if (event.getStatus() != Event.EventStatus.active) {
             throw new RuntimeException("El evento no está disponible para inscripción");
         }
 
-        /** Verificar si el evento está activo*/
+        if (event.getEventDate().isBefore(LocalDate.now())) {
+            throw new RuntimeException("No se puede inscribir a un evento que ya pasó");
+        }
+
         if (registrationRepository.existsByUserIdAndEventId(userId, request.getEventId())) {
             throw new RuntimeException("Ya estás registrado en este evento");
         }
@@ -57,45 +59,41 @@ public class RegistrationService {
         registration.setUserId(userId);
         registration.setEvent(event);
 
-        /** Si hay cupos disponibles, registrar directamente */
         if (event.getAvailableCapacity() > 0) {
             registration.setAttended(false);
             registration.setWaitlistPosition(null);
+            registration.setQrCode(generateQRCode(userId, event.getId()));
             
-            /** Generar código QR para check-in */
-            String qrCode = generateQRCode(userId, event.getId());
-            registration.setQrCode(qrCode);
-
             EventRegistration saved = registrationRepository.save(registration);
             
-            /** Actualizar cupos disponibles */
-            eventRepository.decrementAvailableCapacity(event.getId());
+            int updated = eventRepository.decrementAvailableCapacity(event.getId());
+            if (updated == 0) {
+                throw new RuntimeException("Error al actualizar el cupo del evento");
+            }
             
-            log.info("Usuario {} registrado exitosamente en evento {}", userId, event.getName());
-            
+            log.info("Usuario {} registrado en evento {}", userId, event.getName());
             return convertToResponse(saved);
         } 
-        /** Si no hay cupos, agregar a lista de espera */
         else {
             Integer maxPosition = waitlistRepository.findMaxPositionByEventId(event.getId());
             int newPosition = (maxPosition == null) ? 1 : maxPosition + 1;
             
             registration.setWaitlistPosition(newPosition);
             registration.setAttended(false);
+            registration.setQrCode(null); 
             
             EventRegistration saved = registrationRepository.save(registration);
             
-            // Crear entrada en lista de espera
             Waitlist waitlist = new Waitlist();
             waitlist.setUserId(userId);
             waitlist.setEvent(event);
             waitlist.setPosition(newPosition);
             waitlist.setStatus(Waitlist.WaitlistStatus.waiting);
+            waitlist.setRequestedAt(LocalDateTime.now());
             waitlist.setNotified(false);
-            
             waitlistRepository.save(waitlist);
             
-            log.info("Usuario {} agregado a lista de espera del evento {} (posición {})", 
+            log.info("Usuario {} agregado a lista de espera de {} (posición {})", 
                     userId, event.getName(), newPosition);
             
             return convertToResponse(saved);
