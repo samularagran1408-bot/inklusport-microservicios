@@ -26,6 +26,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RegistrationService {
 
+    /**
+     * Repositorios de la aplicación
+     */
     private final EventRepository eventRepository;
     private final EventRegistrationRepository registrationRepository;
     private final WaitlistRepository waitlistRepository;
