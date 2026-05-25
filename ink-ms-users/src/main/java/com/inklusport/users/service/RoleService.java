@@ -1,6 +1,7 @@
 package com.inklusport.users.service;
 
 import com.inklusport.users.dto.request.AssignRoleRequest;
+import com.inklusport.users.dto.response.AssignRoleResponse;
 import com.inklusport.users.dto.response.RoleResponse;
 import com.inklusport.users.entity.Role;
 import com.inklusport.users.entity.User;
@@ -37,15 +38,16 @@ public class RoleService {
     }
 
     @Transactional
-    public void assignRoleToUser(String userEmail, AssignRoleRequest request) {
+    public AssignRoleResponse assignRoleToUser(String userEmail, AssignRoleRequest request, String assignedByAdminEmail) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException(
+                        "Usuario no encontrado. Debe existir un perfil creado (POST /api/users/perfil) para: " + userEmail));
 
         Role role = roleRepository.findById(request.getRoleId())
-                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado. Consulte los IDs en GET /api/admin/users/roles"));
 
         if (userRoleRepository.existsByUserIdAndRoleId(user.getId(), request.getRoleId())) {
-            throw new RuntimeException("El usuario ya tiene este rol asignado");
+            throw new RuntimeException("El usuario ya tiene el rol " + role.getName());
         }
 
         UserRoleId id = new UserRoleId(user.getId(), request.getRoleId());
@@ -53,9 +55,17 @@ public class RoleService {
         userRole.setId(id);
         userRole.setUser(user);
         userRole.setRole(role);
+        userRole.setAssignedBy(assignedByAdminEmail);
 
         userRoleRepository.save(userRole);
-        log.info("Rol {} asignado a usuario {}", role.getName(), userEmail);
+        log.info("Rol {} asignado a {} por admin {}", role.getName(), userEmail, assignedByAdminEmail);
+
+        return AssignRoleResponse.builder()
+                .email(userEmail)
+                .roleId(role.getId())
+                .roleName(role.getName())
+                .message("Rol asignado correctamente")
+                .build();
     }
 
     @Transactional
