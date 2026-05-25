@@ -11,8 +11,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -61,13 +64,14 @@ public class AdminUserController {
     }
 
     @PostMapping("/{email}/roles")
-    public ResponseEntity<?> assignRole(@PathVariable String email, 
-                                         @Valid @RequestBody AssignRoleRequest request) {
+    public ResponseEntity<?> assignRole(@PathVariable String email,
+                                        @Valid @RequestBody AssignRoleRequest request,
+                                        @AuthenticationPrincipal String adminEmail) {
+        String targetEmail = decodeEmail(email);
         try {
-            roleService.assignRoleToUser(email, request);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(roleService.assignRoleToUser(targetEmail, request, adminEmail));
         } catch (Exception e) {
-            return buildErrorResponse(e, "/api/admin/users/" + email + "/roles");
+            return buildErrorResponse(e, "/api/admin/users/" + targetEmail + "/roles");
         }
     }
 
@@ -90,6 +94,10 @@ public class AdminUserController {
     @GetMapping("/{email}/exists")
     public ResponseEntity<Boolean> userExists(@PathVariable String email) {
         return ResponseEntity.ok(userService.userExists(email));
+    }
+
+    private static String decodeEmail(String email) {
+        return URLDecoder.decode(email, StandardCharsets.UTF_8);
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(Exception e, String path) {
