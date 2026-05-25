@@ -13,31 +13,5 @@ import java.util.Optional;
 
 @Repository
 public interface WaitlistRepository extends JpaRepository<Waitlist, String> {
-
-    List<Waitlist> findByUserId(String userId);
-
-    List<Waitlist> findByEventId(String eventId);
-
-    Optional<Waitlist> findByUserIdAndEventId(String userId, String eventId);
-
-    List<Waitlist> findByStatus(Waitlist.WaitlistStatus status);
-
-    @Query("SELECT w FROM Waitlist w WHERE w.event.id = :eventId ORDER BY w.position ASC")
-    List<Waitlist> findByEventIdOrderByPositionAsc(@Param("eventId") String eventId);
-
-    @Query("SELECT MAX(w.position) FROM Waitlist w WHERE w.event.id = :eventId")
-    Integer findMaxPositionByEventId(@Param("eventId") String eventId);
-
-    @Query("SELECT COUNT(w) FROM Waitlist w WHERE w.event.id = :eventId AND w.notified = false")
-    long countNotNotifiedByEventId(@Param("eventId") String eventId);
-
-    @Modifying
-    @Transactional
-    @Query("UPDATE Waitlist w SET w.notified = true, w.notifiedAt = CURRENT_TIMESTAMP WHERE w.id = :waitlistId")
-    void markAsNotified(@Param("waitlistId") String waitlistId);
-
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM Waitlist w WHERE w.event.id = :eventId")
-    void deleteByEventId(@Param("eventId") String eventId);
+    List<Waitlist> findByEventIdOrderByPositionAsc(String eventId);
 }

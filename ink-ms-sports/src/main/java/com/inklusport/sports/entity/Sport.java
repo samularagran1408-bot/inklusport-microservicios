@@ -1,11 +1,8 @@
 package com.inklusport.sports.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +10,15 @@ import java.util.List;
 @Entity
 @Table(name = "sport")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Sport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id")
+    private Integer id;
 
     @Column(name = "name", nullable = false, length = 100)
     private String name;
@@ -28,26 +27,30 @@ public class Sport {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "difficulty")
-    private Difficulty difficulty = Difficulty.medio;
+    @Column(name = "difficulty", nullable = false)
+    private DifficultyLevel difficulty;
 
     @Column(name = "required_materials", columnDefinition = "TEXT")
     private String requiredMaterials;
 
     @Column(name = "is_active")
-    private Boolean isActive = true;
+    private Boolean isActive;
 
     @CreationTimestamp
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "sport", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @OneToMany(mappedBy = "sport", cascade = CascadeType.ALL)
     private List<SportDisability> disabilities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "sport")
-    private List<Event> events = new ArrayList<>();
-
-    public enum Difficulty {
+    public enum DifficultyLevel {
         bajo, medio, alto
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        if (isActive == null) isActive = true;
+        if (difficulty == null) difficulty = DifficultyLevel.medio;
     }
 }

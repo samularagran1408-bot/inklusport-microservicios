@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
-@FeignClient(name = "ink-ms-users", url = "${users.service.url}")
+@FeignClient(name = "ink-ms-users", url = "${users.service.url:http://localhost:3002}")
 public interface UserServiceClient {
 
     @GetMapping("/api/users/{id}")

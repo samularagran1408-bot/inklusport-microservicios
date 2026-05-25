@@ -1,6 +1,6 @@
 package com.inklusport.sports.config;
 
-import com.inklusport.sports.security.JwtTokenProvider;
+import com.inklusport.sports.config.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,29 +39,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null && jwtTokenProvider.validateToken(token)) {
             String email = jwtTokenProvider.getEmailFromToken(token);
             List<String> roles = jwtTokenProvider.getRolesFromToken(token);
+            
             if (roles == null) {
                 roles = List.of();
             }
 
             List<SimpleGrantedAuthority> authorities = roles.stream()
-                    .map(this::toAuthority)
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                     .collect(Collectors.toList());
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(email, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.debug("Usuario autenticado en sports-ms: {}", email);
+            log.debug("Usuario autenticado: {}", email);
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private SimpleGrantedAuthority toAuthority(String role) {
-        String normalized = role == null ? "" : role.trim().toUpperCase();
-        if (normalized.startsWith("ROLE_")) {
-            normalized = normalized.substring(5);
-        }
-        return new SimpleGrantedAuthority("ROLE_" + normalized);
     }
 
     private String extractToken(HttpServletRequest request) {

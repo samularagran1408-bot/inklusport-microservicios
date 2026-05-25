@@ -13,7 +13,7 @@ import java.time.LocalTime;
 public class EventRequest {
 
     @NotNull(message = "El ID del deporte es obligatorio")
-    private Long sportId;
+    private Integer sportId;
 
     @NotBlank(message = "El nombre del evento es obligatorio")
     private String name;
@@ -33,5 +33,5 @@ public class EventRequest {
     @Positive(message = "El cupo máximo debe ser mayor a 0")
     private Integer maxCapacity;
 
-    private String status; // draft, active, cancelled, finished
+    private String createdBy;
 }

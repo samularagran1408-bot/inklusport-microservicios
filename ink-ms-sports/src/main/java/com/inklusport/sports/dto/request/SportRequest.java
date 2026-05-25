@@ -17,5 +17,5 @@ public class SportRequest {
 
     private String requiredMaterials;
 
-    private Boolean isActive = true;
+    private Boolean isActive;
 }
