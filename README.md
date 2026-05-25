@@ -14,7 +14,7 @@ Monorepositorio de microservicios Spring Boot para Inklusport.
 | `sports-events-ms` | Eventos deportivos |
 | `accessibility-ms` | Accesibilidad |
 | `admin-ms` | Administración |
-| `analytics-ms` | Analítica |
+| `ink-ms-reports` | Reportes y analítica |
 | `search-ms` | Búsqueda |
 | `ai-assistant-ms` | Asistente IA |
 
@@ -37,6 +37,9 @@ mvn spring-boot:run -pl ink-ms-auth
 
 # Users (puerto 3002)
 mvn spring-boot:run -pl ink-ms-users
+
+# Reports (puerto 3003)
+mvn spring-boot:run -pl ink-ms-reports
 ```
 
 Solo la librería compartida:
