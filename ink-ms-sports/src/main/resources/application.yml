@@ -3,11 +3,15 @@ spring:
     name: ink-ms-sports
   
   datasource:
-    url: jdbc:mysql://localhost:3306/ms_sports?useSSL=false&serverTimezone=America/Bogota&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/sports_events_ms?useSSL=false&serverTimezone=America/Bogota&allowPublicKeyRetrieval=true
     username: root
     password: 
     driver-class-name: com.mysql.cj.jdbc.Driver
   
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -27,7 +31,7 @@ server:
 
 app:
   jwt:
-    secret: dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWp3dC10b2tlbi1nZW5lcmF0aW9uLWluLWlua2x1c3BvcnQtMjAyNi1iYWNrZW5kLXNlY3VyaXR5
+    secret: inklusport2024superSecretKeyForJWTtokenGenerationWith512bitsAlgorithmHS512
     expiration: 86400000
 
 users:

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/internal/users")
@@ -18,7 +17,6 @@ import java.util.Map;
 public class InternalUserController {
 
     private final RoleService roleService;
-    private final UserService userService;
 
     @GetMapping("/roles-by-email")
     public List<String> getUserRoles(@RequestParam String email) {

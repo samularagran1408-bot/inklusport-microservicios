@@ -25,7 +25,7 @@ public class EventController {
     }
 
     @PostMapping
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
     public ResponseEntity<EventResponse> createEvent(@RequestBody EventRequest request) {
         return ResponseEntity.ok(eventService.createEvent(request));
     }

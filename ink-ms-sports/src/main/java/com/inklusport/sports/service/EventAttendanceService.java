@@ -1,50 +1,91 @@
 package com.inklusport.sports.service;
 
 import com.inklusport.sports.dto.request.AttendanceRequest;
-import com.inklusport.sports.dto.response.AttendanceResponse;
 import com.inklusport.sports.entity.EventAttendance;
-import com.inklusport.sports.entity.EventRegistration;
+import com.inklusport.sports.entity.EventAttendance.CheckInMethod;
 import com.inklusport.sports.repository.EventAttendanceRepository;
 import com.inklusport.sports.repository.EventRegistrationRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EventAttendanceService {
 
-    private final EventAttendanceRepository attendanceRepository;
-    private final EventRegistrationRepository registrationRepository;
+    private final EventAttendanceRepository eventAttendanceRepository;
+    private final EventRegistrationRepository eventRegistrationRepository;
 
     @Transactional
-    public AttendanceResponse checkInUser(AttendanceRequest request) {
-        EventRegistration registration = registrationRepository.findById(request.getRegistrationId())
-                .orElseThrow(() -> new RuntimeException("Inscripción no encontrada"));
-
-        // Marcar asistencia en la inscripción
-        registration.setAttended(true);
-        registrationRepository.save(registration);
-
-        EventAttendance attendance = EventAttendance.builder()
-                .registrationId(registration.getId())
-                .verifiedBy(request.getVerifiedBy())
-                .build();
-
-        if (request.getCheckInMethod() != null) {
-            attendance.setCheckInMethod(EventAttendance.CheckInMethod.valueOf(request.getCheckInMethod().toLowerCase()));
+    public String recordAttendance(AttendanceRequest request) {
+        
+        /**
+         * Validar que la inscripción exista
+         */
+        boolean registrationExists = eventRegistrationRepository.existsById(request.getRegistrationId());
+        if (!registrationExists) {
+            throw new IllegalArgumentException("Error: La inscripción con ID '" + request.getRegistrationId() + "' no existe.");
         }
 
-        return convertToResponse(attendanceRepository.save(attendance));
+        /**
+         * Validar que no se registró la asistencia previamente
+         */
+        if (eventAttendanceRepository.existsByRegistrationId(request.getRegistrationId())) {
+            throw new IllegalStateException("Error: Ya se registró la asistencia para esta inscripción previamente.");
+        }
+
+        /**
+         * Mapear y procesar el método de Check-In con el Enum de la Entidad
+         */
+        CheckInMethod method;
+        try {
+            /**
+             * El método de check-in recibido puede ser "qr", "manual" o "admin".
+             * En caso de no coincidir con ninguno de los valores permitidos, se usará el valor por defecto "qr".
+             */
+            method = CheckInMethod.valueOf(request.getCheckInMethod().toLowerCase().trim());
+        } catch (Exception e) {
+            log.warn("Método de check-in inválido recibido: {}. Se usará el valor por defecto.", request.getCheckInMethod());
+            method = CheckInMethod.qr; // Respaldo por defecto
+        }
+
+        /**
+         * Construcción limpia del objeto utilizando el patrón Builder de tu Entidad
+         */
+        EventAttendance attendance = EventAttendance.builder()
+                .registrationId(request.getRegistrationId())
+                .checkInMethod(method)
+                .verifiedBy(request.getVerifiedBy())
+                .build(); 
+                
+        /**
+         * Guardar el objeto en la base de datos
+         */
+        EventAttendance saved = eventAttendanceRepository.save(attendance);
+        log.info("Asistencia registrada exitosamente con ID: {}", saved.getId());
+
+        return "Asistencia confirmada exitosamente. Código de registro: " + saved.getId();
     }
 
-    private AttendanceResponse convertToResponse(EventAttendance attendance) {
-        return AttendanceResponse.builder()
-                .id(attendance.getId())
-                .registrationId(attendance.getRegistrationId())
-                .checkInTime(attendance.getCheckInTime())
-                .checkInMethod(attendance.getCheckInMethod().name())
-                .verifiedBy(attendance.getVerifiedBy())
-                .build();
+    @Transactional(readOnly = true)
+    public List<EventAttendance> getAllAttendances() {
+        log.info("Obteniendo listado global de asistencias");
+        return eventAttendanceRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<EventAttendance> getAttendancesByEvent(String eventId) {
+        log.info("Obteniendo asistencias para el evento con ID: {}", eventId);
+        return eventAttendanceRepository.findByRegistration_EventId(eventId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<EventAttendance> getAttendancesByRegistration(String registrationId) {
+        log.info("Obteniendo asistencias para la inscripción con ID: {}", registrationId);
+        return eventAttendanceRepository.findByRegistrationId(registrationId);
     }
 }
