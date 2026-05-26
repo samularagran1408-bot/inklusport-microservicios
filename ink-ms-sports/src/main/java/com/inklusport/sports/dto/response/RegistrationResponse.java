@@ -1,13 +1,12 @@
 package com.inklusport.sports.dto.response;
 
-import lombok.Builder;
-import lombok.Data;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import lombok.*;
+import java.time.*;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RegistrationResponse {
     private String id;
     private String userId;
@@ -17,4 +16,5 @@ public class RegistrationResponse {
     private Boolean attended;
     private Integer waitlistPosition;
     private String qrCode;
+    private String message;
 }
