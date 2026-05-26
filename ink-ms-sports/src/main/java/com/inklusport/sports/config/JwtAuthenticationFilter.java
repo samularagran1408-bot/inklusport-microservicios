@@ -36,6 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = extractToken(request);
+        
         if (token != null && jwtTokenProvider.validateToken(token)) {
             String email = jwtTokenProvider.getEmailFromToken(token);
             List<String> roles = jwtTokenProvider.getRolesFromToken(token);
@@ -44,14 +45,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 roles = List.of();
             }
 
+            // Mapeo y traducción estricta de roles para compatibilidad con Spring Security 
             List<SimpleGrantedAuthority> authorities = roles.stream()
-                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                    .map(role -> {
+                        String normalizedRole = role.toUpperCase().trim();
+                        
+                        // Traducir del token (Español) al estándar de las anotaciones (Inglés)
+                        if (normalizedRole.equals("USUARIO")) {
+                            normalizedRole = "USER";
+                        } else if (normalizedRole.equals("ADMINISTRADOR")) {
+                            normalizedRole = "ADMIN";
+                        } else if (normalizedRole.equals("ORGANIZADOR")) {
+                            normalizedRole = "ORGANIZER";
+                        } else if (normalizedRole.equals("ENTRENADOR")) {
+                            normalizedRole = "COACH";   
+                        }
+                        
+                        // Asegurar el prefijo ROLE_ requerido por Spring Security de forma interna
+                        String roleWithPrefix = normalizedRole.startsWith("ROLE_") ? normalizedRole : "ROLE_" + normalizedRole;
+                        return new SimpleGrantedAuthority(roleWithPrefix);
+                    })
                     .collect(Collectors.toList());
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(email, null, authorities);
+            
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.debug("Usuario autenticado: {}", email);
+            log.info("Usuario autenticado exitosamente en Microservicio Deportes: {} con roles mapeados: {}", email, authorities);
+        } else if (token != null) {
+            log.warn("Se envió un token pero falló la validación en JwtTokenProvider");
         }
 
         filterChain.doFilter(request, response);
