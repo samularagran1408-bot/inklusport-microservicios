@@ -27,7 +27,7 @@ server:
 
 app:
   jwt:
-    secret: dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWp3dC10b2tlbi1nZW5lcmF0aW9uLWluLWlua2x1c3BvcnQ=
+    secret: dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWp3dC10b2tlbi1nZW5lcmF0aW9uLWluLWlua2x1c3BvcnQtMjAyNi1iYWNrZW5kLXNlY3VyaXR5
     expiration: 86400000
 
 users:

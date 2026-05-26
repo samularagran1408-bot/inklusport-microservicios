@@ -6,9 +6,11 @@ import com.inklusport.sports.service.RegistrationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/registrations")
+@PreAuthorize("isAuthenticated()")
 @RequiredArgsConstructor
 public class RegistrationController {
 
