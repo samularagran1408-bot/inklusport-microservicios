@@ -13,9 +13,6 @@ public class RegistrationResponse {
     private String userId;
     private String eventId;
     private String eventName;
-    private LocalDate eventDate;
-    private LocalTime eventTime;
-    private String location;
     private LocalDateTime registrationDate;
     private Boolean attended;
     private Integer waitlistPosition;

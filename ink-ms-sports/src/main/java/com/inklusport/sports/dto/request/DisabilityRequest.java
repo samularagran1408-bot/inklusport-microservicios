@@ -15,5 +15,5 @@ public class DisabilityRequest {
 
     private String category; /** visual, fisica, auditiva, intelectual, multiple */ 
 
-    private Boolean isActive = true;
+    private Boolean isActive;
 }

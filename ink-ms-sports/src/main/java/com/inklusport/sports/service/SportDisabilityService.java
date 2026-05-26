@@ -5,93 +5,76 @@ import com.inklusport.sports.dto.response.SportDisabilityResponse;
 import com.inklusport.sports.entity.Disability;
 import com.inklusport.sports.entity.Sport;
 import com.inklusport.sports.entity.SportDisability;
-import com.inklusport.sports.entity.SportDisabilityId;
 import com.inklusport.sports.repository.DisabilityRepository;
 import com.inklusport.sports.repository.SportDisabilityRepository;
 import com.inklusport.sports.repository.SportRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class SportDisabilityService {
 
     private final SportDisabilityRepository sportDisabilityRepository;
     private final SportRepository sportRepository;
     private final DisabilityRepository disabilityRepository;
 
-    @Transactional
-    public SportDisabilityResponse addAssociation(SportDisabilityRequest request) {
-        Sport sport = sportRepository.findById(request.getSportId())
-                .orElseThrow(() -> new RuntimeException("Deporte no encontrado con ID: " + request.getSportId()));
-
-        Disability disability = disabilityRepository.findById(request.getDisabilityId())
-                .orElseThrow(() -> new RuntimeException("Discapacidad no encontrada con ID: " + request.getDisabilityId()));
-
-        if (sportDisabilityRepository.existsBySportIdAndDisabilityId(request.getSportId(), request.getDisabilityId())) {
-            throw new RuntimeException("La asociación ya existe");
-        }
-
-        SportDisabilityId id = new SportDisabilityId(request.getSportId(), request.getDisabilityId());
-        
-        SportDisability sportDisability = new SportDisability();
-        sportDisability.setId(id);
-        sportDisability.setSport(sport);
-        sportDisability.setDisability(disability);
-        sportDisability.setAdaptations(request.getAdaptations());
-
-        SportDisability saved = sportDisabilityRepository.save(sportDisability);
-        log.info("Asociación creada: Deporte {} - Discapacidad {}", sport.getName(), disability.getName());
-
-        return convertToResponse(saved);
-    }
-
-    @Transactional
-    public void removeAssociation(Long sportId, Long disabilityId) {
-        SportDisabilityId id = new SportDisabilityId(sportId, disabilityId);
-        
-        if (!sportDisabilityRepository.existsById(id)) {
-            throw new RuntimeException("La asociación no existe");
-        }
-        
-        sportDisabilityRepository.deleteById(id);
-        log.info("Asociación eliminada: Deporte {} - Discapacidad {}", sportId, disabilityId);
-    }
-
     @Transactional(readOnly = true)
-    public List<SportDisabilityResponse> getAssociationsBySport(Long sportId) {
+    public List<SportDisabilityResponse> getSportDisabilities(Integer sportId) {
         return sportDisabilityRepository.findBySportId(sportId).stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public List<SportDisabilityResponse> getAssociationsByDisability(Long disabilityId) {
-        return sportDisabilityRepository.findByDisabilityId(disabilityId).stream()
-                .map(this::convertToResponse)
-                .collect(Collectors.toList());
+    @Transactional
+    public SportDisabilityResponse addAdaptation(SportDisabilityRequest request) {
+        // Aseguramos la conversión a Integer usando .intValue() por si el Request expone un Long
+        Integer sId = request.getSportId() instanceof Long ? ((Long) (Object) request.getSportId()).intValue() : (Integer) (Object) request.getSportId();
+        Integer dId = request.getDisabilityId() instanceof Long ? ((Long) (Object) request.getDisabilityId()).intValue() : (Integer) (Object) request.getDisabilityId();
+
+        Sport sport = sportRepository.findById(sId)
+                .orElseThrow(() -> new RuntimeException("Deporte no encontrado"));
+        Disability dis = disabilityRepository.findById(dId)
+                .orElseThrow(() -> new RuntimeException("Discapacidad no encontrada"));
+        
+        SportDisability.SportDisabilityId id = new SportDisability.SportDisabilityId(sId, dId);
+        SportDisability sd = SportDisability.builder()
+                .id(id)
+                .sport(sport)
+                .disability(dis)
+                .adaptations(request.getAdaptations())
+                .build();
+                
+        return convertToResponse(sportDisabilityRepository.save(sd));
     }
 
-    @Transactional(readOnly = true)
-    public String getAdaptations(Long sportId, Long disabilityId) {
-        SportDisabilityId id = new SportDisabilityId(sportId, disabilityId);
-        
-        return sportDisabilityRepository.findById(id)
-                .map(SportDisability::getAdaptations)
-                .orElseThrow(() -> new RuntimeException("No se encontraron adaptaciones para esta combinación"));
+    @Transactional
+    public SportDisabilityResponse updateAdaptation(Integer sportId, Integer disabilityId, SportDisabilityRequest request) {
+        SportDisability.SportDisabilityId id = new SportDisability.SportDisabilityId(sportId, disabilityId);
+        SportDisability sd = sportDisabilityRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Relación no encontrada"));
+        sd.setAdaptations(request.getAdaptations());
+        return convertToResponse(sportDisabilityRepository.save(sd));
+    }
+
+    @Transactional
+    public void removeAdaptation(Integer sportId, Integer disabilityId) {
+        SportDisability.SportDisabilityId id = new SportDisability.SportDisabilityId(sportId, disabilityId);
+        sportDisabilityRepository.deleteById(id);
     }
 
     private SportDisabilityResponse convertToResponse(SportDisability sd) {
+        // Obtenemos los valores numéricos y los casteamos de forma segura
+        Integer sId = sd.getSport().getId();
+        Integer dId = sd.getDisability().getId();
+
         return SportDisabilityResponse.builder()
-                .sportId(sd.getSport().getId())
+                .sportId(sId)
                 .sportName(sd.getSport().getName())
-                .disabilityId(sd.getDisability().getId())
+                .disabilityId(dId)
                 .disabilityName(sd.getDisability().getName())
                 .adaptations(sd.getAdaptations())
                 .build();

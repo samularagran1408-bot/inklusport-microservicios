@@ -1,24 +1,20 @@
 package com.inklusport.sports.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**I can already  work this branch */
 @Entity
 @Table(name = "disability")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Disability {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id")
+    private Integer id;
 
     @Column(name = "name", nullable = false, length = 100)
     private String name;
@@ -30,8 +26,10 @@ public class Disability {
     private String category;
 
     @Column(name = "is_active")
-    private Boolean isActive = true;
+    private Boolean isActive;
 
-    @OneToMany(mappedBy = "disability", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SportDisability> sports = new ArrayList<>();
+    @PrePersist
+    protected void onCreate() {
+        if (isActive == null) isActive = true;
+    }
 }

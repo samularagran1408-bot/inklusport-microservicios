@@ -1,11 +1,9 @@
-# src/main/resources/application.yml
-
 spring:
   application:
-    name: sports-events-ms
+    name: ink-ms-sports
   
   datasource:
-    url: jdbc:mysql://localhost:3306/sports_events_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/ms_sports?useSSL=false&serverTimezone=America/Bogota&allowPublicKeyRetrieval=true
     username: root
     password: 
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -16,20 +14,27 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        format-sql: true
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+  
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
 
 server:
   port: 3003
 
-jwt:
-  secret: inklusport2024superSecretKeyForJWTtokenGenerationWith512bitsAlgorithmHS512
-  expiration: 86400000
+app:
+  jwt:
+    secret: dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWp3dC10b2tlbi1nZW5lcmF0aW9uLWluLWlua2x1c3BvcnQ=
+    expiration: 86400000
 
 users:
   service:
-    url: http://localhost:3002  # URL del Users MS 
+    url: http://localhost:3002
 
 logging:
   level:
     com.inklusport.sports: DEBUG
+    org.springframework.security: DEBUG

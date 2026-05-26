@@ -10,7 +10,7 @@ import java.time.LocalTime;
 @Builder
 public class EventResponse {
     private String id;
-    private Long sportId;
+    private Integer sportId;
     private String sportName;
     private String name;
     private String description;
@@ -22,5 +22,4 @@ public class EventResponse {
     private String status;
     private String createdBy;
     private LocalDateTime createdAt;
-    private Long registeredCount;
 }

@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 @Builder
 public class SportDisabilityResponse {
-    private Long sportId;
+    private Integer sportId;
     private String sportName;
-    private Long disabilityId;
+    private Integer disabilityId;
     private String disabilityName;
     private String adaptations;
 }

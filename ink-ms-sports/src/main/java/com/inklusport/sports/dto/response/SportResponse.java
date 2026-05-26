@@ -8,12 +8,12 @@ import java.util.List;
 @Data
 @Builder
 public class SportResponse {
-    private Long id;
+    private Integer id;
     private String name;
     private String description;
     private String difficulty;
     private String requiredMaterials;
     private Boolean isActive;
     private LocalDateTime createdAt;
-    private List<Long> disabilityIds;
+    private List<DisabilityResponse> disabilities;
 }

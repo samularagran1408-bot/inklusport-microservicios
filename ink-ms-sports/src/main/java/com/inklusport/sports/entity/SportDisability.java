@@ -1,13 +1,13 @@
 package com.inklusport.sports.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "sport_disability")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class SportDisability {
@@ -25,6 +25,18 @@ public class SportDisability {
     @JoinColumn(name = "disability_id")
     private Disability disability;
 
-    @Column(name = "adaptations", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "adaptations", columnDefinition = "TEXT", nullable = false)
     private String adaptations;
+
+    @Embeddable
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SportDisabilityId implements Serializable {
+        @Column(name = "sport_id")
+        private Integer sportId;
+        
+        @Column(name = "disability_id")
+        private Integer disabilityId;
+    }
 }
