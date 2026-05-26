@@ -1,0 +1,37 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1 # Opcional: añade un prefijo a todos tus endpoints (ej: /api/v1/auth)
+
+spring:
+  application:
+    name: ink-ms-auth
+
+  # Configuración de Base de Datos No Relacional (MongoDB)
+  data:
+    mongodb:
+      # Si usas Mongo Atlas en producción, reemplaza esta URI por tu string de conexión
+      uri: mongodb://localhost:27017/ink_auth_db
+      # Fuerza a Spring Boot a crear automáticamente los índices (@Indexed y @CompoundIndex) al arrancar
+      auto-index-creation: true
+
+  # Configuración de Serialización JSON (Muy útil para las fechas de tus colecciones)
+  jackson:
+    serialization:
+      # Evita que las fechas se muestren como timestamps numéricos, forzando formato ISO-8601 estándar
+      write-dates-as-timestamps: false
+    time-zone: UTC
+
+# Configuración personalizada para tu arquitectura de Seguridad y Filtros (JWT)
+# Puedes leer estos valores en tu código usando la anotación @Value("${jwt.secret}")
+jwt:
+  secret: "TuPalabraSecretaSuperSeguraYMuyLargaParaElMicroservicioDeInklusport2026!"
+  expiration: 86400000 # Tiempo de vida del token en milisegundos (ej: 24 horas)
+  header: "Authorization"
+  prefix: "Bearer "
+
+# Configuración de Logs (Opcional, útil para debugear consultas NoSQL en desarrollo)
+logging:
+  level:
+    root: INFO
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG # Muestra en consola las operaciones que se hacen en Mongo
