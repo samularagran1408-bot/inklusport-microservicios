@@ -22,8 +22,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    /**
+     * Se inyecta el JwtTokenProvider para validar y extraer información del token JWT. 
+     */
     private final JwtTokenProvider jwtTokenProvider;
 
+    /**
+     * Este método se ejecuta para cada solicitud entrante. 
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -45,12 +51,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 roles = List.of();
             }
 
-            // Mapeo y traducción estricta de roles para compatibilidad con Spring Security 
+            /**
+             * Mapeo y traducción estricta de roles para compatibilidad con Spring Security 
+             */
             List<SimpleGrantedAuthority> authorities = roles.stream()
                     .map(role -> {
                         String normalizedRole = role.toUpperCase().trim();
                         
-                        // Traducir del token (Español) al estándar de las anotaciones (Inglés)
+                        /**
+                         * Traducir del token (Español) al estándar de las anotaciones (Inglés)
+                         */
                         if (normalizedRole.equals("USUARIO")) {
                             normalizedRole = "USER";
                         } else if (normalizedRole.equals("ADMINISTRADOR")) {
@@ -61,7 +71,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             normalizedRole = "COACH";   
                         }
                         
-                        // Asegurar el prefijo ROLE_ requerido por Spring Security de forma interna
+                        /**
+                         * Asegurar el prefijo ROLE_ requerido por Spring Security de forma interna
+                         */
                         String roleWithPrefix = normalizedRole.startsWith("ROLE_") ? normalizedRole : "ROLE_" + normalizedRole;
                         return new SimpleGrantedAuthority(roleWithPrefix);
                     })
@@ -79,6 +91,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    /**
+     * Extrae el token de la cabecera HTTP Authorization, asegurándose de que tenga el formato correcto "Bearer <token>"
+     */
     private String extractToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {

@@ -22,6 +22,9 @@ public class JwtTokenProvider {
 
     private Key key;
 
+    /**
+     * Inicializa la clave de firma de JWT
+     */
     @PostConstruct
     public void init() {
         byte[] keyBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
