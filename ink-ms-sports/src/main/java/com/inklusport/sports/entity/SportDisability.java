@@ -3,6 +3,7 @@ package com.inklusport.sports.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "sport_disability")
@@ -18,6 +19,7 @@ public class SportDisability {
     @ManyToOne
     @MapsId("sportId")
     @JoinColumn(name = "sport_id")
+    @JsonIgnoreProperties("disabilities")
     private Sport sport;
 
     @ManyToOne
