@@ -24,3 +24,4 @@ public class AnalyticsEvent {
     private LocalDateTime createdAt;
 
 }
+
