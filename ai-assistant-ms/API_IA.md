@@ -2,7 +2,8 @@
 
 Guia rapida para probar el modulo de IA de InkluSport.  
 Puerto por defecto: **8087**  
-Base URL local: `http://localhost:8087`
+Base URL directa al MS: `http://localhost:8087`  
+Base URL por API Gateway: `http://localhost:8080` (mismas rutas `/api/ia/...`)
 
 ---
 
