@@ -1,7 +1,7 @@
 package com.inklusport.sports.controller;
 
-import com.inklusport.sports.dto.request.WaitlistRequest;
-import com.inklusport.sports.dto.response.WaitlistResponse;
+import com.inklusport.sports.dto.WaitlistRequest;
+import com.inklusport.sports.dto.WaitlistResponse;
 import com.inklusport.sports.service.WaitlistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

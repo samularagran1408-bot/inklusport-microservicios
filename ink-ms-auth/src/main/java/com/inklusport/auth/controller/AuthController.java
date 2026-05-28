@@ -1,13 +1,13 @@
 package com.inklusport.auth.controller;
 
-import com.inklusport.auth.dto.request.ForgotPasswordRequest;
-import com.inklusport.auth.dto.request.LoginRequest;
-import com.inklusport.auth.dto.request.RegisterRequest;
-import com.inklusport.auth.dto.request.ResetPasswordRequest;
-import com.inklusport.auth.dto.response.AuthResponse;
+import com.inklusport.auth.dto.AuthResponse;
+import com.inklusport.auth.dto.ForgotPasswordRequest;
+import com.inklusport.auth.dto.ForgotPasswordResponse;
+import com.inklusport.auth.dto.LoginRequest;
+import com.inklusport.auth.dto.RegisterRequest;
+import com.inklusport.auth.dto.ResetPasswordRequest;
+import com.inklusport.auth.dto.ResetPasswordResponse;
 import com.inklusport.common.dto.response.ErrorResponse;
-import com.inklusport.auth.dto.response.ForgotPasswordResponse;
-import com.inklusport.auth.dto.response.ResetPasswordResponse;
 import com.inklusport.auth.security.JwtTokenProvider;
 import com.inklusport.auth.service.AuthService;
 import com.inklusport.auth.service.PasswordResetService;

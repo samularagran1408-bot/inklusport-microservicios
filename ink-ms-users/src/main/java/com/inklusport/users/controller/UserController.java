@@ -1,8 +1,8 @@
 package com.inklusport.users.controller;
 
-import com.inklusport.users.dto.request.UpdateProfileRequest;
-import com.inklusport.users.dto.response.UserProfileResponse;
-import com.inklusport.users.dto.response.UserActivityResponse;
+import com.inklusport.users.dto.UpdateProfileRequest;
+import com.inklusport.users.dto.UserActivityResponse;
+import com.inklusport.users.dto.UserProfileResponse;
 import com.inklusport.common.dto.response.ErrorResponse;
 import com.inklusport.users.service.UserService;
 import com.inklusport.users.service.UserActivityService;

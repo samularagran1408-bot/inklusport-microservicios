@@ -1,6 +1,6 @@
 package com.inklusport.sports.controller;
 
-import com.inklusport.sports.dto.request.AttendanceRequest;
+import com.inklusport.sports.dto.AttendanceRequest;
 import com.inklusport.sports.service.EventAttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

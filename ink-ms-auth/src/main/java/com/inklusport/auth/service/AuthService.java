@@ -2,9 +2,9 @@ package com.inklusport.auth.service;
 
 import com.inklusport.auth.client.UserServiceClient;
 import com.inklusport.auth.config.EmailAlreadyRegisteredException;
-import com.inklusport.auth.dto.request.LoginRequest;
-import com.inklusport.auth.dto.request.RegisterRequest;
-import com.inklusport.auth.dto.response.AuthResponse;
+import com.inklusport.auth.dto.AuthResponse;
+import com.inklusport.auth.dto.LoginRequest;
+import com.inklusport.auth.dto.RegisterRequest;
 import com.inklusport.auth.entity.AuthUser;
 import com.inklusport.auth.entity.LoginAttempt;
 import com.inklusport.auth.repository.AuthUserRepository;

@@ -2,7 +2,7 @@ package com.inklusport.users.controller;
 
 import com.inklusport.users.config.JwtAuthenticationFilter;
 import com.inklusport.users.config.SecurityConfig;
-import com.inklusport.users.dto.response.UserProfileResponse;
+import com.inklusport.users.dto.UserProfileResponse;
 import com.inklusport.users.exception.GlobalExceptionHandler;
 import com.inklusport.users.security.JwtTokenProvider;
 import com.inklusport.users.service.RoleService;

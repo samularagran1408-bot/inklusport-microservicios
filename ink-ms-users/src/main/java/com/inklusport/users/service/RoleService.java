@@ -1,8 +1,8 @@
 package com.inklusport.users.service;
 
-import com.inklusport.users.dto.request.AssignRoleRequest;
-import com.inklusport.users.dto.response.AssignRoleResponse;
-import com.inklusport.users.dto.response.RoleResponse;
+import com.inklusport.users.dto.AssignRoleRequest;
+import com.inklusport.users.dto.AssignRoleResponse;
+import com.inklusport.users.dto.RoleResponse;
 import com.inklusport.users.entity.Role;
 import com.inklusport.users.entity.User;
 import com.inklusport.users.entity.UserRole;
