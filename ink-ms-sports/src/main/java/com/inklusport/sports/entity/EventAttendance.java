@@ -1,5 +1,6 @@
 package com.inklusport.sports.entity;
 
+import com.inklusport.sports.enums.CheckInMethod;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -36,9 +37,6 @@ public class EventAttendance {
     @Column(name = "verified_by", length = 36)
     private String verifiedBy;
 
-    public enum CheckInMethod {
-        qr, manual, admin
-    }
 
     @PrePersist
     protected void onCreate() {

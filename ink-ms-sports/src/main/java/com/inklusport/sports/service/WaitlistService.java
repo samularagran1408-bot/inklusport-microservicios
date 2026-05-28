@@ -1,8 +1,9 @@
 package com.inklusport.sports.service;
 
-import com.inklusport.sports.dto.request.WaitlistRequest;
-import com.inklusport.sports.dto.response.WaitlistResponse;
+import com.inklusport.sports.dto.WaitlistRequest;
+import com.inklusport.sports.dto.WaitlistResponse;
 import com.inklusport.sports.entity.Waitlist;
+import com.inklusport.sports.enums.WaitlistStatus;
 import com.inklusport.sports.repository.WaitlistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class WaitlistService {
 
         Waitlist w = Waitlist.builder()
                 .userId(request.getUserId()).eventId(request.getEventId())
-                .position(nextPosition).status(Waitlist.WaitlistStatus.waiting).build();
+                .position(nextPosition).status(WaitlistStatus.waiting).build();
         return convertToResponse(waitlistRepository.save(w));
     }
 

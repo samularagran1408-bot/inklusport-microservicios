@@ -1,7 +1,7 @@
 package com.inklusport.users.service;
 
-import com.inklusport.users.dto.request.UpdateProfileRequest;
-import com.inklusport.users.dto.response.UserProfileResponse;
+import com.inklusport.users.dto.UpdateProfileRequest;
+import com.inklusport.users.dto.UserProfileResponse;
 import com.inklusport.users.entity.User;
 import com.inklusport.users.repository.UserRepository;
 import com.inklusport.users.repository.UserRoleRepository;

@@ -1,7 +1,7 @@
 package com.inklusport.sports.service;
 
-import com.inklusport.sports.dto.request.RegistrationRequest;
-import com.inklusport.sports.dto.response.RegistrationResponse;
+import com.inklusport.sports.dto.RegistrationRequest;
+import com.inklusport.sports.dto.RegistrationResponse;
 import com.inklusport.sports.entity.Event;
 import com.inklusport.sports.entity.EventRegistration;
 import com.inklusport.sports.repository.EventRegistrationRepository;

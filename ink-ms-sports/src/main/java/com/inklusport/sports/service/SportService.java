@@ -1,8 +1,8 @@
 package com.inklusport.sports.service;
 
-import com.inklusport.sports.dto.request.SportRequest;
-import com.inklusport.sports.dto.response.DisabilityResponse;
-import com.inklusport.sports.dto.response.SportResponse;
+import com.inklusport.sports.dto.SportRequest;
+import com.inklusport.sports.dto.DisabilityResponse;
+import com.inklusport.sports.dto.SportResponse;
 import com.inklusport.sports.entity.Sport;
 import com.inklusport.sports.repository.SportDisabilityRepository;
 import com.inklusport.sports.repository.SportRepository;

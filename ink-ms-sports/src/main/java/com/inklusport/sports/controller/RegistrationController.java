@@ -1,7 +1,7 @@
 package com.inklusport.sports.controller;
 
-import com.inklusport.sports.dto.request.RegistrationRequest;
-import com.inklusport.sports.dto.response.RegistrationResponse;
+import com.inklusport.sports.dto.RegistrationRequest;
+import com.inklusport.sports.dto.RegistrationResponse;
 import com.inklusport.sports.service.RegistrationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +55,7 @@ public class RegistrationController {
         }
     }
 
-    @GetMapping("da503a79-ed37-4b7c-9231-c4eb65ff9531{eventId}/waitlist")
+    @GetMapping("{eventId}/waitlist")
     public ResponseEntity<List<RegistrationResponse>> getWaitlist(@PathVariable String eventId) {
         return ResponseEntity.ok(registrationService.getWaitlistForEvent(eventId));
     }

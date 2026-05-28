@@ -1,8 +1,7 @@
 package com.inklusport.users.controller;
 
-import com.inklusport.users.dto.response.UserProfileResponse;
+import com.inklusport.users.dto.UserProfileResponse;
 import com.inklusport.users.service.RoleService;
-import com.inklusport.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

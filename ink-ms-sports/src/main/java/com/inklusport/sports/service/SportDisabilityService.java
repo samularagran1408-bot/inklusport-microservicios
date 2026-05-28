@@ -1,7 +1,7 @@
 package com.inklusport.sports.service;
 
-import com.inklusport.sports.dto.request.SportDisabilityRequest;
-import com.inklusport.sports.dto.response.SportDisabilityResponse;
+import com.inklusport.sports.dto.SportDisabilityRequest;
+import com.inklusport.sports.dto.SportDisabilityResponse;
 import com.inklusport.sports.entity.Disability;
 import com.inklusport.sports.entity.Sport;
 import com.inklusport.sports.entity.SportDisability;

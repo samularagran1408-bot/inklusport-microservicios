@@ -1,7 +1,7 @@
 package com.inklusport.sports.service;
 
-import com.inklusport.sports.dto.request.DisabilityRequest;
-import com.inklusport.sports.dto.response.DisabilityResponse;
+import com.inklusport.sports.dto.DisabilityRequest;
+import com.inklusport.sports.dto.DisabilityResponse;
 import com.inklusport.sports.entity.Disability;
 import com.inklusport.sports.repository.DisabilityRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package com.inklusport.sports.service;
 
-import com.inklusport.sports.dto.request.EventRequest;
-import com.inklusport.sports.dto.response.EventResponse;
+import com.inklusport.sports.dto.EventRequest;
+import com.inklusport.sports.dto.EventResponse;
 import com.inklusport.sports.entity.Event;
 import com.inklusport.sports.entity.Sport;
 import com.inklusport.sports.repository.EventRepository;

@@ -1,5 +1,6 @@
 package com.inklusport.sports.entity;
 
+import com.inklusport.sports.enums.DifficultyLevel;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
