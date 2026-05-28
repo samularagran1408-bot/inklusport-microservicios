@@ -1,4 +1,4 @@
-package com.inklusport.admin.dto.request;
+package com.inklusport.admin.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
