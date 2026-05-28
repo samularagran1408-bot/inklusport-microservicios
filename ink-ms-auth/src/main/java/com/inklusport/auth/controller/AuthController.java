@@ -56,15 +56,15 @@ public class AuthController {
   }
 
   @PostMapping("/forgot-password")
-  public ResponseEntity<ForgotPasswordResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
-    ForgotPasswordResponse response = passwordResetService.forgotPassword(request);
-    return ResponseEntity.ok(response);
+  public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+      passwordResetService.forgotPassword(request);
+      return ResponseEntity.ok(Map.of("message", "Si el email existe, recibirás instrucciones"));
   }
 
   @PostMapping("/reset-password")
-  public ResponseEntity<ResetPasswordResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
-    ResetPasswordResponse response = passwordResetService.resetPassword(request);
-    return ResponseEntity.ok(response);
+  public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+      passwordResetService.resetPassword(request);
+      return ResponseEntity.ok(Map.of("message", "Contraseña actualizada exitosamente"));
   }
 
   @GetMapping("/validate")
