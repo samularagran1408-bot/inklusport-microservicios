@@ -4,17 +4,16 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
+@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Table(name = "system_parameters")
 public class SystemParameter {
 
     public enum ParamType {
-        integer, boolean, string
+        "integer", "boolean", "string"
     }
 
     @Id
