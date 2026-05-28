@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Esto actúa como un interceptor / try-catch global para toda la app
+ * Actúa como un interceptor/ try-catch global para toda la app
  */
 @RestControllerAdvice 
 public class GlobalExceptionHandler {
