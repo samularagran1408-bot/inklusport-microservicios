@@ -31,7 +31,9 @@ public class SportDisabilityService {
 
     @Transactional
     public SportDisabilityResponse addAdaptation(SportDisabilityRequest request) {
-        // Aseguramos la conversión a Integer usando .intValue() por si el Request expone un Long
+        /**
+         * conversión a Integer usando .intValue() por si el Request expone un Long
+         */
         Integer sId = request.getSportId() instanceof Long ? ((Long) (Object) request.getSportId()).intValue() : (Integer) (Object) request.getSportId();
         Integer dId = request.getDisabilityId() instanceof Long ? ((Long) (Object) request.getDisabilityId()).intValue() : (Integer) (Object) request.getDisabilityId();
 
@@ -67,7 +69,9 @@ public class SportDisabilityService {
     }
 
     private SportDisabilityResponse convertToResponse(SportDisability sd) {
-        // Obtenemos los valores numéricos y los casteamos de forma segura
+        /**
+         * valores numéricos y los casteamos de forma segura
+         */
         Integer sId = sd.getSport().getId();
         Integer dId = sd.getDisability().getId();
 
