@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.inklusport.reports.dto.request.CreateReportRequest;
+import com.inklusport.reports.dto.response.ReportResponse;
 import com.inklusport.reports.entity.ReportConfig;
 import com.inklusport.reports.repository.ReportConfigRepository;
 
@@ -18,7 +20,23 @@ public class ReportConfigService {
         return reportConfigRepository.findAll();
     }
 
-    public ReportConfig saveReport(ReportConfig reportConfig) {
-        return reportConfigRepository.save(reportConfig);
+    public ReportResponse createReport(CreateReportRequest request) {
+
+        ReportConfig report = new ReportConfig();
+
+        report.setReportName(request.getReportName());
+        report.setFilters(request.getFilters());
+        report.setOwnerId(request.getOwnerId());
+
+        ReportConfig savedReport = reportConfigRepository.save(report);
+
+        ReportResponse response = new ReportResponse();
+
+        response.setId(savedReport.getId());
+        response.setReportName(savedReport.getReportName());
+        response.setFilters(savedReport.getFilters());
+        response.setOwnerId(savedReport.getOwnerId());
+
+        return response;
     }
 }
