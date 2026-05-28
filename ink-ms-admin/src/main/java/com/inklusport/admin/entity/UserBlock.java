@@ -1,30 +1,32 @@
-package main.java.com.inklusport.admin.entity;
+package com.inklusport.admin.entity;
 
+import com.inklusport.admin.enums.BlockType;
 import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
-@Getter
-@Setter
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(name = "user_blocks")
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "user_blocks")
 public class UserBlock {
 
-    public enum BlockType {
-        temporal, permanente
-    }
-
     @Id
-    @Column(length = 36)
+    @Column(name = "id", columnDefinition = "CHAR(36)")
     private String id;
 
-    @Column(name = "user_id", nullable = false, length = 36)
+    @Column(name = "user_id", columnDefinition = "CHAR(36)", nullable = false)
     private String userId;
 
-    @Column(name = "blocked_by", nullable = false, length = 36)
+    @Column(name = "blocked_by", columnDefinition = "CHAR(36)", nullable = false)
     private String blockedBy;
 
     @Column(columnDefinition = "TEXT")
@@ -38,9 +40,9 @@ public class UserBlock {
     private LocalDateTime expiresAt;
 
     @Column(name = "is_active")
-    @Builder.Default
-    private Boolean isActive = true;
+    private Boolean isActive;
 
+    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -49,9 +51,18 @@ public class UserBlock {
 
     @PrePersist
     protected void onCreate() {
-        if (this.id == null) {
-            this.id = java.util.UUID.randomUUID().toString();
+        if (id == null) {
+            id = UUID.randomUUID().toString();
         }
-        this.createdAt = LocalDateTime.now();
+        if (isActive == null) {
+            isActive = true;
+        }
+    }
+
+    public boolean isExpired() {
+        if (blockType == BlockType.temporal && expiresAt != null) {
+            return LocalDateTime.now().isAfter(expiresAt);
+        }
+        return false;
     }
 }
