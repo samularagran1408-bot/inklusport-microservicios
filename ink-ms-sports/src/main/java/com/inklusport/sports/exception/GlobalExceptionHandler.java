@@ -9,7 +9,10 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestControllerAdvice // 🌟 Esto actúa como un interceptor / try-catch global para toda la app
+/**
+ * Esto actúa como un interceptor / try-catch global para toda la app
+ */
+@RestControllerAdvice 
 public class GlobalExceptionHandler {
 
     /**
@@ -41,7 +44,9 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // Método auxiliar para mantener las respuestas estandarizadas y limpias
+    /**
+     * Método auxiliar para mantener las respuestas estandarizadas y limpias
+     */
     private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String errorType, String message) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
