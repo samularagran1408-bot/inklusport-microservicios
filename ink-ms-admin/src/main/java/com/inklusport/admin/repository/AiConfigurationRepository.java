@@ -16,8 +16,14 @@ public interface AiConfigurationRepository extends JpaRepository<AiConfiguration
     
     Optional<AiConfiguration> findByFeatureName(String featureName);
     
+    /**
+     * Busca todas las configuraciones activadas
+     */
     List<AiConfiguration> findByIsEnabledTrue();
     
+    /**
+     * Modifica el estado de activación de una característica de IA
+     */
     @Modifying
     @Transactional
     @Query("UPDATE AiConfiguration a SET a.isEnabled = :enabled WHERE a.featureName = :featureName")

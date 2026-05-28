@@ -19,9 +19,15 @@ public interface ScheduledReportRepository extends JpaRepository<ScheduledReport
     
     List<ScheduledReport> findByType(ReportType type);
     
+    /**
+     * Busca reportes programados que deben ejecutarse
+     */
     @Query("SELECT s FROM ScheduledReport s WHERE s.isActive = true AND s.nextRun <= CURRENT_TIMESTAMP")
     List<ScheduledReport> findPendingReports();
     
+    /**
+     * Actualiza los tiempos de ejecución de un reporte programado
+     */
     @Modifying
     @Transactional
     @Query("UPDATE ScheduledReport s SET s.lastRun = :lastRun, s.nextRun = :nextRun WHERE s.id = :id")

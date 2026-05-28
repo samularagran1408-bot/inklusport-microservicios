@@ -17,6 +17,10 @@ public interface SystemParameterRepository extends JpaRepository<SystemParameter
     
     boolean existsByParamKey(String paramKey);
     
+    /**
+     * Modificando el query devuelve una lista de objetos con el valor del parámetro en la BD
+     * y el nombre del parámetro en el campo paramKey
+     */
     @Modifying
     @Transactional
     @Query("UPDATE SystemParameter s SET s.paramValue = :value, s.updatedBy = :updatedBy, s.updatedAt = CURRENT_TIMESTAMP WHERE s.paramKey = :key")

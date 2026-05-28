@@ -19,6 +19,11 @@ public interface PermissionRepository extends JpaRepository<Permission, Integer>
     
     List<Permission> findByAction(PermissionAction action);
     
+    /**
+     * Busca un permiso por recurso y acción
+     * Modificando el query devuelve una lista de objetos con el nombre del recurso en la BD
+     * y el número de permisos asociados a ese recurso en el campo action
+     */
     @Query("SELECT p FROM Permission p WHERE p.resource = :resource AND p.action = :action")
     Optional<Permission> findByResourceAndAction(@Param("resource") String resource, 
                                                   @Param("action") PermissionAction action);

@@ -24,14 +24,25 @@ public interface UserBlockRepository extends JpaRepository<UserBlock, String> {
     
     Page<UserBlock> findByBlockType(BlockType blockType, Pageable pageable);
     
+    /**
+     * Busca bloqueos temporales que han expirado
+     * Modificando el query devuelve una lista de objetos con el ID del bloqueo en la BD
+     * y el ID del usuario bloqueado en el campo userId
+     */
     @Query("SELECT b FROM UserBlock b WHERE b.isActive = true AND b.blockType = 'temporal' AND b.expiresAt < CURRENT_TIMESTAMP")
     List<UserBlock> findExpiredBlocks();
     
+    /**
+     * Desactiva un bloqueo específico, marcándolo como inactivo y registrando la fecha de desbloqueo
+     */
     @Modifying
     @Transactional
     @Query("UPDATE UserBlock b SET b.isActive = false, b.unblockedAt = CURRENT_TIMESTAMP WHERE b.id = :id")
     void deactivateBlock(@Param("id") String id);
     
+    /**
+     * Desactiva todos los bloqueos de un usuario, marcándolos como inactivos y registrando la fecha de desbloqueo
+     */
     @Modifying
     @Transactional
     @Query("UPDATE UserBlock b SET b.isActive = false WHERE b.userId = :userId AND b.isActive = true")
