@@ -23,10 +23,8 @@ public class ChatbotServiceImpl implements ChatbotService {
 
     @Override
     public ChatbotQueryResponse procesarMensaje(ChatbotQueryRequest request) {
-        Optional<ConversacionChatbotDocument> activa = conversacionChatbotRepository.findAll().stream()
-                .filter(c -> request.getUsuarioId().equals(c.getUsuarioId()))
-                .filter(c -> ESTADO_ACTIVA.equalsIgnoreCase(c.getEstadoConversacion()))
-                .findFirst();
+        Optional<ConversacionChatbotDocument> activa = conversacionChatbotRepository
+                .findByUsuarioIdAndEstadoConversacionIgnoreCase(request.getUsuarioId(), ESTADO_ACTIVA);
 
         ConversacionChatbotDocument conversacion = activa.orElseGet(ConversacionChatbotDocument::new);
         String intencion = detectarIntencion(request.getMensaje());

@@ -21,10 +21,8 @@ public class PlanEntrenamientoServiceImpl implements PlanEntrenamientoService {
 
     @Override
     public PlanEntrenamientoResponse crearOActualizarPlan(PlanEntrenamientoRequest request) {
-        Optional<PlanEntrenamientoDocument> existente = planEntrenamientoRepository.findAll().stream()
-                .filter(plan -> request.getUsuarioId().equals(plan.getUsuarioId()))
-                .filter(plan -> request.getEntrenadorId().equals(plan.getEntrenadorId()))
-                .findFirst();
+        Optional<PlanEntrenamientoDocument> existente = planEntrenamientoRepository
+                .findByUsuarioIdAndEntrenadorId(request.getUsuarioId(), request.getEntrenadorId());
 
         PlanEntrenamientoDocument plan = existente.orElseGet(PlanEntrenamientoDocument::new);
         plan.setUsuarioId(request.getUsuarioId());

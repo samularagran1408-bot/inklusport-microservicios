@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,9 +45,9 @@ public class AnalisisBiomecanicoServiceImpl implements AnalisisBiomecanicoServic
 
     @Override
     public List<AnalisisBiomecanicoResponse> consultarHistorialPorUsuario(String usuarioId) {
-        List<AnalisisBiomecanicoResponse> historial = analisisBiomecanicoRepository.findAll().stream()
-                .filter(a -> usuarioId.equals(a.getUsuarioId()))
-                .sorted(Comparator.comparing(AnalisisBiomecanicoDocument::getFechaAnalisis).reversed())
+        List<AnalisisBiomecanicoResponse> historial = analisisBiomecanicoRepository
+                .findByUsuarioIdOrderByFechaAnalisisDesc(usuarioId)
+                .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
 
