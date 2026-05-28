@@ -9,7 +9,9 @@ Base URL por API Gateway: `http://localhost:8080` (mismas rutas `/api/ia/...`)
 
 ## Antes de probar
 
-1. Ten Mongo corriendo (por defecto apunta a `mongodb://localhost:27017/inklusport_ia`).
+1. Mongo (elige una):
+   - `docker compose up -d mongo` en la raiz del monorepo, o
+   - Mongo instalado en tu PC en el puerto 27017
 2. Levanta el microservicio:
 
 ```bash
@@ -18,6 +20,15 @@ mvn spring-boot:run
 ```
 
 Si algo falla, revisa que Mongo este prendido y que el puerto 8087 no este ocupado.
+
+### Pruebas automaticas (sin Postman)
+
+```bash
+cd ai-assistant-ms
+mvn test
+```
+
+No necesitas Postman ni Docker para eso. Detalle en `PRUEBAS.md`.
 
 ---
 
@@ -34,7 +45,7 @@ Si algo falla, revisa que Mongo este prendido y que el puerto 8087 no este ocupa
 
 - **Analisis biomecanico:** no usa ChatGPT ni nada parecido. Usa una formula con los 3 valores que mandas (rango, simetria, estabilidad).
 - **Plan:** guarda lo que tu mandas en el JSON. No inventa ejercicios todavia.
-- **Chatbot:** por ahora lee palabras como "hola", "ayuda", "progreso" y marca la intencion. Despues se puede enchufar un LLM por detras sin cambiar la URL.
+- **Chatbot:** detecta intencion por palabras clave y responde con **texto fijo** (`respuestaBot`). No usa LLM todavia (`ia.enabled=false`).
 
 ---
 
@@ -116,17 +127,31 @@ Body (JSON):
 }
 ```
 
-El servicio intenta detectar intencion:
+El servicio detecta intencion y responde con un mensaje fijo:
 
-| Si el mensaje tiene algo como... | Intencion |
-|----------------------------------|-----------|
-| hola, buenas | SALUDO |
-| ayuda, soporte | AYUDA |
-| progreso, avance | PROGRESO |
-| gracias, adios | CIERRE (y cierra la conversacion) |
-| cualquier otra cosa | CONSULTA_GENERAL |
+| Si el mensaje tiene algo como... | Intencion | Ejemplo de respuestaBot |
+|----------------------------------|-----------|-------------------------|
+| hola, buenas | SALUDO | Saludo y ofrecimiento de ayuda |
+| ayuda, soporte | AYUDA | Que puede orientar con plan o progreso |
+| progreso, avance | PROGRESO | Que revise analisis y plan del entrenador |
+| gracias, adios | CIERRE | Despedida (estado CERRADA) |
+| cualquier otra cosa | CONSULTA_GENERAL | Pide mas detalle |
 
-La conversacion se guarda en Mongo en la coleccion `conversaciones_chatbot`.
+Respuesta JSON (ejemplo):
+
+```json
+{
+  "conversacionId": "...",
+  "usuarioId": "user-001",
+  "mensajeUsuario": "hola",
+  "intencionDetectada": "SALUDO",
+  "respuestaBot": "Hola! Soy el asistente de InkluSport...",
+  "estadoConversacion": "ACTIVA",
+  "updatedAt": "2026-05-28T12:00:00Z"
+}
+```
+
+La conversacion se guarda en Mongo (`conversaciones_chatbot`) con `respuesta_bot` incluido.
 
 ---
 
@@ -161,13 +186,24 @@ Ejemplo de error de validacion:
 
 ---
 
+## Config para IA futura (aun apagada)
+
+En `application.properties`:
+
+```properties
+ia.enabled=false
+ia.provider=none
+ia.base-url=http://localhost:11434
+ia.model=llama3
+```
+
+Copia `.env.example` si usas variables de entorno. La interfaz `LlmClient` ya existe; falta la implementacion cuando activen `ia.enabled=true`.
+
 ## Proximo paso (cuando quieran IA de verdad)
 
-1. Crear un `LlmClient` aparte (OpenAI u Ollama en local).
-2. Llamarlo desde `ChatbotServiceImpl` y guardar la respuesta del bot.
+1. Implementar `LlmClient` (Ollama u OpenAI).
+2. En `ChatbotServiceImpl`, si `ia.enabled=true`, usar el modelo en vez de respuestas fijas.
 3. Opcional: endpoint para sugerir planes con prompt + JSON.
-
-Eso va en otro PR para no mezclar todo.
 
 ---
 

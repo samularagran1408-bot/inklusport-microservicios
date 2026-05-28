@@ -1,2 +1,12 @@
-# Inklusport — orquestación local (completar servicios e imágenes)
-services: {}
+# Inklusport - servicios locales basicos
+services:
+  mongo:
+    image: mongo:7
+    container_name: inklusport-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - inklusport_mongo_data:/data/db
+
+volumes:
+  inklusport_mongo_data:
