@@ -1,4 +1,4 @@
-package com.inklusport.auth.dto.request;
+package com.inklusport.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

@@ -1,4 +1,4 @@
-package com.inklusport.users.dto.request;
+package com.inklusport.dto;
 
 import jakarta.validation.constraints.Size;
 import lombok.Data;

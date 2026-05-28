@@ -1,4 +1,4 @@
-package com.inklusport.users.dto.response;
+package com.inklusport.dto;
 
 import lombok.Builder;
 import lombok.Data;

@@ -6,6 +6,8 @@ import com.inklusport.auth.dto.request.RegisterRequest;
 import com.inklusport.auth.dto.request.ResetPasswordRequest;
 import com.inklusport.auth.dto.response.AuthResponse;
 import com.inklusport.common.dto.response.ErrorResponse;
+import com.inklusport.auth.dto.response.ForgotPasswordResponse;
+import com.inklusport.auth.dto.response.ResetPasswordResponse;
 import com.inklusport.auth.security.JwtTokenProvider;
 import com.inklusport.auth.service.AuthService;
 import com.inklusport.auth.service.PasswordResetService;
