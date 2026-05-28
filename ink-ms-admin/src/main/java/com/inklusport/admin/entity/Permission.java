@@ -1,30 +1,40 @@
-package main.java.com.inklusport.admin.entity;
+package com.inklusport.admin.entity;
 
+import com.inklusport.admin.enums.PermissionAction;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "permission")
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "permission")
 public class Permission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true, nullable = false, length = 100)
+    @Column(nullable = false, unique = true, length = 100)
     private String name;
 
     @Column(nullable = false, length = 50)
     private String resource;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private String action;
+    private PermissionAction action;
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @OneToMany(mappedBy = "permission", cascade = CascadeType.ALL)
+    private List<RolePermission> roles = new ArrayList<>();
 }

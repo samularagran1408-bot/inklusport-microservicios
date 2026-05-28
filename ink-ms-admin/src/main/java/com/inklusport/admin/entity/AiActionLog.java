@@ -1,35 +1,39 @@
-package main.java.com.inklusport.admin.entity;
+package com.inklusport.admin.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.UUID;
 
-@Getter
-@Setter
+@Entity
+@Table(name = "ai_action_log")
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "ai_action_log")
 public class AiActionLog {
 
     @Id
-    @Column(length = 36)
+    @Column(name = "id", columnDefinition = "CHAR(36)")
     private String id;
 
-    @Column(name = "user_id", nullable = false, length = 36)
+    @Column(name = "user_id", columnDefinition = "CHAR(36)", nullable = false)
     private String userId;
 
     @Column(name = "ai_feature", nullable = false, length = 100)
     private String aiFeature;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "prediction_value", columnDefinition = "json")
-    private Map<String, Object> predictionValue;
+    @Column(name = "prediction_value")
+    private String predictionValue;
 
     @Column(precision = 3, scale = 2)
     private BigDecimal confidence;
@@ -38,17 +42,19 @@ public class AiActionLog {
     private String recommendedAction;
 
     @Column(name = "was_applied")
-    @Builder.Default
-    private Boolean wasApplied = false;
+    private Boolean wasApplied;
 
+    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        if (this.id == null) {
-            this.id = java.util.UUID.randomUUID().toString();
+        if (id == null) {
+            id = UUID.randomUUID().toString();
         }
-        this.createdAt = LocalDateTime.now();
+        if (wasApplied == null) {
+            wasApplied = false;
+        }
     }
 }

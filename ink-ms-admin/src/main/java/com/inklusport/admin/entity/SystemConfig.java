@@ -1,16 +1,19 @@
-package main.java.com.inklusport.admin.entity;
+package com.inklusport.admin.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Entity
+@Table(name = "system_config")
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "system_config")
 public class SystemConfig {
 
     @Id
@@ -23,15 +26,14 @@ public class SystemConfig {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "updated_by", length = 36)
+    @Column(name = "updated_by", columnDefinition = "CHAR(36)")
     private String updatedBy;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @PrePersist
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 }

@@ -1,38 +1,38 @@
-package main.java.com.inklusport.admin.entity;
+package com.inklusport.admin.entity;
 
+import com.inklusport.admin.enums.AlertSeverity;
 import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
-@Getter
-@Setter
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(name = "admin_alert")
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "admin_alert")
 public class AdminAlert {
 
-    public enum AlertSeverity {
-        low, medium, high, critical
-    }
-
     @Id
-    @Column(length = 36)
+    @Column(name = "id", columnDefinition = "CHAR(36)")
     private String id;
 
     @Column(nullable = false, length = 50)
     private String type;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('low', 'medium', 'high', 'critical')")
-    @Builder.Default
-    private AlertSeverity severity = AlertSeverity.medium;
+    private AlertSeverity severity;
 
     @Column(nullable = false, length = 255)
     private String title;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "target_id", length = 100)
@@ -41,23 +41,28 @@ public class AdminAlert {
     @Column(name = "target_type", length = 50)
     private String targetType;
 
-    @Builder.Default
-    private Boolean resolved = false;
+    private Boolean resolved;
 
-    @Column(name = "resolved_by", length = 36)
+    @Column(name = "resolved_by", columnDefinition = "CHAR(36)")
     private String resolvedBy;
 
     @Column(name = "resolved_at")
     private LocalDateTime resolvedAt;
 
+    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        if (this.id == null) {
-            this.id = java.util.UUID.randomUUID().toString();
+        if (id == null) {
+            id = UUID.randomUUID().toString();
         }
-        this.createdAt = LocalDateTime.now();
+        if (severity == null) {
+            severity = AlertSeverity.medium;
+        }
+        if (resolved == null) {
+            resolved = false;
+        }
     }
 }
