@@ -1,10 +1,10 @@
 package com.inklusport.auth.service;
 
 import com.inklusport.auth.config.InvalidResetTokenException;
-import com.inklusport.auth.dto.request.ForgotPasswordRequest;
-import com.inklusport.auth.dto.request.ResetPasswordRequest;
-import com.inklusport.auth.dto.response.ForgotPasswordResponse;
-import com.inklusport.auth.dto.response.ResetPasswordResponse;
+import com.inklusport.auth.dto.ForgotPasswordRequest;
+import com.inklusport.auth.dto.ForgotPasswordResponse;
+import com.inklusport.auth.dto.ResetPasswordRequest;
+import com.inklusport.auth.dto.ResetPasswordResponse;
 import com.inklusport.auth.entity.AuthUser;
 import com.inklusport.auth.entity.PasswordResetToken;
 import com.inklusport.auth.repository.AuthUserRepository;

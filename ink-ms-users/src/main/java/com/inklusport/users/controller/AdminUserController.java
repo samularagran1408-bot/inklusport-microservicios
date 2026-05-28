@@ -1,9 +1,9 @@
 package com.inklusport.users.controller;
 
+import com.inklusport.users.dto.AssignRoleRequest;
+import com.inklusport.users.dto.RoleResponse;
+import com.inklusport.users.dto.UserProfileResponse;
 import com.inklusport.common.dto.response.ErrorResponse;
-import com.inklusport.users.dto.request.AssignRoleRequest;
-import com.inklusport.users.dto.response.RoleResponse;
-import com.inklusport.users.dto.response.UserProfileResponse;
 import com.inklusport.users.service.UserService;
 import com.inklusport.users.service.RoleService;
 import jakarta.validation.Valid;

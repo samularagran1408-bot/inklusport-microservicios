@@ -1,6 +1,6 @@
 package com.inklusport.users.service;
 
-import com.inklusport.users.dto.response.UserActivityResponse;
+import com.inklusport.users.dto.UserActivityResponse;
 import com.inklusport.users.entity.User;
 import com.inklusport.users.entity.UserActivity;
 import com.inklusport.users.repository.UserActivityRepository;

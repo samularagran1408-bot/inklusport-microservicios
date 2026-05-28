@@ -1,7 +1,7 @@
 package com.inklusport.sports.service;
 
-import com.inklusport.sports.dto.request.WaitlistRequest;
-import com.inklusport.sports.dto.response.WaitlistResponse;
+import com.inklusport.sports.dto.WaitlistRequest;
+import com.inklusport.sports.dto.WaitlistResponse;
 import com.inklusport.sports.entity.Waitlist;
 import com.inklusport.sports.enums.WaitlistStatus;
 import com.inklusport.sports.repository.WaitlistRepository;

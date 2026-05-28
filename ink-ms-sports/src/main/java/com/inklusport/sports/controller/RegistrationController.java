@@ -1,7 +1,7 @@
 package com.inklusport.sports.controller;
 
-import com.inklusport.sports.dto.request.RegistrationRequest;
-import com.inklusport.sports.dto.response.RegistrationResponse;
+import com.inklusport.sports.dto.RegistrationRequest;
+import com.inklusport.sports.dto.RegistrationResponse;
 import com.inklusport.sports.service.RegistrationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
