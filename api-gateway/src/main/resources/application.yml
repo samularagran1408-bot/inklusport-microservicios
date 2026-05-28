@@ -1,0 +1,44 @@
+# API Gateway - rutas directas por URL (sin Eureka por ahora)
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+        # Modulo IA (ai-assistant-ms en puerto 8087)
+        - id: ai-assistant
+          uri: http://localhost:8087
+          predicates:
+            - Path=/api/ia/**
+
+        # Users (cuando levantes ink-ms-users en 3002)
+        - id: ink-ms-users
+          uri: http://localhost:3002
+          predicates:
+            - Path=/api/users/**
+
+        # Sports (cuando levantes ink-ms-sports en 3003)
+        - id: ink-ms-sports
+          uri: http://localhost:3003
+          predicates:
+            - Path=/api/sports/**
+
+        # Auth (ajusta puerto si tu ink-ms-auth usa otro)
+        - id: ink-ms-auth
+          uri: http://localhost:3001
+          predicates:
+            - Path=/api/auth/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
