@@ -36,16 +36,4 @@ public class RolePermission {
 
     @Column(name = "assigned_by", columnDefinition = "CHAR(36)")
     private String assignedBy;
-
-    @Embeddable
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class RolePermissionId implements java.io.Serializable {
-        @Column(name = "role_id")
-        private Integer roleId;
-        
-        @Column(name = "permission_id")
-        private Integer permissionId;
-    }
 }

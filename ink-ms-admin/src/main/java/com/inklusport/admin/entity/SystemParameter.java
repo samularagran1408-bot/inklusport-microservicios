@@ -1,5 +1,6 @@
 package com.inklusport.admin.entity;
 
+import com.inklusport.admin.enums.ParamType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,10 +39,6 @@ public class SystemParameter {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    public enum ParamType {
-        integer, boolean, string
-    }
 
     @PrePersist
     protected void onCreate() {

@@ -31,16 +31,4 @@ public class AdminUserRole {
 
     @Column(name = "assigned_by", columnDefinition = "CHAR(36)")
     private String assignedBy;
-
-    @Embeddable
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class AdminUserRoleId implements java.io.Serializable {
-        @Column(name = "admin_id", columnDefinition = "CHAR(36)")
-        private String adminId;
-        
-        @Column(name = "role_id")
-        private Integer roleId;
-    }
 }
