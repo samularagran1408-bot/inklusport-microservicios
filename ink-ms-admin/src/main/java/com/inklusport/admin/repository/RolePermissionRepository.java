@@ -19,6 +19,11 @@ public interface RolePermissionRepository extends JpaRepository<RolePermission, 
     @Query("SELECT rp.permission.name FROM RolePermission rp WHERE rp.id.roleId = :roleId")
     List<String> findPermissionNamesByRoleId(@Param("roleId") Integer roleId);
     
+    /**
+     * Modifying inica a Spring data JPA que una consulta ejecutada con 
+     * @Query no es una simple lectura (SELECT), sino una operación 
+     * de modificación en la base de datos, usadas es update, insert and select
+     */
     @Modifying
     @Transactional
     @Query("DELETE FROM RolePermission rp WHERE rp.id.roleId = :roleId")

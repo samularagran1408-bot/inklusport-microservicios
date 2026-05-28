@@ -16,15 +16,26 @@ import java.util.List;
 @Repository
 public interface PendingApprovalRepository extends JpaRepository<PendingApproval, String> {
     
+    /**
+     * Page divide un conjunto grande de datos en partes o bloques más pequeños llamados páginas
+     */
     Page<PendingApproval> findByStatus(RequestStatus status, Pageable pageable);
     
     Page<PendingApproval> findByTargetType(String targetType, Pageable pageable);
     
     Page<PendingApproval> findByRequestedBy(String requestedBy, Pageable pageable);
     
+    /**
+     * El query ejecuta este comando en la BD y después devuelve una lista de objetos con la fecha de solicitud en la BD
+     */
     @Query("SELECT p FROM PendingApproval p WHERE p.status = 'pending' AND p.requestedAt <= :cutoff")
     List<PendingApproval> findPendingOlderThan(@Param("cutoff") java.time.LocalDateTime cutoff);
     
+    /**
+     * Busca las solicitudes más recientes
+     * modificando la consulta devuelve una lista de objetos con la fecha de solicitud en la BD
+     * y el estado de la solicitud en el campo status
+     */
     @Modifying
     @Transactional
     @Query("UPDATE PendingApproval p SET p.status = :status, p.reviewedBy = :reviewedBy, p.reviewedAt = CURRENT_TIMESTAMP, p.reviewNotes = :notes WHERE p.id = :id")
