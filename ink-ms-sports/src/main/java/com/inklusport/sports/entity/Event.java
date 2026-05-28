@@ -1,5 +1,6 @@
 package com.inklusport.sports.entity;
 
+import com.inklusport.sports.enums.EventStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -57,10 +58,6 @@ public class Event {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
-
-    public enum EventStatus {
-        draft, active, cancelled, finished
-    }
 
     @PrePersist
     protected void onCreate() {

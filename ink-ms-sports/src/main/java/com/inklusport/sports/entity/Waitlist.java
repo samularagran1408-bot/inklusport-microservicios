@@ -1,5 +1,6 @@
 package com.inklusport.sports.entity;
 
+import com.inklusport.sports.enums.WaitlistStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -42,10 +43,6 @@ public class Waitlist {
 
     @Enumerated(EnumType.STRING)
     private WaitlistStatus status;
-
-    public enum WaitlistStatus {
-        waiting, offered, accepted, expired
-    }
 
     @PrePersist
     protected void onCreate() {
