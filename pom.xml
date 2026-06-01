@@ -23,6 +23,7 @@
         <module>ink-ms-common</module>
         <module>ink-ms-auth</module>
         <module>ink-ms-users</module>
+        <module>ink-ms-gateway</module>
         <module>ink-ms-reports</module>
     </modules>
 

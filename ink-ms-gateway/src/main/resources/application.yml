@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: ink-ms-gateway
+  
+  cloud:
+    gateway:
+      routes:
+        # Ruta para Auth MS
+        - id: auth-ms
+          uri: http://localhost:3001
+          predicates:
+            - Path=/api/auth/**
+        
+        # Ruta para Users MS
+        - id: users-ms
+          uri: http://localhost:3002
+          predicates:
+            - Path=/api/users/**, /api/admin/**
+        
+        # Ruta para Sports MS (cuando esté listo)
+        - id: sports-ms
+          uri: http://localhost:3003
+          predicates:
+            - Path=/api/sports/**, /api/events/**, /api/disabilities/**, /api/registrations/**, /api/calendar/**
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
