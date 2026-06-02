@@ -6,7 +6,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "ink-ms-users", url = "${users.service.url}")
+@FeignClient(
+        name = "ink-ms-users",
+        url = "${users.service.url}",
+        fallback = UserServiceFallback.class
+)
 public interface UserServiceClient {
 
     @GetMapping("/api/internal/users/roles-by-email")

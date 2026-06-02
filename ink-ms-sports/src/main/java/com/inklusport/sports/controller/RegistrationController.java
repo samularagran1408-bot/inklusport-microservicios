@@ -11,6 +11,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.Map;
 import java.util.List;
 
+/**
+ * Endpoints de inscripcion y cancelacion para eventos.
+ */
 @RestController
 @RequestMapping("/api/registrations")
 @PreAuthorize("isAuthenticated()")
@@ -19,6 +22,10 @@ public class RegistrationController {
 
     private final RegistrationService registrationService;
 
+    /**
+     * Inscribe a un usuario en un evento.
+     * Puede devolver respuesta de exito o un objeto de error de negocio.
+     */
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> registerToEvent(@RequestBody RegistrationRequest request) { // 🌟 Cambiado a <?> para soportar respuestas de error mixtas
@@ -38,6 +45,9 @@ public class RegistrationController {
         }
     }
 
+    /**
+     * Cancela una inscripcion y ajusta la lista de espera si aplica.
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> cancelRegistration(@PathVariable String id) {
@@ -55,6 +65,9 @@ public class RegistrationController {
         }
     }
 
+    /**
+     * Consulta la waitlist asociada a un evento.
+     */
     @GetMapping("{eventId}/waitlist")
     public ResponseEntity<List<RegistrationResponse>> getWaitlist(@PathVariable String eventId) {
         return ResponseEntity.ok(registrationService.getWaitlistForEvent(eventId));

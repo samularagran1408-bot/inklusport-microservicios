@@ -25,6 +25,9 @@ public class ConversacionChatbotDocument {
     @Field("intencion_detectada")
     private String intencionDetectada;
 
+    @Field("respuesta_bot")
+    private String respuestaBot;
+
     @Field("estado_conversacion")
     private String estadoConversacion;
 
