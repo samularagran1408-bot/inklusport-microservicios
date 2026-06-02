@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio para administración de roles y relaciones usuario-rol.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -30,6 +33,9 @@ public class RoleService {
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
 
+    /**
+     * Lista catálogo de roles disponibles.
+     */
     @Transactional(readOnly = true)
     public List<RoleResponse> getAllRoles() {
         return roleRepository.findAll().stream()
@@ -37,6 +43,9 @@ public class RoleService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Asigna un rol a un usuario existente.
+     */
     @Transactional
     public AssignRoleResponse assignRoleToUser(String userEmail, AssignRoleRequest request, String assignedByAdminEmail) {
         User user = userRepository.findByEmail(userEmail)
@@ -68,6 +77,9 @@ public class RoleService {
                 .build();
     }
 
+    /**
+     * Elimina un rol puntual de un usuario.
+     */
     @Transactional
     public void removeRoleFromUser(String userEmail, Long roleId) {
         User user = userRepository.findByEmail(userEmail)
@@ -81,6 +93,9 @@ public class RoleService {
         log.info("Rol {} removido de usuario {}", roleId, userEmail);
     }
 
+    /**
+     * Obtiene nombres de rol por email de usuario.
+     */
     @Transactional(readOnly = true)
     public List<String> getUserRoles(String email) {
         return userRepository.findByEmail(email)
@@ -88,6 +103,9 @@ public class RoleService {
                 .orElse(List.of());
     }
 
+    /**
+     * Mapea entidad Role a DTO de salida.
+     */
     private RoleResponse convertToResponse(Role role) {
         return RoleResponse.builder()
                 .id(role.getId())

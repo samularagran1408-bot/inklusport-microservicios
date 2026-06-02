@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Gestiona las adaptaciones entre deporte y discapacidad.
+ */
 @RestController
 @RequestMapping("/api/sport-disabilities")
 @RequiredArgsConstructor
@@ -16,16 +19,25 @@ public class SportDisabilityController {
 
     private final SportDisabilityService sportDisabilityService;
 
+    /**
+     * Lista adaptaciones asociadas a un deporte.
+     */
     @GetMapping("/sport/{sportId}")
     public ResponseEntity<List<SportDisabilityResponse>> getSportDisabilities(@PathVariable Integer sportId) {
         return ResponseEntity.ok(sportDisabilityService.getSportDisabilities(sportId));
     }
 
+    /**
+     * Crea una adaptacion deporte-discapacidad.
+     */
     @PostMapping
     public ResponseEntity<SportDisabilityResponse> addAdaptation(@RequestBody SportDisabilityRequest request) {
         return ResponseEntity.ok(sportDisabilityService.addAdaptation(request));
     }
 
+    /**
+     * Actualiza una adaptacion existente.
+     */
     @PutMapping("/sport/{sportId}/disability/{disabilityId}")
     public ResponseEntity<SportDisabilityResponse> updateAdaptation(
             @PathVariable Integer sportId,
@@ -34,6 +46,9 @@ public class SportDisabilityController {
         return ResponseEntity.ok(sportDisabilityService.updateAdaptation(sportId, disabilityId, request));
     }
 
+    /**
+     * Elimina una adaptacion de un deporte/discapacidad.
+     */
     @DeleteMapping("/sport/{sportId}/disability/{disabilityId}")
     public ResponseEntity<Void> removeAdaptation(
             @PathVariable Integer sportId,

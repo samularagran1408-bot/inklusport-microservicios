@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio de auditoría funcional del usuario (acciones sobre su perfil).
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -24,6 +27,9 @@ public class UserActivityService {
     private final UserActivityRepository userActivityRepository;
     private final UserRepository userRepository;
 
+    /**
+     * Registra una actividad del usuario con acción, detalle e IP.
+     */
     @Transactional
     public void logActivity(String email, String action, String details, String ipAddress) {
         User user = userRepository.findByEmail(email)
@@ -39,6 +45,9 @@ public class UserActivityService {
         log.debug("Actividad registrada: {} - {}", email, action);
     }
 
+    /**
+     * Consulta actividades del usuario en orden descendente por fecha.
+     */
     @Transactional(readOnly = true)
     public List<UserActivityResponse> getUserActivities(String email) {
         User user = userRepository.findByEmail(email)
@@ -50,6 +59,9 @@ public class UserActivityService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Convierte entidad UserActivity a DTO de respuesta.
+     */
     private UserActivityResponse convertToResponse(UserActivity activity) {
         return UserActivityResponse.builder()
                 .id(activity.getId())

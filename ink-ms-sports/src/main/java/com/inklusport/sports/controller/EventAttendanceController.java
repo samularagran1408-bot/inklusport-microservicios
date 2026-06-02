@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+/**
+ * Endpoints para registrar y consultar asistencia a eventos.
+ */
 @RestController
 @RequestMapping("/api/attendance")
 @RequiredArgsConstructor
@@ -16,6 +19,9 @@ public class EventAttendanceController {
 
     private final EventAttendanceService eventAttendanceService;
 
+    /**
+     * Registra asistencia para una inscripcion/evento.
+     */
     @PostMapping
     @PreAuthorize("isAuthenticated()") 
     public ResponseEntity<?> markAttendance(@RequestBody AttendanceRequest request) {
@@ -38,6 +44,10 @@ public class EventAttendanceController {
         }
     }
 
+    /**
+     * Consulta asistencias por filtros opcionales.
+     * Si no se envian filtros, devuelve todas.
+     */
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getAttendances(

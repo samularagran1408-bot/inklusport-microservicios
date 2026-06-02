@@ -20,6 +20,9 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
+    /**
+     * Envía correo HTML de recuperación de contraseña de forma asíncrona.
+     */
     @Async
     public void sendPasswordResetEmail(String to, String resetToken, int expiryHours) {
         try {
@@ -40,6 +43,9 @@ public class EmailService {
         }
     }
 
+    /**
+     * Construye el HTML del correo de recuperación.
+     */
     private String buildEmailContent(String resetUrl, int expiryHours) {
         return """
             <!DOCTYPE html>

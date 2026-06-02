@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Endpoints de preferencias de accesibilidad del usuario.
+ */
 @RestController
 @RequestMapping("/api/preferences")
 public class UserPreferencesController {
@@ -16,6 +19,9 @@ public class UserPreferencesController {
         this.userPreferenceService = userPreferenceService;
     }
 
+    /**
+     * Obtiene las preferencias de un usuario por su id.
+     */
     @GetMapping("/{userId}")
     public ResponseEntity<?> obtenerPreferencias(@PathVariable String userId) {
         try {
@@ -32,6 +38,9 @@ public class UserPreferencesController {
         }
     }
 
+    /**
+     * Crea o actualiza preferencias de accesibilidad.
+     */
     @PostMapping
     public ResponseEntity<?> guardarPreferencias(@RequestBody UserPreferences preferences) {
         try {
