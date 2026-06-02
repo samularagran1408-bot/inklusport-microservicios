@@ -3,6 +3,7 @@ package com.inklusport.reports.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -14,10 +15,13 @@ public class SecurityConfig {
 
         http
             .csrf(csrf -> csrf.disable())
+            .cors(Customizer.withDefaults())
 
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/token").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/token", "/token/**").permitAll()
+                .requestMatchers("/reports", "/reports/**").permitAll()
+                .requestMatchers("/actuator/health", "/error").permitAll()
+                .anyRequest().permitAll()
             );
 
         return http.build();
