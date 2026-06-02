@@ -21,6 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Servicio de recuperación de contraseña.
+ * Maneja generación, expiración y uso único de tokens.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -40,6 +44,10 @@ public class PasswordResetService {
     @Value("${app.password-reset.token-expiry-hours:24}")
     private int tokenExpiryHours;
 
+    /**
+     * Genera token de recuperación si el correo existe y opcionalmente envía email.
+     * La respuesta es neutra para no exponer si el correo está registrado.
+     */
     @Transactional
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {
         String resetToken = null;
@@ -79,6 +87,9 @@ public class PasswordResetService {
         return builder.build();
     }
 
+    /**
+     * Valida token, actualiza contraseña y marca token como usado.
+     */
     @Transactional
     public ResetPasswordResponse resetPassword(ResetPasswordRequest request) {
         PasswordResetToken token = tokenRepository.findByTokenAndUsedFalse(request.getToken())

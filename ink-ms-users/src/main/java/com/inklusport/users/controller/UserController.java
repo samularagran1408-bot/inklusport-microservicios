@@ -17,6 +17,13 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Endpoints del usuario autenticado.
+ * Flujo:
+ * 1) Gestion del perfil
+ * 2) Historial de actividad
+ * 3) Consulta puntual por identificador
+ */
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -25,6 +32,11 @@ public class UserController {
     private final UserService userService;
     private final UserActivityService userActivityService;
 
+    // ===== Bloque 1: Gestion del perfil =====
+    /**
+     * Crea el perfil base del usuario autenticado.
+     * Si llegan campos adicionales, completa los datos en la misma operacion.
+     */
     @PostMapping("/perfil")
     public ResponseEntity<?> createMyProfile(@AuthenticationPrincipal String email,
                                               @Valid @RequestBody UpdateProfileRequest request,
@@ -32,7 +44,7 @@ public class UserController {
         try {
             UserProfileResponse response = userService.createUserProfile(email, request.getFullName());
             
-            // Actualizar el resto de campos si vienen en la petición
+            // Actualiza campos opcionales si fueron enviados en el request.
             if (request.getPhone() != null || 
                 request.getProfilePicture() != null || request.getBio() != null) {
                 response = userService.updateUserProfile(email, request);
@@ -44,6 +56,9 @@ public class UserController {
         }
     }
 
+    /**
+     * Consulta el perfil del usuario autenticado.
+     */
     @GetMapping("/perfil")
     public ResponseEntity<?> getMyProfile(@AuthenticationPrincipal String email) {
         try {
@@ -54,6 +69,9 @@ public class UserController {
         }
     }
 
+    /**
+     * Actualiza el perfil del usuario autenticado y registra actividad.
+     */
     @PutMapping("/perfil")
     public ResponseEntity<?> updateMyProfile(@AuthenticationPrincipal String email,
                                               @Valid @RequestBody UpdateProfileRequest request,
@@ -70,6 +88,10 @@ public class UserController {
         }
     }
 
+    // ===== Bloque 2: Historial de actividad =====
+    /**
+     * Obtiene el historial de actividades del usuario autenticado.
+     */
     @GetMapping("/perfil/activities")
     public ResponseEntity<?> getMyActivities(@AuthenticationPrincipal String email) {
         try {
@@ -80,6 +102,10 @@ public class UserController {
         }
     }
 
+    // ===== Bloque 3: Consulta puntual =====
+    /**
+     * Consulta un perfil por identificador.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable String id) {
         try {

@@ -2,6 +2,8 @@ spring:
   application:
     name: ink-ms-auth
   
+  # Config de correo para recuperar contraseña.
+  # Recomendado: mover username/password a variables de entorno en producción.
   mail:
     host: smtp.gmail.com
     port: 465
@@ -20,10 +22,11 @@ spring:
             port: 465
             class: javax.net.ssl.SSLSocketFactory
   
+  # Base de datos principal del módulo auth.
   datasource:
     url: jdbc:mysql://localhost:3306/auth_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
-    password:   # ← Tu contraseña de MySQL (si no tiene, déjala vacía)
+    password:   
     driver-class-name: com.mysql.cj.jdbc.Driver
   
   jpa:
@@ -38,19 +41,24 @@ spring:
 server:
   port: 3001
 
+# Config JWT compartida con MS que validan el token.
 jwt:
   secret: inklusport2024superSecretKeyForJWTtokenGenerationWith512bitsAlgorithmHS512
-  expiration: 86400000
+  expiration: 86400000 # 24h en milisegundos.
 
 app:
   password-reset:
-    mail-enabled: true          # ← Para pruebas con correo real
-    expose-token-in-response: false
-    token-expiry-hours: 24
+    mail-enabled: true # true: envía correo real. false: solo log de token para pruebas.
+    expose-token-in-response: false # true solo para testing local (no recomendado en producción).
+    token-expiry-hours: 24 # Tiempo de vida del token de recuperación.
 
 users:
   service:
-    url: http://localhost:3002
+    url: http://localhost:3002 # Endpoint del MS Users para consultar roles.
+
+feign:
+  circuitbreaker:
+    enabled: true
 
 logging:
   level:

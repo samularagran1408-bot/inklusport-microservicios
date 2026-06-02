@@ -20,6 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Servicio principal de autenticación.
+ * Gestiona registro/login, trazabilidad de intentos y bloqueo temporal por fuerza bruta.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -37,6 +41,9 @@ public class AuthService {
   @Value("${security.rate-limit.block-duration-minutes:15}")
   private int blockDurationMinutes;
 
+  /**
+   * Registra un usuario nuevo y retorna token inicial.
+   */
   @Transactional
   public AuthResponse register(RegisterRequest request, String ipAddress) {
     if (authUserRepository.existsByEmail(request.getEmail())) {
@@ -65,6 +72,9 @@ public class AuthService {
             .build();
   }
 
+  /**
+   * Valida credenciales, consulta roles en users-ms y genera JWT con claims de roles.
+   */
   @Transactional
   public AuthResponse login(LoginRequest request, String ipAddress) {
     checkBruteForceBlock(request.getEmail(), ipAddress);
@@ -112,6 +122,9 @@ public class AuthService {
             .build();
   }
 
+  /**
+   * Guarda cada intento de login para auditoría y control de abuso.
+   */
   private void logLoginAttempt(String email, String ipAddress, boolean successful) {
     LoginAttempt attempt = new LoginAttempt();
     attempt.setEmail(email);
@@ -125,6 +138,9 @@ public class AuthService {
     }
   }
 
+  /**
+   * Aplica bloqueo temporal si se superan los intentos fallidos permitidos.
+   */
   private void checkBruteForceBlock(String email, String ipAddress) {
     LocalDateTime since = LocalDateTime.now().minusMinutes(blockDurationMinutes);
 
