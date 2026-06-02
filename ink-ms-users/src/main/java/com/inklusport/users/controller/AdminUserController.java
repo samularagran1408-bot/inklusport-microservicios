@@ -23,8 +23,8 @@ import java.util.List;
  * Endpoints administrativos para gestion de usuarios y roles.
  * Requiere rol ADMIN en toda la clase.
  * Flujo:
- * 1) Consulta y estado de usuarios
- * 2) Gestion de roles
+ * 1. Consulta y estado de usuarios
+ * 2. Gestion de roles
  */
 @RestController
 @RequestMapping("/api/admin/users")
