@@ -31,7 +31,6 @@ public interface AiActionLogRepository extends JpaRepository<AiActionLog, String
      * Busca las acciones más utilizadas
      * listadas en un mapa con la clave como la acción y el valor como el número de veces que se ejecutó
      */
-     */
     @Query("SELECT a.aiFeature, COUNT(a), AVG(a.confidence) FROM AiActionLog a WHERE a.createdAt >= :since GROUP BY a.aiFeature")
     List<Object[]> getFeatureStats(@Param("since") LocalDateTime since);
 }
