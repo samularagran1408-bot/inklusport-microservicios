@@ -7,5 +7,5 @@ RUN apk add --no-cache maven && mvn -q -B package -DskipTests && rm -rf /root/.m
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/ink-ms-auth-*.jar app.jar
-EXPOSE 8081
+EXPOSE 3001
 ENTRYPOINT ["java", "-jar", "app.jar"]
