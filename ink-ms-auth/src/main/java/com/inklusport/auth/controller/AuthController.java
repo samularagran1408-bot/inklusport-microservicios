@@ -2,11 +2,9 @@ package com.inklusport.auth.controller;
 
 import com.inklusport.auth.dto.AuthResponse;
 import com.inklusport.auth.dto.ForgotPasswordRequest;
-import com.inklusport.auth.dto.ForgotPasswordResponse;
 import com.inklusport.auth.dto.LoginRequest;
 import com.inklusport.auth.dto.RegisterRequest;
 import com.inklusport.auth.dto.ResetPasswordRequest;
-import com.inklusport.auth.dto.ResetPasswordResponse;
 import com.inklusport.common.dto.response.ErrorResponse;
 import com.inklusport.auth.security.JwtTokenProvider;
 import com.inklusport.auth.service.AuthService;
@@ -21,6 +19,13 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+/**
+ * Endpoints de autenticacion y gestion de tokens.
+ * Flujo:
+ * 1) Registro y login
+ * 2) Recuperacion de contraseña
+ * 3) Validacion de token JWT
+ */
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -30,6 +35,10 @@ public class AuthController {
   private final PasswordResetService passwordResetService;
   private final JwtTokenProvider jwtTokenProvider;
 
+  // ===== Bloque 1: Registro y login =====
+  /**
+   * Registra un usuario nuevo y retorna los datos de autenticacion inicial.
+   */
   @PostMapping("/register")
   public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request, HttpServletRequest httpRequest) {
     try {
@@ -40,6 +49,9 @@ public class AuthController {
     }
   }
 
+  /**
+   * Autentica credenciales y devuelve la informacion de sesion/token.
+   */
   @PostMapping("/login")
   public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
     try {
@@ -50,23 +62,37 @@ public class AuthController {
     }
   }
 
+  /**
+   * Endpoint de salida de sesion sin invalidacion persistente de token.
+   */
   @PostMapping("/logout")
   public ResponseEntity<?> logout() {
     return ResponseEntity.ok().build();
   }
 
+  // ===== Bloque 2: Recuperacion de contraseña =====
+  /**
+   * Inicia el flujo de recuperacion de contraseña para un correo.
+   */
   @PostMapping("/forgot-password")
   public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
       passwordResetService.forgotPassword(request);
       return ResponseEntity.ok(Map.of("message", "Si el email existe, recibirás instrucciones"));
   }
 
+  /**
+   * Aplica el cambio de contraseña usando el token de recuperacion.
+   */
   @PostMapping("/reset-password")
   public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
       passwordResetService.resetPassword(request);
       return ResponseEntity.ok(Map.of("message", "Contraseña actualizada exitosamente"));
   }
 
+  // ===== Bloque 3: Validacion de token =====
+  /**
+   * Valida un JWT recibido en el header Authorization.
+   */
   @GetMapping("/validate")
   public ResponseEntity<?> validateToken(@RequestHeader(value = "Authorization", required = false) String authHeader) {
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {

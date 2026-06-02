@@ -17,6 +17,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Filtro JWT de users-ms.
+ * Extrae token Bearer, valida y carga principal+roles en Spring Security.
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -24,6 +28,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    /**
+     * Aplica autenticación por token para rutas protegidas.
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,

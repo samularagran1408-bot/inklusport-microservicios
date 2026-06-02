@@ -19,6 +19,13 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Endpoints administrativos para gestion de usuarios y roles.
+ * Requiere rol ADMIN en toda la clase.
+ * Flujo:
+ * 1) Consulta y estado de usuarios
+ * 2) Gestion de roles
+ */
 @RestController
 @RequestMapping("/api/admin/users")
 @PreAuthorize("hasRole('ADMIN')")
@@ -28,16 +35,26 @@ public class AdminUserController {
     private final UserService userService;
     private final RoleService roleService;
 
+    // ===== Bloque 1: Consulta y estado de usuarios =====
+    /**
+     * Lista todos los usuarios registrados.
+     */
     @GetMapping
     public ResponseEntity<List<UserProfileResponse>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    /**
+     * Lista solo usuarios activos.
+     */
     @GetMapping("/active")
     public ResponseEntity<List<UserProfileResponse>> getActiveUsers() {
         return ResponseEntity.ok(userService.getActivateUsers());
     }
 
+    /**
+     * Desactiva un usuario por correo.
+     */
     @PostMapping("/{email}/deactivate")
     public ResponseEntity<?> deactivateUser(@PathVariable String email) {
         try {
@@ -48,6 +65,9 @@ public class AdminUserController {
         }
     }
 
+    /**
+     * Activa un usuario por correo.
+     */
     @PostMapping("/{email}/activate")
     public ResponseEntity<?> activateUser(@PathVariable String email) {
         try {
@@ -58,11 +78,18 @@ public class AdminUserController {
         }
     }
 
+    // ===== Bloque 2: Gestion de roles =====
+    /**
+     * Lista los roles disponibles en el sistema.
+     */
     @GetMapping("/roles")
     public ResponseEntity<List<RoleResponse>> getAllRoles() {
         return ResponseEntity.ok(roleService.getAllRoles());
     }
 
+    /**
+     * Asigna un rol a un usuario.
+     */
     @PostMapping("/{email}/roles")
     public ResponseEntity<?> assignRole(@PathVariable String email,
                                         @Valid @RequestBody AssignRoleRequest request,
@@ -75,12 +102,18 @@ public class AdminUserController {
         }
     }
 
+    /**
+     * Consulta los roles por correo.
+     */
     @GetMapping("/roles-by-email")
     public ResponseEntity<List<String>> getUserRoles(@RequestParam String email) {
         List<String> roles = roleService.getUserRoles(email);
         return ResponseEntity.ok(roles);
     }
 
+    /**
+     * Remueve un rol especifico de un usuario por su identificador.
+     */
     @DeleteMapping("/{email}/roles/{roleId}")
     public ResponseEntity<?> removeRole(@PathVariable String email, @PathVariable Long roleId) {
         try {
@@ -91,6 +124,9 @@ public class AdminUserController {
         }
     }
 
+    /**
+     * Verifica si un usuario existe por correo.
+     */
     @GetMapping("/{email}/exists")
     public ResponseEntity<Boolean> userExists(@PathVariable String email) {
         return ResponseEntity.ok(userService.userExists(email));
