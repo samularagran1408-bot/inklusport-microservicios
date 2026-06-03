@@ -46,7 +46,7 @@ public class EmailService {
     /**
      * Construye el HTML del correo de recuperación.
      */
-    private String buildEmailContent(String resetUrl, int expiryHours) {
+    private String buildEmailContent(String resetToken, int expiryHours) {
         return """
             <!DOCTYPE html>
             <html>
@@ -56,17 +56,26 @@ public class EmailService {
                     <h2 style="color: #1E3A8A;">InkluSport</h2>
                     <h3>Recuperación de contraseña</h3>
                     <p>Recibimos una solicitud para restablecer tu contraseña.</p>
-                    <p>Haz clic en el siguiente botón para continuar:</p>
-                    <a href="%s" style="display: inline-block; padding: 10px 20px; 
-                          background-color: #1E3A8A; color: white; text-decoration: none; 
-                          border-radius: 5px;">Restablecer contraseña</a>
-                    <p>Este enlace expirará en <strong>%d horas</strong>.</p>
+                    <p>Usa el siguiente token para restablecer tu contraseña:</p>
+                    <div style="background-color: #f4f4f4; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <code style="font-size: 18px; font-weight: bold;">%s</code>
+                    </div>
+                    <p>Para restablecer tu contraseña, haz una petición POST a:</p>
+                    <code>http://localhost:3001/api/auth/reset-password</code>
+                    <p>Con el siguiente cuerpo:</p>
+                    <pre style="background-color: #f4f4f4; padding: 10px; border-radius: 5px;">
+    {
+        "token": "%s",
+        "newPassword": "tu_nueva_contraseña"
+    }
+                    </pre>
+                    <p>Este token expirará en <strong>%d horas</strong>.</p>
                     <p>Si no solicitaste este cambio, ignora este mensaje.</p>
                     <hr>
                     <p style="font-size: 12px; color: #666;">InkluSport - Deporte para todos</p>
                 </div>
             </body>
             </html>
-            """.formatted(resetUrl, expiryHours);
+            """.formatted(resetToken, resetToken, expiryHours);
     }
 }
