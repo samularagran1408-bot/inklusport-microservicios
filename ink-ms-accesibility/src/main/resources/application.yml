@@ -4,7 +4,7 @@ spring:
   
   data:
     mongodb:
-      uri: mongodb://localhost:27017/accessibility_notifications_db
+      uri: mongodb+srv://Samulara:Erdanojoda123@cluster0.o43hxok.mongodb.net/accessibility_notifications_db?retryWrites=true&w=majority
       auto-index-creation: true
 
 server:
@@ -12,6 +12,7 @@ server:
 
 jwt:
   secret: inklusport2024superSecretKeyForJWTtokenGenerationWith512bitsAlgorithmHS512
+  expiration: 86400000
 
 logging:
   level:
