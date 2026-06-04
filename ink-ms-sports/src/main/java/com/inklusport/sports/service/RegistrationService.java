@@ -1,7 +1,9 @@
 package com.inklusport.sports.service;
 
+import com.inklusport.sports.client.NotificationServiceClient;
 import com.inklusport.sports.dto.RegistrationRequest;
 import com.inklusport.sports.dto.RegistrationResponse;
+import com.inklusport.sports.dto.NotificationRequest;
 import com.inklusport.sports.entity.Event;
 import com.inklusport.sports.entity.EventRegistration;
 import com.inklusport.sports.repository.EventRegistrationRepository;
@@ -23,6 +25,7 @@ public class RegistrationService {
 
     private final EventRegistrationRepository registrationRepository;
     private final EventRepository eventRepository;
+    private final NotificationServiceClient notificationClient;
 
     @Transactional
     public RegistrationResponse registerToEvent(RegistrationRequest request) {
@@ -42,6 +45,9 @@ public class RegistrationService {
         registration.setQrCode("QR_" + UUID.randomUUID().toString());
 
         String statusMessage; 
+        String notificationType;
+        String notificationTitle;
+        String notificationBody;
 
         if (event.getAvailableCapacity() > 0) {
             registration.setWaitlistPosition(null); 
@@ -50,15 +56,23 @@ public class RegistrationService {
             eventRepository.save(event);
             
             statusMessage = "Inscripción confirmada exitosamente. ¡Cupo asegurado!";
+            notificationType = "event_registration";
+            notificationTitle = "¡Inscripción confirmada!";
+            notificationBody = "Te has inscrito correctamente al evento: " + event.getName();
         } else {
             long personasEnEspera = registrationRepository.countByEventIdAndWaitlistPositionIsNotNull(request.getEventId());
             int nuevaPosicion = (int) personasEnEspera + 1;
             registration.setWaitlistPosition(nuevaPosicion);
             
             statusMessage = "El evento está lleno. Has sido agregado a la lista de espera en la posición: " + nuevaPosicion;
+            notificationType = "waitlist_added";
+            notificationTitle = "Lista de espera";
+            notificationBody = "El evento " + event.getName() + " está lleno. Estás en la posición " + nuevaPosicion + " de la lista de espera.";
         }
 
         EventRegistration saved = registrationRepository.save(registration);
+
+        sendNotification(request.getUserId(), notificationType, notificationTitle, notificationBody, request.getEventId());
         
         return convertToResponse(saved, statusMessage, event.getName());
     }
@@ -95,6 +109,43 @@ public class RegistrationService {
         } else {
             reorderWaitlist(eventId);
         }
+    }
+
+    private void sendNotification(String userId, String type, String title, String body, String eventId) {
+        try {
+            NotificationRequest notificationRequest = new NotificationRequest();
+            notificationRequest.setType(type);
+            notificationRequest.setTitle(title);
+            notificationRequest.setBody(body);
+            notificationRequest.setEventId(eventId);
+            notificationRequest.setPriority("high");
+            
+            notificationClient.createNotification(userId, notificationRequest);
+            log.info("Notificación enviada a usuario {}: {}", userId, title);
+        } catch (Exception e) {
+            log.error("Error al enviar notificación a usuario {}: {}", userId, e.getMessage());
+        }
+    }
+
+    @Transactional
+    public void notifyWaitlistUser(String eventId, String userId, int position) {
+        String notificationType = "waitlist_offer";
+        String notificationTitle = "¡Cupo disponible!";
+        String notificationBody = "Ha quedado un cupo disponible para el evento. Tienes 24 horas para confirmar tu asistencia.";
+        
+        sendNotification(userId, notificationType, notificationTitle, notificationBody, eventId);
+    }
+
+    @Transactional
+    public void confirmWaitlistOffer(String userId, String eventId) {
+        // Usuario acepta el cupo de la lista de espera
+        registrationRepository.updateWaitlistToConfirmed(userId, eventId);
+        
+        String notificationType = "waitlist_confirmed";
+        String notificationTitle = "¡Cupo confirmado!";
+        String notificationBody = "Has confirmado tu asistencia al evento. ¡Te esperamos!";
+        
+        sendNotification(userId, notificationType, notificationTitle, notificationBody, eventId);
     }
 
     private void reorderWaitlist(String eventId) {
