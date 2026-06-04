@@ -38,6 +38,10 @@ users:
   service:
     url: http://localhost:3002
 
+accessibility:
+  service:
+    url: http://localhost:3004
+
 logging:
   level:
     com.inklusport.sports: DEBUG

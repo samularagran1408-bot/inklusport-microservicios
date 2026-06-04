@@ -6,6 +6,7 @@ import com.inklusport.accessibility.dto.ErrorResponse;
 import com.inklusport.accessibility.service.NotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationController {
 
     private final NotificationService notificationService;
@@ -46,6 +48,18 @@ public class NotificationController {
     @PostMapping("/read-all")
     public ResponseEntity<Void> markAllAsRead(@AuthenticationPrincipal String userId) {
         notificationService.markAllAsRead(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/internal/create")
+    public ResponseEntity<?> createNotificationInternal(
+            @RequestHeader("X-User-Id") String userId,
+            @RequestBody NotificationRequest request) {
+        
+        log.info("Recibida solicitud de notificación - Usuario: {}, Título: {}", userId, request.getTitle());
+        
+        notificationService.createNotification(userId, request);
+        
         return ResponseEntity.ok().build();
     }
 }

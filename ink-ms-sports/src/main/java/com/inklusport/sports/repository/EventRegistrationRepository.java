@@ -3,6 +3,10 @@ package com.inklusport.sports.repository;
 import com.inklusport.sports.entity.EventRegistration;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,4 +36,12 @@ public interface EventRegistrationRepository extends JpaRepository<EventRegistra
      * Trae a todos los que están en la fila para poder reordenarlos cuando uno se salga
      */
     List<EventRegistration> findByEventIdAndWaitlistPositionIsNotNullOrderByWaitlistPositionAsc(String eventId);
+
+    /**
+     * Cambia la posición de un usuario en la lista de espera
+     */
+    @Modifying
+    @Transactional
+    @Query("UPDATE EventRegistration er SET er.waitlistPosition = NULL WHERE er.userId = :userId AND er.eventId = :eventId")
+    void updateWaitlistToConfirmed(@Param("userId") String userId, @Param("eventId") String eventId);
 }
