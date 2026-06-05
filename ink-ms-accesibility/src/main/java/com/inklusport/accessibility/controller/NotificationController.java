@@ -39,13 +39,13 @@ public class NotificationController {
         return ResponseEntity.ok(Map.of("count", notificationService.getUnreadCount(userId)));
     }
 
-    @PostMapping("/{notificationId}/read")
+    @GetMapping("/{notificationId}/read")
     public ResponseEntity<Void> markAsRead(@AuthenticationPrincipal String userId, @PathVariable String notificationId) {
         notificationService.markAsRead(userId, notificationId);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/read-all")
+    @GetMapping("/read-all")
     public ResponseEntity<Void> markAllAsRead(@AuthenticationPrincipal String userId) {
         notificationService.markAllAsRead(userId);
         return ResponseEntity.ok().build();
@@ -53,13 +53,19 @@ public class NotificationController {
 
     @PostMapping("/internal/create")
     public ResponseEntity<?> createNotificationInternal(
-            @RequestHeader("X-User-Id") String userId,
+            @RequestHeader(value = "X-User-Id", required = false) String userId,
             @RequestBody NotificationRequest request) {
         
-        log.info("Recibida solicitud de notificación - Usuario: {}, Título: {}", userId, request.getTitle());
+        String finalUserId = userId != null ? userId : request.getUserId();
         
-        notificationService.createNotification(userId, request);
+        log.info("Notificación - Usuario: {}, Título: {}", finalUserId, request.getTitle());
         
+        if (finalUserId == null) {
+            log.error("No se pudo determinar el userId");
+            return ResponseEntity.badRequest().build();
+        }
+        
+        notificationService.createNotification(finalUserId, request);
         return ResponseEntity.ok().build();
     }
 }

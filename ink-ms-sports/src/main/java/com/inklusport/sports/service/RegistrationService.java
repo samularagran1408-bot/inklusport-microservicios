@@ -10,6 +10,7 @@ import com.inklusport.sports.repository.EventRegistrationRepository;
 import com.inklusport.sports.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,10 +37,12 @@ public class RegistrationService {
             throw new IllegalStateException("El usuario ya se encuentra registrado.");
         }
 
+        String userEmail = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         EventRegistration registration = new EventRegistration();
         registration.setId(UUID.randomUUID().toString());
         registration.setEventId(request.getEventId());
-        registration.setUserId(request.getUserId());
+        registration.setUserId(userEmail);
         registration.setRegistrationDate(LocalDateTime.now());
         registration.setAttended(false);
         registration.setQrCode("QR_" + UUID.randomUUID().toString());
@@ -112,16 +115,23 @@ public class RegistrationService {
     }
 
     private void sendNotification(String userId, String type, String title, String body, String eventId) {
+
+        log.info("Enviando notificación - Usuario: {}, Título: {}", userId, title);
+        log.info("URL: http://localhost:3004/api/notifications/internal/create");
+
         try {
             NotificationRequest notificationRequest = new NotificationRequest();
+            notificationRequest.setUserId(userId);
             notificationRequest.setType(type);
             notificationRequest.setTitle(title);
             notificationRequest.setBody(body);
             notificationRequest.setEventId(eventId);
             notificationRequest.setPriority("high");
+
+             log.info("Body: {}", notificationRequest);
             
             notificationClient.createNotification(userId, notificationRequest);
-            log.info("Notificación enviada a usuario {}: {}", userId, title);
+            log.info("Notificación enviada correctamente");
         } catch (Exception e) {
             log.error("Error al enviar notificación a usuario {}: {}", userId, e.getMessage());
         }
