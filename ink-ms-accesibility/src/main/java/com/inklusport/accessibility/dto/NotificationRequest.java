@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 @Data
 public class NotificationRequest {
 
+    private String userId;
+
     @NotBlank(message = "El tipo es obligatorio")
     private String type;
 
