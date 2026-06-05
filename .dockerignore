@@ -1,0 +1,13 @@
+**/.git
+**/.idea
+**/.vscode
+**/target
+**/*.iml
+**/.classpath
+**/.project
+**/.settings
+**/node_modules
+**/.cursor
+**/agent-transcripts
+**/*.md
+!DOCKER.md

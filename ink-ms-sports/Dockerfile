@@ -6,6 +6,6 @@ RUN apk add --no-cache maven && mvn -q -B package -DskipTests && rm -rf /root/.m
 
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-COPY --from=build /app/target/sports-events-ms-*.jar app.jar
+COPY --from=build /app/target/ink-ms-sports-*.jar app.jar
 EXPOSE 3003
 ENTRYPOINT ["java", "-jar", "app.jar"]
