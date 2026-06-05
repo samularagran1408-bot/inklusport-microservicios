@@ -1,0 +1,44 @@
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: auth-ms
+          uri: ${AUTH_SERVICE_URL:http://ink-ms-auth:3001}
+          predicates:
+            - Path=/api/auth/**
+
+        - id: users-ms
+          uri: ${USERS_SERVICE_URL:http://ink-ms-users:3002}
+          predicates:
+            - Path=/api/users/**
+
+        - id: sports-ms
+          uri: ${SPORTS_SERVICE_URL:http://ink-ms-sports:3003}
+          predicates:
+            - Path=/api/sports/**,/api/events/**,/api/disabilities/**,/api/registrations/**,/api/calendar/**
+
+        - id: admin-ms
+          uri: ${ADMIN_SERVICE_URL:http://ink-ms-admin:3005}
+          predicates:
+            - Path=/api/v1/admin/**
+
+        - id: reports-ms
+          uri: ${REPORTS_SERVICE_URL:http://ink-ms-reports:3006}
+          predicates:
+            - Path=/api/reports/**
+
+        - id: accessibility-ms
+          uri: ${ACCESSIBILITY_SERVICE_URL:http://ink-ms-accessibility:3004}
+          predicates:
+            - Path=/api/accessibility/**
+
+        - id: ai-assistant-ms
+          uri: ${AI_SERVICE_URL:http://ai-assistant-ms:8087}
+          predicates:
+            - Path=/api/ia/**
