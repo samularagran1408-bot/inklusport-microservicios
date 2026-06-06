@@ -5,13 +5,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 import java.util.Map;
 
-@FeignClient(name = "ink-ms-users", url = "${users.service.url:http://localhost:3002}")
+@FeignClient(name = "ink-ms-users", url = "${users.service.url:http://localhost:3002}", fallback = UserServiceFallback.class)
 public interface UserServiceClient {
 
     @GetMapping("/api/users/{id}")
     Map<String, Object> getUserById(@PathVariable("id") String id);
+
+    @GetMapping("/api/admin/users/roles-by-email")
+    List<String> getUserRoles(@RequestParam("email") String email);
 
     @GetMapping("/api/internal/users/id-by-email")
     Map<String, String> getUserIdByEmail(@RequestParam("email") String email);
