@@ -100,11 +100,11 @@ public class AdminRoleService {
      * Asigna un rol a un administrador
      */
     @Transactional
-    public void assignRoleToAdmin(String adminId, Integer roleId, String assignedBy) {
-        AdminRole role = roleRepository.findById(roleId)
-                .orElseThrow(() -> new RuntimeException("Rol no encontrado con ID: " + roleId));
+    public void assignRoleToAdmin(AssignRoleRequest request) {
+        AdminRole role = roleRepository.findById(request.getRoleId())
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado con ID: " + request.getRoleId()));
 
-        AdminUserRoleId id = new AdminUserRoleId(adminId, roleId);
+        AdminUserRoleId id = new AdminUserRoleId(request.getAdminId(), request.getRoleId());
         
         if (userRoleRepository.existsById(id)) {
             throw new RuntimeException("El admin ya tiene este rol asignado");
@@ -113,11 +113,11 @@ public class AdminRoleService {
         AdminUserRole userRole = AdminUserRole.builder()
                 .id(id)
                 .role(role)
-                .assignedBy(assignedBy)
+                .assignedBy(request.getAssignedBy())
                 .build();
 
         userRoleRepository.save(userRole);
-        log.info("Rol {} asignado al admin {} por {}", role.getName(), adminId, assignedBy);
+        log.info("Rol {} asignado al admin {} por {}", role.getName(), request.getAdminId(), request.getAssignedBy());
     }
 
     /**
