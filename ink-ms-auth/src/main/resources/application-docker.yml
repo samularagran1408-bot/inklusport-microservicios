@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_HOST:mysql-auth}:${DB_PORT:3306}/${DB_NAME:auth_ms}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root123}
+
+app:
+  password-reset:
+    mail-enabled: false
+
+users:
+  service:
+    url: ${USERS_SERVICE_URL:http://ink-ms-users:3002}

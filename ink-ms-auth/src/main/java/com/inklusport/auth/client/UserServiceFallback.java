@@ -15,7 +15,7 @@ public class UserServiceFallback implements UserServiceClient {
 
     @Override
     public List<String> getUserRoles(String email) {
-        log.warn("⚠️ Users MS no disponible. Asignando rol USUARIO");
+        log.warn(" Users MS no disponible. Asignando rol USUARIO");
         return List.of("USUARIO");
     }
 }
