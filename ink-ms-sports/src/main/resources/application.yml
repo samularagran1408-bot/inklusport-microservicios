@@ -3,7 +3,7 @@ spring:
     name: ink-ms-sports
   
   datasource:
-    url: jdbc:mysql://localhost:3306/ms_sports?useSSL=false&serverTimezone=America/Bogota&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/sports_events_ms?useSSL=false&serverTimezone=America/Bogota&allowPublicKeyRetrieval=true
     username: root
     password: 
     driver-class-name: com.mysql.cj.jdbc.Driver
