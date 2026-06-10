@@ -1,36 +1,62 @@
 package com.inklusport.reports.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.inklusport.reports.dto.ReportConfigRequest;
+import com.inklusport.reports.dto.ReportConfigResponse;
+import com.inklusport.reports.service.ReportService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
-import com.inklusport.reports.dto.request.CreateReportRequest;
-import com.inklusport.reports.dto.response.ReportResponse;
-import com.inklusport.reports.entity.ReportConfig;
-import com.inklusport.reports.service.ReportConfigService;
+import java.util.List;
 
 @RestController
-@RequestMapping("/reports")
+@RequestMapping("/api/reports")
+@RequiredArgsConstructor
 public class ReportController {
 
-    @Autowired
-    private ReportConfigService reportConfigService;
+    /**
+     * Inyección de Servicio
+     */
+    private final ReportService reportService;
 
-    @GetMapping
-    public List<ReportConfig> getAllReports() {
-        return reportConfigService.getAllReports();
+    /**
+     * Crear Reporte 
+     * @param userId
+     * @param request
+     * @return
+     */
+    @PostMapping("/configs")
+    public ResponseEntity<ReportConfigResponse> createReportConfig(
+            @AuthenticationPrincipal String userId,
+            @Valid @RequestBody ReportConfigRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(reportService.createReportConfig(userId, request));
     }
 
-    @PostMapping
-    public ResponseEntity<ReportResponse> createReport(@RequestBody CreateReportRequest request) {
-        ReportResponse response = reportConfigService.createReport(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    /**
+     * Obtener mis propios reportes
+     * @param userId
+     * @return
+     */
+    @GetMapping("/configs")
+    public ResponseEntity<List<ReportConfigResponse>> getMyReportConfigs(@AuthenticationPrincipal String userId) {
+        return ResponseEntity.ok(reportService.getMyReportConfigs(userId));
+    }
+
+    /**
+     * Eliminar reportes por id
+     * @param userId
+     * @param id
+     * @return
+     */
+    @DeleteMapping("/configs/{id}")
+    public ResponseEntity<Void> deleteReportConfig(
+            @AuthenticationPrincipal String userId,
+            @PathVariable String id) {
+        reportService.deleteReportConfig(id, userId);
+        return ResponseEntity.noContent().build();
     }
 }
