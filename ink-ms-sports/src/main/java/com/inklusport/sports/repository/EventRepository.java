@@ -13,4 +13,6 @@ import java.util.List;
 @Repository
 public interface EventRepository extends JpaRepository<Event, String> {
     List<Event> findByStatus(EventStatus status);
+
+    List<Event> findByEventDateAndStatus(LocalDate eventDate, EventStatus status);
 }
