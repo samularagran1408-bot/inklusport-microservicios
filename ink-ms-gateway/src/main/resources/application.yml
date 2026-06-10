@@ -21,7 +21,7 @@ spring:
         - id: sports-ms
           uri: http://localhost:3003
           predicates:
-            - Path=/api/sports/**, /api/events/**, /api/disabilities/**, /api/registrations/**, /api/calendar/**
+            - Path=/api/sports/**, /api/events/**, /api/disabilities/**, /api/registrations/**, /api/calendar/**, /api/scheduler/**
 
 server:
   port: 8080
