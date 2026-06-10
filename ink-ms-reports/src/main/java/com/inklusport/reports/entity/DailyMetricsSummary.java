@@ -1,25 +1,38 @@
 package com.inklusport.reports.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "daily_metrics_summary")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DailyMetricsSummary {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", columnDefinition = "CHAR(36)")
     private String id;
 
+    @Column(name = "summary_date", nullable = false)
     private LocalDate summaryDate;
 
+    @Column(name = "metric_key", nullable = false, length = 50)
     private String metricKey;
 
-    private int metricValue;
+    @Column(name = "metric_value", nullable = false)
+    private Integer metricValue;
 
+    @UpdateTimestamp
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
 }

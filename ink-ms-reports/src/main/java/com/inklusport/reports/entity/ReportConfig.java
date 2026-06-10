@@ -1,53 +1,40 @@
 package com.inklusport.reports.entity;
 
-import java.util.UUID;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import org.hibernate.annotations.CreationTimestamp;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "report_config")
+@Table(name = "report_configs")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ReportConfig {
 
     @Id
-    private String id = UUID.randomUUID().toString();
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", columnDefinition = "CHAR(36)")
+    private String id;
 
+    @Column(name = "report_name", nullable = false, length = 100)
     private String reportName;
 
+    @Column(name = "filters", nullable = false, columnDefinition = "JSON")
     private String filters;
 
+    @Column(name = "owner_id", columnDefinition = "CHAR(36)", nullable = false)
     private String ownerId;
 
-    public String getId() {
-        return id;
-    }
+    @Column(name = "last_run")
+    private LocalDateTime lastRun;
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getReportName() {
-        return reportName;
-    }
-
-    public void setReportName(String reportName) {
-        this.reportName = reportName;
-    }
-
-    public String getFilters() {
-        return filters;
-    }
-
-    public void setFilters(String filters) {
-        this.filters = filters;
-    }
-
-    public String getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(String ownerId) {
-        this.ownerId = ownerId;
-    }
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 }
