@@ -6,6 +6,7 @@ import com.inklusport.accessibility.dto.ErrorResponse;
 import com.inklusport.accessibility.service.NotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationController {
 
     private final NotificationService notificationService;
@@ -37,15 +39,33 @@ public class NotificationController {
         return ResponseEntity.ok(Map.of("count", notificationService.getUnreadCount(userId)));
     }
 
-    @PostMapping("/{notificationId}/read")
+    @GetMapping("/{notificationId}/read")
     public ResponseEntity<Void> markAsRead(@AuthenticationPrincipal String userId, @PathVariable String notificationId) {
         notificationService.markAsRead(userId, notificationId);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/read-all")
+    @GetMapping("/read-all")
     public ResponseEntity<Void> markAllAsRead(@AuthenticationPrincipal String userId) {
         notificationService.markAllAsRead(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/internal/create")
+    public ResponseEntity<?> createNotificationInternal(
+            @RequestHeader(value = "X-User-Id", required = false) String userId,
+            @RequestBody NotificationRequest request) {
+        
+        String finalUserId = userId != null ? userId : request.getUserId();
+        
+        log.info("Notificación - Usuario: {}, Título: {}", finalUserId, request.getTitle());
+        
+        if (finalUserId == null) {
+            log.error("No se pudo determinar el userId");
+            return ResponseEntity.badRequest().build();
+        }
+        
+        notificationService.createNotification(finalUserId, request);
         return ResponseEntity.ok().build();
     }
 }

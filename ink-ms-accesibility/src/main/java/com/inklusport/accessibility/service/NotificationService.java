@@ -10,6 +10,7 @@ import com.inklusport.accessibility.repository.NotificationPreferenceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -59,6 +60,7 @@ public class NotificationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void markAsRead(String userId, String notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new RuntimeException("Notificación no encontrada"));
