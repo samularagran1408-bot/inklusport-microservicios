@@ -13,6 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio de perfil de usuario.
+ * Centraliza alta, consulta, actualización y activación/desactivación.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -24,6 +28,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
 
+    /**
+     * Crea perfil base del usuario autenticado.
+     */
     @Transactional
     public UserProfileResponse createUserProfile(String email, String fullName) {
         if (userRepository.existsByEmail(email)) {
@@ -41,6 +48,9 @@ public class UserService {
         return convertToResponse(savedUser);
     }
 
+    /**
+     * Consulta perfil por email.
+     */
     @Transactional(readOnly = true)
     public UserProfileResponse getUserProfileByEmail(String email) {
         User user = userRepository.findByEmail(email)
@@ -48,6 +58,9 @@ public class UserService {
         return convertToResponse(user);
     }
 
+    /**
+     * Consulta perfil por id.
+     */
     @Transactional(readOnly = true)
     public UserProfileResponse getUserProfileById(String id) {
         User user = userRepository.findById(id)
@@ -55,6 +68,9 @@ public class UserService {
         return convertToResponse(user);
     }
 
+    /**
+     * Actualiza solo campos enviados en el request.
+     */
     @Transactional
     public UserProfileResponse updateUserProfile(String email, UpdateProfileRequest request) {
         User user = userRepository.findByEmail(email)
@@ -82,18 +98,27 @@ public class UserService {
         return convertToResponse(updateUser);
     }
 
+    /**
+     * Desactiva usuario por correo.
+     */
     @Transactional
     public void desactivateUser(String email) {
         userRepository.deactivateUser(email);
         log.info("Usuario desactivado: {}", email);
     }
 
+    /**
+     * Reactiva usuario por correo.
+     */
     @Transactional
     public void activateUser(String email) {
         userRepository.activateUser(email);
         log.info("Usuario activado: {}", email);
     }
 
+    /**
+     * Lista todos los perfiles.
+     */
     @Transactional(readOnly = true)
     public List<UserProfileResponse> getAllUsers() {
         return userRepository.findAll().stream()
@@ -101,6 +126,9 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Lista solo perfiles activos.
+     */
     @Transactional(readOnly = true)
     public List<UserProfileResponse> getActivateUsers() {
         return userRepository.findByIsActiveTrue().stream()
@@ -108,11 +136,17 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Verifica existencia de usuario por email.
+     */
     @Transactional(readOnly = true)
     public boolean userExists(String email) {
         return userRepository.existsByEmail(email);
     }
 
+    /**
+     * Mapea entidad User a DTO de salida con roles incluidos.
+     */
     private UserProfileResponse convertToResponse(User user) {
         List<String> roles = userRoleRepository.findRoleNamesByUserId(user.getId());
 

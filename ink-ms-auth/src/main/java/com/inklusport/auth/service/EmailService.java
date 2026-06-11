@@ -21,26 +21,24 @@ public class EmailService {
     private String fromEmail;
 
     @Async
-    public void sendPasswordResetEmail(String to, String resetToken, int expiryHours) {
+    public void sendPasswordResetCode(String to, String code, int expiryMinutes) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            String resetUrl = "http://localhost:3001/api/auth/reset-password?token=" + resetToken;
-
             helper.setFrom(fromEmail);
             helper.setTo(to);
-            helper.setSubject("Recuperación de contraseña - InkluSport");
-            helper.setText(buildEmailContent(resetUrl, expiryHours), true);
+            helper.setSubject("Código de recuperación - InkluSport");
+            helper.setText(buildEmailContent(code, expiryMinutes), true);
 
             mailSender.send(message);
-            log.info("Correo de recuperación enviado a: {}", to);
+            log.info("Código de recuperación enviado a: {}", to);
         } catch (MessagingException e) {
-            log.error("Error al enviar correo a {}: {}", to, e.getMessage());
+            log.error("Error al enviar código a {}: {}", to, e.getMessage());
         }
     }
 
-    private String buildEmailContent(String resetUrl, int expiryHours) {
+    private String buildEmailContent(String code, int expiryMinutes) {
         return """
             <!DOCTYPE html>
             <html>
@@ -50,17 +48,18 @@ public class EmailService {
                     <h2 style="color: #1E3A8A;">InkluSport</h2>
                     <h3>Recuperación de contraseña</h3>
                     <p>Recibimos una solicitud para restablecer tu contraseña.</p>
-                    <p>Haz clic en el siguiente botón para continuar:</p>
-                    <a href="%s" style="display: inline-block; padding: 10px 20px; 
-                          background-color: #1E3A8A; color: white; text-decoration: none; 
-                          border-radius: 5px;">Restablecer contraseña</a>
-                    <p>Este enlace expirará en <strong>%d horas</strong>.</p>
+                    <p>Usa el siguiente código de verificación:</p>
+                    <div style="background-color: #f4f4f4; padding: 20px; text-align: center; font-size: 32px; letter-spacing: 10px; border-radius: 10px;">
+                        <strong>%s</strong>
+                    </div>
+                    <p>Este código expirará en <strong>%d minutos</strong>.</p>
+                    <p>Ingresa este código en la aplicación para restablecer tu contraseña.</p>
                     <p>Si no solicitaste este cambio, ignora este mensaje.</p>
                     <hr>
                     <p style="font-size: 12px; color: #666;">InkluSport - Deporte para todos</p>
                 </div>
             </body>
             </html>
-            """.formatted(resetUrl, expiryHours);
+            """.formatted(code, expiryMinutes);
     }
 }

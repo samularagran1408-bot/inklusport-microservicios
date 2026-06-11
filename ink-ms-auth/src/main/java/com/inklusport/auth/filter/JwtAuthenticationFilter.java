@@ -17,6 +17,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Filtro JWT para auth-ms.
+ * Deja pasar rutas públicas y autentica el resto a partir del token Bearer.
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -24,6 +28,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtTokenProvider jwtTokenProvider;
 
+  /**
+   * Resuelve el usuario desde el token y lo inyecta en el SecurityContext.
+   */
   @Override
   protected void doFilterInternal(HttpServletRequest request,
                                   HttpServletResponse response,

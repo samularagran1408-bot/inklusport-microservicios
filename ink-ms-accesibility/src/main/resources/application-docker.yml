@@ -1,0 +1,4 @@
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://mongo:27017/accessibility_notifications_db}

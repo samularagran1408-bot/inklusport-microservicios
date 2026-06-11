@@ -50,8 +50,14 @@ mvn clean install -pl ink-ms-common -am -DskipTests
 
 Ver `ink-ms-common/README.md` para probar el JAR sin levantar un microservicio.
 
-Con Docker Compose (cuando configures los servicios en `docker-compose.yml`):
+Con Docker (ver guía completa en [`DOCKER.md`](DOCKER.md)):
 
 ```bash
+# Stack núcleo: auth, users, sports, gateway
 docker compose up --build
+
+# Stack completo (+ reports, admin, accessibility, IA)
+docker compose --profile full up --build
 ```
+
+Gateway: http://localhost:8080

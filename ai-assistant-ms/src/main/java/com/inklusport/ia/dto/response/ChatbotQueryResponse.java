@@ -12,6 +12,7 @@ public class ChatbotQueryResponse {
     String usuarioId;
     String mensajeUsuario;
     String intencionDetectada;
+    String respuestaBot;
     String estadoConversacion;
     Instant updatedAt;
 }
