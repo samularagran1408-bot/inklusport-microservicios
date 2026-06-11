@@ -22,7 +22,7 @@ public class PasswordResetToken {
   @Column(name = "user_id", columnDefinition = "CHAR(36)", nullable = false)
   private String userId;
   
-  @Column(name = "token", length = 255, unique = true, nullable = false)
+  @Column(name = "token", unique = true, nullable = false, length = 6)
   private String token;
   
   @Column(name = "expires_at", nullable = false)

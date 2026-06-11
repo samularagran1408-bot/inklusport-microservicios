@@ -3,6 +3,7 @@ package com.inklusport.sports.controller;
 import com.inklusport.sports.dto.SportRequest;
 import com.inklusport.sports.dto.SportResponse;
 import com.inklusport.sports.service.SportService;
+import com.inklusport.sports.repository.SportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ import java.util.List;
 public class SportController {
 
     private final SportService sportService;
+    private final SportRepository sportRepository;
 
     /**
      * Lista todos los deportes.
@@ -74,5 +76,11 @@ public class SportController {
     public ResponseEntity<Void> deleteSport(@PathVariable Integer id) {
         sportService.deleteSport(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> countSports() {
+        long count = sportRepository.count();
+        return ResponseEntity.ok(count);
     }
 }
