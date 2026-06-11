@@ -2,6 +2,7 @@ package com.inklusport.reports.controller;
 
 import com.inklusport.reports.dto.ReportConfigRequest;
 import com.inklusport.reports.dto.ReportConfigResponse;
+import com.inklusport.reports.dto.ReportRunResponse;
 import com.inklusport.reports.service.ReportService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,21 @@ public class ReportController {
     @GetMapping("/configs")
     public ResponseEntity<List<ReportConfigResponse>> getMyReportConfigs(@AuthenticationPrincipal String userId) {
         return ResponseEntity.ok(reportService.getMyReportConfigs(userId));
+    }
+
+    @PutMapping("/configs/{id}")
+    public ResponseEntity<ReportConfigResponse> updateReportConfig(
+            @AuthenticationPrincipal String userId,
+            @PathVariable String id,
+            @Valid @RequestBody ReportConfigRequest request) {
+        return ResponseEntity.ok(reportService.updateReportConfig(id, userId, request));
+    }
+
+    @PostMapping("/configs/{id}/run")
+    public ResponseEntity<ReportRunResponse> runReport(
+            @AuthenticationPrincipal String userId,
+            @PathVariable String id) {
+        return ResponseEntity.ok(reportService.runReport(id, userId));
     }
 
     /**

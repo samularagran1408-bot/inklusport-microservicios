@@ -69,6 +69,13 @@ public class AnalyticsEventService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<AnalyticsEventResponse> getEventsByModule(String module) {
+        return analyticsEventRepository.findByModule(module).stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
     /**
      * Convertir a response los atributos
      * @param event
