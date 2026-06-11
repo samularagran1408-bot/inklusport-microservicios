@@ -18,4 +18,6 @@ public class UserBlockRequest {
     private String blockType;  /** temporal, permanente */
     
     private LocalDateTime expiresAt;
+
+    private String blockedBy;
 }

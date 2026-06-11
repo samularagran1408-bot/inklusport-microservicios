@@ -1,5 +1,7 @@
 package com.inklusport.admin.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inklusport.admin.dto.AiConfigRequest;
 import com.inklusport.admin.dto.AiConfigResponse;
 import com.inklusport.admin.entity.AiConfiguration;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 public class AiConfigurationService {
 
     private final AiConfigurationRepository aiConfigurationRepository;
+    private final ObjectMapper objectMapper;
 
     /**
      * Obtiene todas las configuraciones de IA.
@@ -80,7 +83,7 @@ public class AiConfigurationService {
                 .isEnabled(request.getIsEnabled() != null ? request.getIsEnabled() : true)
                 .modelVersion(request.getModelVersion())
                 .confidenceThreshold(request.getConfidenceThreshold())
-                .parameters(request.getParameters())
+                .parameters(toJson(request.getParameters()))
                 .updatedBy(request.getUpdatedBy())
                 .build();
 
@@ -103,7 +106,7 @@ public class AiConfigurationService {
 
         config.setModelVersion(request.getModelVersion());
         config.setConfidenceThreshold(request.getConfidenceThreshold());
-        config.setParameters(request.getParameters());
+        config.setParameters(toJson(request.getParameters()));
         config.setUpdatedBy(request.getUpdatedBy());
         config.setUpdatedAt(LocalDateTime.now());
 
@@ -164,5 +167,16 @@ public class AiConfigurationService {
                 .updatedBy(config.getUpdatedBy())
                 .updatedAt(config.getUpdatedAt())
                 .build();
+    }
+
+    private String toJson(Object value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            return objectMapper.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("No se pudo serializar el valor JSON", e);
+        }
     }
 }

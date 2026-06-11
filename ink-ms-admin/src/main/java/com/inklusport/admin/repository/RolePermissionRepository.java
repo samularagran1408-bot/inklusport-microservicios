@@ -1,7 +1,7 @@
 package com.inklusport.admin.repository;
 
 import com.inklusport.admin.entity.RolePermission;
-import com.inklusport.admin.entity.enums.RolePermissionId;
+import com.inklusport.admin.entity.RolePermissionId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

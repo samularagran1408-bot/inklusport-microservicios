@@ -2,6 +2,7 @@ package com.inklusport.admin.service;
 
 import com.inklusport.admin.dto.UserBlockRequest;
 import com.inklusport.admin.dto.UserBlockResponse;
+import com.inklusport.admin.enums.BlockType;
 import com.inklusport.admin.entity.UserBlock;
 import com.inklusport.admin.exception.ResourceNotFoundException;
 import com.inklusport.admin.repository.UserBlockRepository;
@@ -33,7 +34,7 @@ public class UserBlockService {
      */
     @Transactional(readOnly = true)
     public Page<UserBlockResponse> getBlockedUsers(Pageable pageable) {
-        return userBlockRepository.findByIsActiveTrueOrderByCreatedAtDesc(pageable)
+        return userBlockRepository.findByIsActiveTrue(pageable)
                 .map(this::convertToResponse);
     }
 
@@ -80,7 +81,7 @@ public class UserBlockService {
         UserBlock block = UserBlock.builder()
                 .id(UUID.randomUUID().toString())
                 .userId(request.getUserId())
-                .blockType(request.getBlockType())
+                .blockType(BlockType.valueOf(request.getBlockType()))
                 .reason(request.getReason())
                 .blockedBy(request.getBlockedBy())
                 .isActive(true)
@@ -117,7 +118,7 @@ public class UserBlockService {
      */
     @Transactional(readOnly = true)
     public Page<UserBlockResponse> getBlocksByType(String blockType, Pageable pageable) {
-        return userBlockRepository.findByBlockTypeAndIsActiveTrue(blockType, pageable)
+        return userBlockRepository.findByBlockTypeAndIsActiveTrue(BlockType.valueOf(blockType), pageable)
                 .map(this::convertToResponse);
     }
 
@@ -128,7 +129,7 @@ public class UserBlockService {
         return UserBlockResponse.builder()
                 .id(block.getId())
                 .userId(block.getUserId())
-                .blockType(block.getBlockType())
+                .blockType(block.getBlockType() != null ? block.getBlockType().name() : null)
                 .reason(block.getReason())
                 .blockedBy(block.getBlockedBy())
                 .isActive(block.getIsActive())
