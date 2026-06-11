@@ -39,3 +39,12 @@ accessibility:
 logging:
   level:
     com.inklusport.reports: DEBUG
+
+reports:
+  scheduling:
+    enabled: true
+  aggregation:
+    cron: "0 0 1 * * ?"
+  cleanup:
+    cron: "0 0 2 * * SUN"
+    retention-days: 90

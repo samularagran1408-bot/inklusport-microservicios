@@ -26,9 +26,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health").permitAll()
-                        .requestMatchers("/api/analytics/events/**").hasAnyRole("ADMIN", "ORGANIZADOR")
-                        .requestMatchers("/api/analytics/reports/**").hasAnyRole("ADMIN", "ORGANIZADOR")
-                        .requestMatchers("/api/dashboard/**").hasRole("ADMIN") 
+                        .requestMatchers("/api/analytics/**").hasAnyRole("ADMIN", "ORGANIZADOR")
+                        .requestMatchers("/api/reports/**").hasAnyRole("ADMIN", "ORGANIZADOR")
+                        .requestMatchers("/api/dashboard/**").hasAnyRole("ADMIN", "ORGANIZADOR") 
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

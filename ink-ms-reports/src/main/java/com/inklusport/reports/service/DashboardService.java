@@ -1,5 +1,6 @@
 package com.inklusport.reports.service;
 
+import com.inklusport.reports.client.SportsServiceClient;
 import com.inklusport.reports.client.UserServiceClient;
 import com.inklusport.reports.dto.DashboardFilters;
 import com.inklusport.reports.dto.DashboardResponse;
@@ -7,8 +8,6 @@ import com.inklusport.reports.repository.AnalyticsEventRepository;
 import com.inklusport.reports.repository.DailyMetricsSummaryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,6 +26,7 @@ public class DashboardService {
     private final AnalyticsEventRepository analyticsEventRepository;
     private final DailyMetricsSummaryRepository metricsRepository;
     private final UserServiceClient userServiceClient;
+    private final SportsServiceClient sportsServiceClient;
 
     public DashboardResponse getDashboard(DashboardFilters filters) {
         LocalDateTime startDate = filters.getStartDate() != null ? 
@@ -36,19 +36,9 @@ public class DashboardService {
                 filters.getEndDate().atTime(LocalTime.MAX) : 
                 LocalDateTime.now();
 
-        /**
-         * Obtener el token del contexto
-         */
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String token = (String) auth.getCredentials();
-        log.debug("🔑 Token obtenido para llamada a Users MS");
-
-        /**
-         * Obtener total de usuarios desde Users MS
-         */
         int totalUsers;
         try {
-            totalUsers = userServiceClient.getTotalUsers("Bearer " + token);
+            totalUsers = userServiceClient.getAllUsers().size();
             log.info("Total de usuarios obtenido: {}", totalUsers);
         } catch (Exception e) {
             log.error("Error al obtener total de usuarios: {}", e.getMessage());
@@ -79,8 +69,11 @@ public class DashboardService {
         Map<String, Integer> weeklyTrend = new HashMap<>();
         for (int i = 6; i >= 0; i--) {
             LocalDate date = LocalDate.now().minusDays(i);
-            long count = analyticsEventRepository.countByDateRange(date.atStartOfDay(), date.atTime(LocalTime.MAX));
-            weeklyTrend.put(date.toString(), (int) count);
+            int count = metricsRepository.findBySummaryDateAndMetricKey(date, "total_events")
+                    .map(metric -> metric.getMetricValue())
+                    .orElseGet(() -> (int) analyticsEventRepository.countByDateRange(
+                            date.atStartOfDay(), date.atTime(LocalTime.MAX)));
+            weeklyTrend.put(date.toString(), count);
         }
 
         return DashboardResponse.builder()
@@ -91,12 +84,20 @@ public class DashboardService {
     }
 
     private int getActiveEventsCount() {
-        // Implementar llamada a Sports MS
-        return 0;
+        try {
+            return sportsServiceClient.getActiveEventsCount();
+        } catch (Exception e) {
+            log.error("Error al obtener eventos activos: {}", e.getMessage());
+            return 0;
+        }
     }
 
     private int getTotalSports() {
-        // Implementar llamada a Sports MS
-        return 0;
+        try {
+            return sportsServiceClient.getTotalSports();
+        } catch (Exception e) {
+            log.error("Error al obtener total de deportes: {}", e.getMessage());
+            return 0;
+        }
     }
 }

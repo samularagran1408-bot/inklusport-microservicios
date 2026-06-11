@@ -12,3 +12,7 @@ spring:
 jwt:
   secret: inklusport2024superSecretKeyForJWTtokenGenerationWith512bitsAlgorithmHS512
   expiration: 86400000
+
+reports:
+  scheduling:
+    enabled: false

@@ -11,7 +11,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "daily_metrics_summary")
+@Table(name = "daily_metrics_summary", indexes = {
+        @Index(name = "idx_metrics_key_date", columnList = "metric_key, summary_date")
+})
 @Data
 @Builder
 @NoArgsConstructor
