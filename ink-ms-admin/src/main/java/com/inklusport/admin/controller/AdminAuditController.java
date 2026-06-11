@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  * Proporciona endpoints para consultar el registro de auditoría.
  */
 @RestController
-@RequestMapping("/api/v1/admin/audit")
+@RequestMapping("/api/admin/audit")
 @RequiredArgsConstructor
 public class AdminAuditController {
 

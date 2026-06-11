@@ -17,7 +17,7 @@ import java.util.List;
  * Permite habilitar/deshabilitar caracteristicas de IA y ajustar parametros.
  */
 @RestController
-@RequestMapping("/api/v1/admin/ai-config")
+@RequestMapping("/api/admin/ai-config")
 @RequiredArgsConstructor
 public class AiConfigurationController {
 

@@ -17,7 +17,7 @@ import java.util.List;
  * Permite obtener, crear y actualizar parametros globales de la plataforma.
  */
 @RestController
-@RequestMapping("/api/v1/admin/config")
+@RequestMapping("/api/admin/config")
 @RequiredArgsConstructor
 public class SystemConfigController {
 
