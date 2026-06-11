@@ -15,6 +15,8 @@ import java.util.Optional;
 public interface AiConfigurationRepository extends JpaRepository<AiConfiguration, Integer> {
     
     Optional<AiConfiguration> findByFeatureName(String featureName);
+
+    boolean existsByFeatureName(String featureName);
     
     /**
      * Busca todas las configuraciones activadas

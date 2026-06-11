@@ -1,6 +1,6 @@
 package com.inklusport.admin.controller;
 
-import com.inklusport.admin.dto.AdminAlertResponse;
+import com.inklusport.admin.dto.AlertResponse;
 import com.inklusport.admin.dto.AlertRequest;
 import com.inklusport.admin.service.AdminAlertService;
 import jakarta.validation.Valid;
@@ -30,8 +30,8 @@ public class AdminAlertController {
      */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<AdminAlertResponse>> getAllAlerts(Pageable pageable) {
-        Page<AdminAlertResponse> alerts = adminAlertService.getAllAlerts(pageable);
+    public ResponseEntity<Page<AlertResponse>> getAllAlerts(Pageable pageable) {
+        Page<AlertResponse> alerts = adminAlertService.getAllAlerts(pageable);
         return ResponseEntity.ok(alerts);
     }
 
@@ -42,8 +42,8 @@ public class AdminAlertController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AdminAlertResponse> getAlertById(@PathVariable String id) {
-        AdminAlertResponse alert = adminAlertService.getAlertById(id);
+    public ResponseEntity<AlertResponse> getAlertById(@PathVariable String id) {
+        AlertResponse alert = adminAlertService.getAlertById(id);
         return ResponseEntity.ok(alert);
     }
 
@@ -54,8 +54,8 @@ public class AdminAlertController {
      */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AdminAlertResponse> createAlert(@Valid @RequestBody AlertRequest request) {
-        AdminAlertResponse alert = adminAlertService.createAlert(request);
+    public ResponseEntity<AlertResponse> createAlert(@Valid @RequestBody AlertRequest request) {
+        AlertResponse alert = adminAlertService.createAlert(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(alert);
     }
 
@@ -67,10 +67,10 @@ public class AdminAlertController {
      */
     @PutMapping("/{id}/resolve")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AdminAlertResponse> resolveAlert(
+    public ResponseEntity<AlertResponse> resolveAlert(
             @PathVariable String id,
             @RequestParam String adminId) {
-        AdminAlertResponse alert = adminAlertService.resolveAlert(id, adminId);
+        AlertResponse alert = adminAlertService.resolveAlert(id, adminId);
         return ResponseEntity.ok(alert);
     }
 
@@ -81,8 +81,8 @@ public class AdminAlertController {
      */
     @GetMapping("/unresolved")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<AdminAlertResponse>> getUnresolvedAlerts(Pageable pageable) {
-        Page<AdminAlertResponse> alerts = adminAlertService.getUnresolvedAlerts(pageable);
+    public ResponseEntity<Page<AlertResponse>> getUnresolvedAlerts(Pageable pageable) {
+        Page<AlertResponse> alerts = adminAlertService.getUnresolvedAlerts(pageable);
         return ResponseEntity.ok(alerts);
     }
 
@@ -94,10 +94,10 @@ public class AdminAlertController {
      */
     @GetMapping("/by-severity/{severity}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<AdminAlertResponse>> getAlertsBySeverity(
+    public ResponseEntity<Page<AlertResponse>> getAlertsBySeverity(
             @PathVariable String severity,
             Pageable pageable) {
-        Page<AdminAlertResponse> alerts = adminAlertService.getAlertsBySeverity(severity, pageable);
+        Page<AlertResponse> alerts = adminAlertService.getAlertsBySeverity(severity, pageable);
         return ResponseEntity.ok(alerts);
     }
 }

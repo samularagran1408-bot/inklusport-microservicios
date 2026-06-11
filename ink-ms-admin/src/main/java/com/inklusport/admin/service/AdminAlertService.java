@@ -1,7 +1,8 @@
 package com.inklusport.admin.service;
 
-import com.inklusport.admin.dto.AdminAlertResponse;
+import com.inklusport.admin.dto.AlertResponse;
 import com.inklusport.admin.dto.AlertRequest;
+import com.inklusport.admin.enums.AlertSeverity;
 import com.inklusport.admin.entity.AdminAlert;
 import com.inklusport.admin.exception.ResourceNotFoundException;
 import com.inklusport.admin.repository.AdminAlertRepository;
@@ -35,7 +36,7 @@ public class AdminAlertService {
      * @return Pagina con alertas
      */
     @Transactional(readOnly = true)
-    public Page<AdminAlertResponse> getAllAlerts(Pageable pageable) {
+    public Page<AlertResponse> getAllAlerts(Pageable pageable) {
         return adminAlertRepository.findAll(pageable)
                 .map(this::convertToResponse);
     }
@@ -47,7 +48,7 @@ public class AdminAlertService {
      * @throws ResourceNotFoundException Si no existe
      */
     @Transactional(readOnly = true)
-    public AdminAlertResponse getAlertById(String id) {
+    public AlertResponse getAlertById(String id) {
         AdminAlert alert = adminAlertRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Alerta no encontrada con ID: " + id));
         return convertToResponse(alert);
@@ -59,11 +60,11 @@ public class AdminAlertService {
      * @return Alerta creada
      */
     @Transactional
-    public AdminAlertResponse createAlert(AlertRequest request) {
+    public AlertResponse createAlert(AlertRequest request) {
         AdminAlert alert = AdminAlert.builder()
                 .id(UUID.randomUUID().toString())
                 .type(request.getType())
-                .severity(request.getSeverity())
+                .severity(AlertSeverity.valueOf(request.getSeverity()))
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .targetId(request.getTargetId())
@@ -84,7 +85,7 @@ public class AdminAlertService {
      * @throws ResourceNotFoundException Si no existe
      */
     @Transactional
-    public AdminAlertResponse resolveAlert(String id, String adminId) {
+    public AlertResponse resolveAlert(String id, String adminId) {
         AdminAlert alert = adminAlertRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Alerta no encontrada con ID: " + id));
 
@@ -103,7 +104,7 @@ public class AdminAlertService {
      * @return Pagina con alertas no resueltas
      */
     @Transactional(readOnly = true)
-    public Page<AdminAlertResponse> getUnresolvedAlerts(Pageable pageable) {
+    public Page<AlertResponse> getUnresolvedAlerts(Pageable pageable) {
         // Ordenar por severidad descendente (critical primero)
         Pageable pageableWithSort = PageRequest.of(
                 pageable.getPageNumber(),
@@ -122,19 +123,19 @@ public class AdminAlertService {
      * @return Pagina con alertas del nivel especificado
      */
     @Transactional(readOnly = true)
-    public Page<AdminAlertResponse> getAlertsBySeverity(String severity, Pageable pageable) {
-        return adminAlertRepository.findBySeverity(severity, pageable)
+    public Page<AlertResponse> getAlertsBySeverity(String severity, Pageable pageable) {
+        return adminAlertRepository.findBySeverity(AlertSeverity.valueOf(severity), pageable)
                 .map(this::convertToResponse);
     }
 
     /**
      * Convierte una entidad AdminAlert a su DTO de respuesta.
      */
-    private AdminAlertResponse convertToResponse(AdminAlert alert) {
-        return AdminAlertResponse.builder()
+    private AlertResponse convertToResponse(AdminAlert alert) {
+        return AlertResponse.builder()
                 .id(alert.getId())
                 .type(alert.getType())
-                .severity(alert.getSeverity())
+                .severity(alert.getSeverity() != null ? alert.getSeverity().name() : null)
                 .title(alert.getTitle())
                 .description(alert.getDescription())
                 .targetId(alert.getTargetId())

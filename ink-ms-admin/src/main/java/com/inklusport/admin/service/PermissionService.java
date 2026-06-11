@@ -98,7 +98,8 @@ public class PermissionService {
      */
     @Transactional(readOnly = true)
     public List<PermissionResponse> getPermissionsByRole(Integer roleId) {
-        return rolePermissionRepository.findPermissionsByRoleId(roleId).stream()
+        return rolePermissionRepository.findByIdRoleId(roleId).stream()
+                .map(RolePermission::getPermission)
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }

@@ -17,4 +17,6 @@ public class AiConfigRequest {
     private BigDecimal confidenceThreshold;
     
     private Object parameters;
+
+    private String updatedBy;
 }

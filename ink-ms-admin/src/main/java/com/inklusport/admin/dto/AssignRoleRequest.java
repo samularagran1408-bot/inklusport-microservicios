@@ -11,4 +11,6 @@ public class AssignRoleRequest {
     
     @NotNull(message = "El ID del rol es obligatorio")
     private Integer roleId;
+
+    private String assignedBy;
 }

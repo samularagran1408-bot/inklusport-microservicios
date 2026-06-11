@@ -1,8 +1,12 @@
 package com.inklusport.admin.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inklusport.admin.dto.ReportRequest;
 import com.inklusport.admin.dto.ReportResponse;
 import com.inklusport.admin.entity.ScheduledReport;
+import com.inklusport.admin.enums.ReportType;
 import com.inklusport.admin.exception.ResourceNotFoundException;
 import com.inklusport.admin.repository.ScheduledReportRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -25,6 +30,7 @@ import java.util.UUID;
 public class ScheduledReportService {
 
     private final ScheduledReportRepository scheduledReportRepository;
+    private final ObjectMapper objectMapper;
 
     /**
      * Obtiene todos los reportes programados.
@@ -60,10 +66,10 @@ public class ScheduledReportService {
         ScheduledReport report = ScheduledReport.builder()
                 .id(UUID.randomUUID().toString())
                 .name(request.getName())
-                .type(request.getType())
+                .type(ReportType.valueOf(request.getType()))
                 .scheduleCron(request.getScheduleCron())
-                .parameters(request.getParameters())
-                .recipients(request.getRecipients())
+                .parameters(toJson(request.getParameters()))
+                .recipients(toJson(request.getRecipients()))
                 .createdAt(LocalDateTime.now())
                 .build();
 
@@ -85,10 +91,10 @@ public class ScheduledReportService {
                 .orElseThrow(() -> new ResourceNotFoundException("Reporte no encontrado con ID: " + id));
 
         report.setName(request.getName());
-        report.setType(request.getType());
+        report.setType(ReportType.valueOf(request.getType()));
         report.setScheduleCron(request.getScheduleCron());
-        report.setParameters(request.getParameters());
-        report.setRecipients(request.getRecipients());
+        report.setParameters(toJson(request.getParameters()));
+        report.setRecipients(toJson(request.getRecipients()));
 
         ScheduledReport updated = scheduledReportRepository.save(report);
         log.info("Reporte actualizado: {}", updated.getName());
@@ -117,7 +123,7 @@ public class ScheduledReportService {
      */
     @Transactional(readOnly = true)
     public Page<ReportResponse> getReportsByType(String reportType, Pageable pageable) {
-        return scheduledReportRepository.findByType(reportType, pageable)
+        return scheduledReportRepository.findByType(ReportType.valueOf(reportType), pageable)
                 .map(this::convertToResponse);
     }
 
@@ -128,11 +134,33 @@ public class ScheduledReportService {
         return ReportResponse.builder()
                 .id(report.getId())
                 .name(report.getName())
-                .type(report.getType())
+                .type(report.getType() != null ? report.getType().name() : null)
                 .scheduleCron(report.getScheduleCron())
                 .parameters(report.getParameters())
-                .recipients(report.getRecipients())
+                .recipients(fromJsonList(report.getRecipients()))
                 .createdAt(report.getCreatedAt())
                 .build();
+    }
+
+    private String toJson(Object value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            return objectMapper.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("No se pudo serializar el valor JSON", e);
+        }
+    }
+
+    private List<String> fromJsonList(String json) {
+        if (json == null) {
+            return null;
+        }
+        try {
+            return objectMapper.readValue(json, new TypeReference<List<String>>() {});
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("No se pudo deserializar la lista JSON", e);
+        }
     }
 }

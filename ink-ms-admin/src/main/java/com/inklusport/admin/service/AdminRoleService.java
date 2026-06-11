@@ -150,7 +150,7 @@ public class AdminRoleService {
                 .description(role.getDescription())
                 .createdAt(role.getCreatedAt())
                 .permissions(permissions)
-                .adminCount(adminCount)
+                .adminCount(adminCount.intValue())
                 .build();
     }
 }
