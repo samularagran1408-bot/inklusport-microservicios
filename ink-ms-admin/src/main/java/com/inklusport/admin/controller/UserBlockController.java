@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * Permite bloquear y desbloquear usuarios de la plataforma.
  */
 @RestController
-@RequestMapping("/api/v1/admin/user-blocks")
+@RequestMapping("/api/admin/user-blocks")
 @RequiredArgsConstructor
 public class UserBlockController {
 

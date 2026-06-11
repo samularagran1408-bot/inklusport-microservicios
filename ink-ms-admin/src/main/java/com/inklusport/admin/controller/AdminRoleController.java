@@ -19,7 +19,7 @@ import java.util.List;
  * Tambien permite asignar roles a administradores.
  */
 @RestController
-@RequestMapping("/api/v1/admin/roles")
+@RequestMapping("/api/admin/roles")
 @RequiredArgsConstructor
 public class AdminRoleController {
 

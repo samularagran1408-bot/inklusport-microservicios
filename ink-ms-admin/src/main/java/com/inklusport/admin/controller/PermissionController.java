@@ -17,7 +17,7 @@ import java.util.List;
  * Permite crear, consultar y asignar permisos a roles administrativos.
  */
 @RestController
-@RequestMapping("/api/v1/admin/permissions")
+@RequestMapping("/api/admin/permissions")
 @RequiredArgsConstructor
 public class PermissionController {
 

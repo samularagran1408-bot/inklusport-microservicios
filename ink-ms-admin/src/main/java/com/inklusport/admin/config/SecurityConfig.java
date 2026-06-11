@@ -46,7 +46,7 @@ public class SecurityConfig {
                         /**
                          * Endpoints PROTEGIDOS (requieren token y rol ADMIN)
                          */
-                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                         /**
                          * Cualquier otra solicitud requiere autenticacion

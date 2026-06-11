@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * Permite crear, consultar y resolver alertas de sistema.
  */
 @RestController
-@RequestMapping("/api/v1/admin/alerts")
+@RequestMapping("/api/admin/alerts")
 @RequiredArgsConstructor
 public class AdminAlertController {
 

@@ -5,7 +5,7 @@ Documentacion de los endpoints disponibles en el microservicio de administracion
 ## Base URL
 
 ```
-http://localhost:3005/api/v1/admin
+http://localhost:3005/api/admin
 ```
 
 ## Autenticacion
@@ -814,7 +814,7 @@ Respuesta:
 ### Usar el token para acceder a endpoints del admin
 
 ```bash
-curl -X GET http://localhost:3005/api/v1/admin/roles \
+curl -X GET http://localhost:3005/api/admin/roles \
   -H "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9..."
 ```
 

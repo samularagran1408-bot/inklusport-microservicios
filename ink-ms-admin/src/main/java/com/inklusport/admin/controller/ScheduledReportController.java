@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * Permite crear, configurar y listar reportes que se generan automaticamente.
  */
 @RestController
-@RequestMapping("/api/v1/admin/reports")
+@RequestMapping("/api/admin/reports")
 @RequiredArgsConstructor
 public class ScheduledReportController {
 

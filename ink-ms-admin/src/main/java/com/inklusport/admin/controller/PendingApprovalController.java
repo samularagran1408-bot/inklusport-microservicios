@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  * Gestiona las solicitudes de aprobacion que requieren revision de administradores.
  */
 @RestController
-@RequestMapping("/api/v1/admin/approvals")
+@RequestMapping("/api/admin/approvals")
 @RequiredArgsConstructor
 public class PendingApprovalController {
 
