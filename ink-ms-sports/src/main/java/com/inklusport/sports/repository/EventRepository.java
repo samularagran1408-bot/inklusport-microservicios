@@ -15,4 +15,8 @@ public interface EventRepository extends JpaRepository<Event, String> {
     List<Event> findByStatus(EventStatus status);
 
     List<Event> findByEventDateAndStatus(LocalDate eventDate, EventStatus status);
+
+    long countByStatus(EventStatus status);
+
+    long countBySportIdAndStatus(Long sportId, EventStatus status);
 }

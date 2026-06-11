@@ -29,3 +29,12 @@ CREATE TABLE login_attempt (
     successful BOOLEAN DEFAULT FALSE,
     ip_address VARCHAR(45)
 );
+
+-- Modificación del token para que sea de 6 caracteres
+ALTER TABLE password_reset_token MODIFY token VARCHAR(6) NOT NULL;
+
+describe password_reset_token;
+
+select * from auth_user;
+select * from password_reset_token;
+select * from login_attempt;
