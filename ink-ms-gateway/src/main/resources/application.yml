@@ -5,23 +5,35 @@ spring:
   cloud:
     gateway:
       routes:
-        # Ruta para Auth MS
+        # 1. Auth MS
         - id: auth-ms
           uri: http://localhost:3001
           predicates:
             - Path=/api/auth/**
         
-        # Ruta para Users MS
+        # 2. Users MS
         - id: users-ms
           uri: http://localhost:3002
           predicates:
             - Path=/api/users/**, /api/admin/**
         
-        # Ruta para Sports MS (cuando esté listo)
+        # 3. Sports MS
         - id: sports-ms
           uri: http://localhost:3003
           predicates:
-            - Path=/api/sports/**, /api/events/**, /api/disabilities/**, /api/registrations/**, /api/calendar/**, /api/scheduler/**
+            - Path=/api/sports/**, /api/events/**, /api/disabilities/**, /api/registrations/**, /api/calendar/**, /api/scheduler/**, /api/attendance/**
+        
+        # 4. Accessibility MS 
+        - id: accessibility-ms
+          uri: http://localhost:3004
+          predicates:
+            - Path=/api/preferences/**, /api/notifications/**
+        
+        # 5. Reports MS
+        - id: reports-ms
+          uri: http://localhost:3006
+          predicates:
+            - Path=/api/analytics/**, /api/dashboard/**, /api/reports/**
 
 server:
   port: 8080
