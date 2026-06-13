@@ -4,11 +4,9 @@ import com.inklusport.auth.entity.LoginAttempt;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 
-@Repository
 public interface LoginAttemptRepository extends JpaRepository<LoginAttempt, String> {
     
     @Query("SELECT COUNT(l) FROM LoginAttempt l WHERE l.email = :email AND l.successful = false AND l.attemptTime > :since")
