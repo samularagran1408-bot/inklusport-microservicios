@@ -2,11 +2,9 @@ package com.inklusport.auth.controller;
 
 import com.inklusport.auth.dto.AuthResponse;
 import com.inklusport.auth.dto.ForgotPasswordRequest;
-import com.inklusport.auth.dto.ForgotPasswordResponse;
 import com.inklusport.auth.dto.LoginRequest;
 import com.inklusport.auth.dto.RegisterRequest;
 import com.inklusport.auth.dto.ResetPasswordRequest;
-import com.inklusport.auth.dto.ResetPasswordResponse;
 import com.inklusport.common.dto.response.ErrorResponse;
 import com.inklusport.auth.security.JwtTokenProvider;
 import com.inklusport.auth.service.AuthService;
