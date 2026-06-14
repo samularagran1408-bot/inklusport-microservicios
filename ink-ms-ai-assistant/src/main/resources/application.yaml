@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: ink-ms-ai-assistant
+  
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/inclusport_training_ia
+      auto-index-creation: true
+
+server:
+  port: 3008
+
+jwt:
+  secret: inklusport2024superSecretKeyForJWTtokenGenerationWith512bitsAlgorithmHS512
+  expiration: 86400000
+
+logging:
+  level:
+    com.inklusport.ai: DEBUG

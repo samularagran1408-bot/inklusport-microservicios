@@ -1,0 +1,14 @@
+package com.inklusport.ai.dto.request;
+
+import lombok.Data;
+import java.util.Map;
+
+@Data
+public class BiomechanicalRequest {
+    
+    private Map<String, Object> movementData;
+    
+    private String ejercicioNombre;
+    
+    private String disabilityType;
+}
