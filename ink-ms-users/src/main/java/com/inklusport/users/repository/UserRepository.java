@@ -29,4 +29,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Transactional
     @Query("UPDATE User u SET u.isActive = false WHERE u.email = :email")
     void deactivateUser(@Param("email") String email);
+
+    long countByIsActiveTrue();
 }

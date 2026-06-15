@@ -36,6 +36,16 @@ accessibility:
   service:
     url: http://localhost:3004
 
+feign:
+  circuitbreaker:
+    enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 10000
+
+
 logging:
   level:
     com.inklusport.reports: DEBUG
