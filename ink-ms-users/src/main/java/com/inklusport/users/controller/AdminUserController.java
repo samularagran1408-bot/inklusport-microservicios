@@ -6,6 +6,7 @@ import com.inklusport.users.dto.UserProfileResponse;
 import com.inklusport.common.dto.response.ErrorResponse;
 import com.inklusport.users.service.UserService;
 import com.inklusport.users.service.RoleService;
+import com.inklusport.users.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,7 @@ public class AdminUserController {
 
     private final UserService userService;
     private final RoleService roleService;
+    private final UserRepository userRepository;
 
     // ===== Bloque 1: Consulta y estado de usuarios =====
     /**
@@ -85,6 +87,18 @@ public class AdminUserController {
     @GetMapping("/roles")
     public ResponseEntity<List<RoleResponse>> getAllRoles() {
         return ResponseEntity.ok(roleService.getAllRoles());
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> countUsers() {
+        long count = userRepository.count();
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/active/count")
+    public ResponseEntity<Long> countActiveUsers() {
+        long count = userRepository.countByIsActiveTrue();
+        return ResponseEntity.ok(count);
     }
 
     /**

@@ -5,7 +5,6 @@ import com.inklusport.reports.client.UserServiceClient;
 import com.inklusport.reports.dto.DashboardFilters;
 import com.inklusport.reports.dto.DashboardResponse;
 import com.inklusport.reports.repository.AnalyticsEventRepository;
-import com.inklusport.reports.repository.DailyMetricsSummaryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,6 @@ import java.util.stream.Collectors;
 public class DashboardService {
 
     private final AnalyticsEventRepository analyticsEventRepository;
-    private final DailyMetricsSummaryRepository metricsRepository;
     private final UserServiceClient userServiceClient;
     private final SportsServiceClient sportsServiceClient;
 
@@ -36,22 +34,25 @@ public class DashboardService {
                 filters.getEndDate().atTime(LocalTime.MAX) : 
                 LocalDateTime.now();
 
-        int totalUsers;
-        try {
-            totalUsers = userServiceClient.getAllUsers().size();
-            log.info("Total de usuarios obtenido: {}", totalUsers);
-        } catch (Exception e) {
-            log.error("Error al obtener total de usuarios: {}", e.getMessage());
-            totalUsers = 0;
-        }
+        /**
+         * Métricas con fallbacks automáticos (si el MS falla, devuelve 0)
+         */
+        int totalUsers = userServiceClient.getTotalUsers();
+        int activeUsers = userServiceClient.getActiveUsers();
+        int activeEvents = sportsServiceClient.getActiveEventsCount();
+        int totalSports = sportsServiceClient.getTotalSports();
+        
+        log.info("Dashboard metrics - Usuarios totales: {}, Usuarios activos: {}, Eventos activos: {}, Deportes: {}", 
+                 totalUsers, activeUsers, activeEvents, totalSports);
 
         /**
          * Métricas principales
          */
         Map<String, Integer> metrics = new HashMap<>();
         metrics.put("total_users", totalUsers);
-        metrics.put("active_events", getActiveEventsCount());
-        metrics.put("total_sports", getTotalSports());
+        metrics.put("active_users", activeUsers);
+        metrics.put("active_events", activeEvents);
+        metrics.put("total_sports", totalSports);
 
         /**
          * Conteo de eventos por tipo
@@ -69,11 +70,8 @@ public class DashboardService {
         Map<String, Integer> weeklyTrend = new HashMap<>();
         for (int i = 6; i >= 0; i--) {
             LocalDate date = LocalDate.now().minusDays(i);
-            int count = metricsRepository.findBySummaryDateAndMetricKey(date, "total_events")
-                    .map(metric -> metric.getMetricValue())
-                    .orElseGet(() -> (int) analyticsEventRepository.countByDateRange(
-                            date.atStartOfDay(), date.atTime(LocalTime.MAX)));
-            weeklyTrend.put(date.toString(), count);
+            long count = analyticsEventRepository.countByDateRange(date.atStartOfDay(), date.atTime(LocalTime.MAX));
+            weeklyTrend.put(date.toString(), (int) count);
         }
 
         return DashboardResponse.builder()
@@ -81,23 +79,5 @@ public class DashboardService {
                 .eventCounts(eventCounts)
                 .weeklyTrend(weeklyTrend)
                 .build();
-    }
-
-    private int getActiveEventsCount() {
-        try {
-            return sportsServiceClient.getActiveEventsCount();
-        } catch (Exception e) {
-            log.error("Error al obtener eventos activos: {}", e.getMessage());
-            return 0;
-        }
-    }
-
-    private int getTotalSports() {
-        try {
-            return sportsServiceClient.getTotalSports();
-        } catch (Exception e) {
-            log.error("Error al obtener total de deportes: {}", e.getMessage());
-            return 0;
-        }
     }
 }
