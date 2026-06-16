@@ -7,6 +7,7 @@ import com.inklusport.accessibility.service.NotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -51,6 +52,28 @@ public class NotificationController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/admin/create")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> createNotificationByAdmin(
+            @Valid @RequestBody NotificationRequest request) {
+        
+        log.info("Admin creando notificación para usuario: {}", request.getUserId());
+        
+        NotificationRequest notificationRequest = new NotificationRequest();
+        notificationRequest.setUserId(request.getUserId());
+        notificationRequest.setType(request.getType() != null ? request.getType() : "system");
+        notificationRequest.setTitle(request.getTitle());
+        notificationRequest.setBody(request.getBody());
+        notificationRequest.setPriority(request.getPriority() != null ? request.getPriority() : "medium");
+        
+        notificationService.createNotification(request.getUserId(), notificationRequest);
+        
+        return ResponseEntity.ok(Map.of(
+            "message", "Notificación enviada al usuario: " + request.getUserId(),
+            "status", "success"
+        ));
+    }
+
     @PostMapping("/internal/create")
     public ResponseEntity<?> createNotificationInternal(
             @RequestHeader(value = "X-User-Id", required = false) String userId,
@@ -58,7 +81,7 @@ public class NotificationController {
         
         String finalUserId = userId != null ? userId : request.getUserId();
         
-        log.info("Notificación - Usuario: {}, Título: {}", finalUserId, request.getTitle());
+        log.info("Notificación interna - Usuario: {}, Título: {}", finalUserId, request.getTitle());
         
         if (finalUserId == null) {
             log.error("No se pudo determinar el userId");

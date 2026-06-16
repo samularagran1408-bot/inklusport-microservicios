@@ -40,7 +40,7 @@ users:
 
 accessibility:
   service:
-    url: http://localhost:3004
+    url: http://localhost:3004 
 
 logging:
   level:

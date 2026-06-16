@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface NotificationServiceClient {
 
     @PostMapping("/api/notifications/internal/create")
-    void createNotification(@RequestHeader("X-User-Id") String userId, 
+    void createNotification(@RequestHeader("X-User-Id") String userId,
                             @RequestBody NotificationRequest request);
 }
