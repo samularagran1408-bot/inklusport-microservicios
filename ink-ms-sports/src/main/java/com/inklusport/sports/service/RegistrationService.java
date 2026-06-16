@@ -117,7 +117,7 @@ public class RegistrationService {
     private void sendNotification(String userId, String type, String title, String body, String eventId) {
 
         log.info("Enviando notificación - Usuario: {}, Título: {}", userId, title);
-        log.info("URL: http://localhost:3004/api/notifications/internal/create");
+        log.info("URL: http://localhost:8080/api/notifications/admin/create");
 
         try {
             NotificationRequest notificationRequest = new NotificationRequest();
