@@ -1,4 +1,4 @@
-package com.inklusport.ai.dto.request;
+package com.inklusport.ai.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

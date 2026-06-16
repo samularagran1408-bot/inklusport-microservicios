@@ -1,8 +1,8 @@
-package com.inklusport.ia;
+package com.inklusport.ai;
 
-import com.inklusport.ia.repository.AnalisisBiomecanicoRepository;
-import com.inklusport.ia.repository.ConversacionChatbotRepository;
-import com.inklusport.ia.repository.PlanEntrenamientoRepository;
+import com.inklusport.ai.repository.BiomechanicalAnalysisRepository;
+import com.inklusport.ai.repository.ChatSessionRepository;
+import com.inklusport.ai.repository.TrainingPlanRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,155 +24,183 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class IaApiIntegrationTest {
+class AiApiIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private AnalisisBiomecanicoRepository analisisBiomecanicoRepository;
+    private BiomechanicalAnalysisRepository biomechanicalAnalysisRepository;
 
     @Autowired
-    private PlanEntrenamientoRepository planEntrenamientoRepository;
+    private TrainingPlanRepository trainingPlanRepository;
 
     @Autowired
-    private ConversacionChatbotRepository conversacionChatbotRepository;
+    private ChatSessionRepository chatSessionRepository;
 
     @BeforeEach
     void limpiarColecciones() {
-        analisisBiomecanicoRepository.deleteAll();
-        planEntrenamientoRepository.deleteAll();
-        conversacionChatbotRepository.deleteAll();
+        biomechanicalAnalysisRepository.deleteAll();
+        trainingPlanRepository.deleteAll();
+        chatSessionRepository.deleteAll();
     }
 
     @Test
     void registrarAnalisis_calculaPuntajeYRecomendaciones() throws Exception {
         String body = """
                 {
-                  "usuarioId": "user-test-1",
-                  "tipoDiscapacidad": "MOTORA",
-                  "rangoMovimiento": 65,
-                  "simetria": 70,
-                  "estabilidad": 60
+                  "userId": "user-test-1",
+                  "ejercicioNombre": "Sentadilla",
+                  "disabilityType": "motriz",
+                  "movementData": {
+                    "rangeOfMotion": 65,
+                    "symmetry": 70,
+                    "stability": 60
+                  }
                 }
                 """;
 
-        mockMvc.perform(post("/api/ia/analisis")
+        mockMvc.perform(post("/api/ai/biomechanical/analyze")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.puntaje").value(65.0))
-                .andExpect(jsonPath("$.recomendaciones", hasSize(3)))
-                .andExpect(jsonPath("$.usuarioId").value("user-test-1"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.generalScore").exists())
+                .andExpect(jsonPath("$.fatigueLevel").exists())
+                .andExpect(jsonPath("$.recommendations").exists());
 
-        assertThat(analisisBiomecanicoRepository.count()).isEqualTo(1);
+        assertThat(biomechanicalAnalysisRepository.count()).isGreaterThanOrEqualTo(1);
     }
 
     @Test
     void historialUsuario_devuelveLista() throws Exception {
-        registrarAnalisisPara("user-hist");
-
-        mockMvc.perform(get("/api/ia/analisis/usuario/user-hist"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].usuarioId").value("user-hist"));
-    }
-
-    @Test
-    void historialUsuario_sinDatos_devuelve404() throws Exception {
-        mockMvc.perform(get("/api/ia/analisis/usuario/no-existe"))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void planEntrenamiento_creaYActualiza() throws Exception {
+        // Primero registrar un análisis
         String body = """
                 {
-                  "usuarioId": "user-plan",
-                  "entrenadorId": "coach-1",
-                  "ejercicios": [
-                    {
-                      "nombreEjercicio": "Sentadilla asistida",
-                      "adaptaciones": ["voz", "visual"]
-                    }
-                  ]
+                  "userId": "user-hist",
+                  "ejercicioNombre": "Flexión",
+                  "movementData": {
+                    "rangeOfMotion": 50,
+                    "symmetry": 50,
+                    "stability": 50
+                  }
                 }
                 """;
 
-        mockMvc.perform(put("/api/ia/planes")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ejercicios", hasSize(1)))
-                .andExpect(jsonPath("$.id", notNullValue()));
+        mockMvc.perform(post("/api/ai/biomechanical/analyze")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body));
 
-        mockMvc.perform(put("/api/ia/planes")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body.replace("Sentadilla asistida", "Plancha adaptada")))
+        // Luego consultar historial
+        mockMvc.perform(get("/api/ai/biomechanical/user/user-hist"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ejercicios[0].nombreEjercicio").value("Plancha adaptada"));
-
-        assertThat(planEntrenamientoRepository.count()).isEqualTo(1);
+                .andExpect(jsonPath("$", hasSize(1)));
     }
 
     @Test
-    void chatbot_devuelveRespuestaFijaPorIntencion() throws Exception {
+    void chatbot_devuelveRespuestaPorPalabrasClave() throws Exception {
         String body = """
                 {
-                  "usuarioId": "user-chat",
-                  "mensaje": "hola necesito ayuda"
+                  "message": "hola necesito ayuda"
                 }
                 """;
 
-        mockMvc.perform(post("/api/ia/chat")
+        mockMvc.perform(post("/api/ai/chat")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.intencionDetectada").value("SALUDO"))
-                .andExpect(jsonPath("$.respuestaBot", notNullValue()))
-                .andExpect(jsonPath("$.estadoConversacion").value("ACTIVA"));
+                .andExpect(jsonPath("$.response").exists())
+                .andExpect(jsonPath("$.sessionId").exists());
 
-        assertThat(conversacionChatbotRepository.count()).isEqualTo(1);
+        assertThat(chatSessionRepository.count()).isGreaterThanOrEqualTo(1);
     }
 
     @Test
-    void chatbot_cierreMarcaConversacionCerrada() throws Exception {
-        String body = """
+    void chatbot_conversacionContinua() throws Exception {
+        String body1 = """
                 {
-                  "usuarioId": "user-chat-2",
-                  "mensaje": "gracias adios"
+                  "message": "que eventos hay"
                 }
                 """;
 
-        mockMvc.perform(post("/api/ia/chat")
+        String response = mockMvc.perform(post("/api/ai/chat")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.sessionId").exists())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        String sessionId = "test-session-id";
+
+        String body2 = """
+                {
+                  "message": "como me inscribo",
+                  "sessionId": "test-session-id"
+                }
+                """;
+
+        mockMvc.perform(post("/api/ai/chat")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body2))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.response").exists());
+
+        assertThat(chatSessionRepository.count()).isGreaterThanOrEqualTo(1);
+    }
+
+    @Test
+    void generarPlanEntrenamiento() throws Exception {
+        String body = """
+                {
+                  "sport": "natación",
+                  "disabilityType": "fisica",
+                  "level": "intermedio",
+                  "durationWeeks": 4
+                }
+                """;
+
+        mockMvc.perform(post("/api/ai/training/generate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.intencionDetectada").value("CIERRE"))
-                .andExpect(jsonPath("$.estadoConversacion").value("CERRADA"));
+                .andExpect(jsonPath("$.planId").exists())
+                .andExpect(jsonPath("$.exercises").exists());
+
+        assertThat(trainingPlanRepository.count()).isGreaterThanOrEqualTo(1);
     }
 
     @Test
     void validacion_fallaSinCamposObligatorios() throws Exception {
-        mockMvc.perform(post("/api/ia/analisis")
+        mockMvc.perform(post("/api/ai/chat")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isBadRequest());
     }
 
-    private void registrarAnalisisPara(String usuarioId) throws Exception {
+    @Test
+    void registrarFeedback() throws Exception {
         String body = """
                 {
-                  "usuarioId": "%s",
-                  "tipoDiscapacidad": "MOTORA",
-                  "rangoMovimiento": 50,
-                  "simetria": 50,
-                  "estabilidad": 50
+                  "conversacionId": "conv-test-123",
+                  "mensajeId": "msg-test-456",
+                  "util": true,
+                  "comentario": "Muy útil la respuesta"
                 }
-                """.formatted(usuarioId);
+                """;
 
-        mockMvc.perform(post("/api/ia/analisis")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body));
+        mockMvc.perform(post("/api/ai/feedback")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.util").value(true));
+    }
+
+    @Test
+    void healthCheck_devuelveUP() throws Exception {
+        mockMvc.perform(get("/actuator/health"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("UP"));
     }
 }

@@ -12,8 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -66,33 +66,46 @@ public class ChatService {
     }
     
     private ChatSession createNewSession(String userId) {
+        List<Mensaje> mensajes = new ArrayList<>();
+        
         ChatSession session = ChatSession.builder()
                 .usuarioId(userId)
+                .disabilityType("no_especificado")
                 .fechaInicio(LocalDateTime.now())
                 .estado("activa")
                 .ultimaInteraccion(LocalDateTime.now())
+                .mensajes(mensajes) 
                 .build();
+        
         return chatSessionRepository.save(session);
     }
 
     private String findResponse(String message) {
-        /**
-         * Buscar por palabras clave
-         */
         List<ChatTraining> trainings = chatTrainingRepository.findAll();
-
+        
         for (ChatTraining training : trainings) {
-            for (String keyword : training.getPalabrasClave()) {
-                if (message.toLowerCase().contains(keyword.toLowerCase())) {
-                    return traing.getRespuestaBase();
+            List<String> palabrasClave = training.getPalabrasClave();
+            if (palabrasClave == null || palabrasClave.isEmpty()) {
+                log.debug("Training {} no tiene palabras clave definidas", training.getId());
+                continue;
+            }
+            
+            for (String keyword : palabrasClave) {
+                if (keyword != null && !keyword.isEmpty() && 
+                    message.toLowerCase().contains(keyword.toLowerCase())) {
+                    return training.getRespuestaBase();
                 }
             }
         }
-
+        
         return "Lo siento, no entendí tu pregunta. ¿Puedes reformularla?";
     }
 
     private void saveUserMessage(ChatSession session, String message) {
+        if (session.getMensajes() == null) {
+            session.setMensajes(new ArrayList<>());
+        }
+        
         Mensaje mensaje = Mensaje.builder()
                 .mensajeId(UUID.randomUUID().toString())
                 .mensaje(message)
@@ -104,6 +117,10 @@ public class ChatService {
     }
 
     private void saveAssistantMessage(ChatSession session, String response) {
+        if (session.getMensajes() == null) {
+            session.setMensajes(new ArrayList<>());
+        }
+        
         Mensaje mensaje = Mensaje.builder()
                 .mensajeId(UUID.randomUUID().toString())
                 .mensaje(response)
@@ -111,7 +128,6 @@ public class ChatService {
                 .fecha(LocalDateTime.now())
                 .build();
 
-        session.getMensajes().add(mensaje)
+        session.getMensajes().add(mensaje);
     }
-
 }

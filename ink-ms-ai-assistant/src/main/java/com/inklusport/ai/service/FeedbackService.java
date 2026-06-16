@@ -2,6 +2,7 @@ package com.inklusport.ai.service;
 
 import com.inklusport.ai.dto.FeedbackRequest;
 import com.inklusport.ai.dto.FeedbackResponse;
+import com.inklusport.ai.dto.FeedbackStats;
 import com.inklusport.ai.model.ChatFeedback;
 import com.inklusport.ai.repository.ChatFeedbackRepository;
 import lombok.RequiredArgsConstructor;

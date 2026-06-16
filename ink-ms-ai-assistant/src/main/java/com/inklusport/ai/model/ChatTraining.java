@@ -7,6 +7,7 @@ import lombok.Builder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,13 +24,22 @@ public class ChatTraining {
     private String id;
 
     private String pregunta;
+    
+    @Field("respuesta_base")
     private String respuestaBase;
+    
     private String intencion;
+    
+    @Field("respuesta_adaptada")
     private Map<String, String> respuestaAdaptada;
+    
+    @Field("palabras_clave")
     private List<String> palabrasClave;
+    
     private Integer prioridad;
     private Boolean activo;
 
+    @Field("fecha_creacion")
     @CreatedDate
     private LocalDateTime fechaCreacion;
 }

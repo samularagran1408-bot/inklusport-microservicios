@@ -21,7 +21,7 @@ public class ChatController {
     private final ChatService chatService;
 
     @PostMapping
-    public ResponseEntity<?> char(@AuthenticationPrincipal String userId,
+    public ResponseEntity<?> chat(@AuthenticationPrincipal String userId,
                                    @Valid @RequestBody ChatRequest request) {
         try {
            ChatResponse response =  chatService.processMessage(userId, request);

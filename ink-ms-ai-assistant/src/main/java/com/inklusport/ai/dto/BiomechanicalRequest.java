@@ -1,4 +1,4 @@
-package com.inklusport.ai.dto.request;
+package com.inklusport.ai.dto;
 
 import lombok.Data;
 import java.util.Map;
