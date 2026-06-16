@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Document(collection = "conversaciones_chatbot")
 @Data
@@ -29,7 +28,7 @@ public class ChatSession {
     private String disabilityType;
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFin;
-    private String estado; /** activa, finalizada, abandonada */
+    private String estado;
 
     private List<Mensaje> mensajes;
     private String resumen;
