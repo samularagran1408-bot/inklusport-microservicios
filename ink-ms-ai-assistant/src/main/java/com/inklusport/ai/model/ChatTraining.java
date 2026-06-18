@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,19 +25,21 @@ public class ChatTraining {
     private String id;
 
     private String pregunta;
-    
+
     @Field("respuesta_base")
     private String respuestaBase;
-    
+
     private String intencion;
-    
+
     @Field("respuesta_adaptada")
     private Map<String, String> respuestaAdaptada;
-    
+
     @Field("palabras_clave")
-    private List<String> palabrasClave;
-    
+    @Builder.Default
+    private List<String> palabrasClave = new ArrayList<>();
+
     private Integer prioridad;
+
     private Boolean activo;
 
     @Field("fecha_creacion")

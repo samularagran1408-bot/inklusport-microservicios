@@ -77,49 +77,59 @@ public class AuthService {
    */
   @Transactional
   public AuthResponse login(LoginRequest request, String ipAddress) {
-    checkBruteForceBlock(request.getEmail(), ipAddress);
+      checkBruteForceBlock(request.getEmail(), ipAddress);
 
-    AuthUser user = authUserRepository.findByEmail(request.getEmail()).orElse(null);
-    boolean success = user != null
-            && passwordEncoder.matches(request.getPassword(), user.getPasswordHash())
-            && Boolean.TRUE.equals(user.getIsActive());
+      // 1. Validar credenciales
+      AuthUser user = authUserRepository.findByEmail(request.getEmail())
+              .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
 
-    logLoginAttempt(request.getEmail(), ipAddress, success);
+      if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+          logLoginAttempt(request.getEmail(), ipAddress, false);
+          throw new RuntimeException("Credenciales inválidas");
+      }
 
-    if (!success) {
-      throw new RuntimeException("Credenciales inválidas");
-    }
+      if (!Boolean.TRUE.equals(user.getIsActive())) {
+          throw new RuntimeException("Usuario inactivo");
+      }
 
-    log.info("Email del usuario: {}", request.getEmail());
+      logLoginAttempt(request.getEmail(), ipAddress, true);
+      log.info("Usuario autenticado: {}", user.getEmail());
 
-    
+      // 2. Obtener roles (con fallback)
+      List<String> roles = obtenerRolesConFallback(request.getEmail());
 
-    log.info("Usuario autenticado: {}", user.getEmail());
+      // 3. Actualizar último login
+      authUserRepository.updateLastLogin(request.getEmail(), LocalDateTime.now());
 
-    List<String> roles;
-    try {
-        roles = userServiceClient.getUserRoles(request.getEmail());
-    } catch (Exception e) {
-        log.warn("No se pudieron obtener roles desde Users MS: {}", e.getMessage());
-        roles = List.of();
-    }
-    log.info("Roles obtenidos desde Users MS: {}", roles);
+      // 4. Generar token CON roles
+      String token = jwtTokenProvider.generateToken(user.getEmail(), roles);
+      log.info("Token generado para {} con roles: {}", user.getEmail(), roles);
+      log.info("Token: {}", token);
 
-    if (roles == null || roles.isEmpty()) {
-        log.warn("Sin roles en Users MS, asignando USUARIO por defecto");
-        roles = List.of("USUARIO");
-    }
+      return AuthResponse.builder()
+              .token(token)
+              .tipo("Bearer")
+              .email(user.getEmail())
+              .build();
+  }
 
-    authUserRepository.updateLastLogin(request.getEmail(), LocalDateTime.now());
-    String token = jwtTokenProvider.generateToken(user.getEmail(), roles);
-
-    return AuthResponse.builder()
-            .token(token)
-            .tipo("Bearer")
-            .id(null)
-            .nombre(null)
-            .email(user.getEmail())
-            .build();
+  /**
+   * Obtiene roles del usuario con fallback seguro
+   */
+  private List<String> obtenerRolesConFallback(String email) {
+      try {
+          List<String> roles = userServiceClient.getUserRoles(email);
+          if (roles != null && !roles.isEmpty()) {
+              log.info("Roles obtenidos desde Users MS: {}", roles);
+              return roles;
+          }
+          log.warn("Users MS devolvió roles vacíos para: {}", email);
+      } catch (Exception e) {
+          log.warn("Error conectando con Users MS: {}", e.getMessage());
+      }
+      
+      log.info("Asignando rol USUARIO por defecto");
+      return List.of("USUARIO");
   }
 
   /**
@@ -154,5 +164,9 @@ public class AuthService {
     if (ipFailures >= maxAttempts) {
       throw new RuntimeException("Demasiados intentos fallidos desde esta IP. Intente más tarde.");
     }
+  }
+
+  private List<String> getDefaultRoles() {
+      return List.of("USUARIO");
   }
 }
