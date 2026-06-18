@@ -7,10 +7,14 @@ import com.inklusport.ai.model.ChatFeedback;
 import com.inklusport.ai.repository.ChatFeedbackRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,61 +25,163 @@ public class FeedbackService {
     private final ChatFeedbackRepository feedbackRepository;
 
     /**
-     * Registrar feedback de un usuario sobre una respuesta del chatbot
+     * Guardar feedback
      */
-    public FeedbackResponse registrarFeedback(String userId, FeedbackRequest request) {
+    @Transactional
+    @CacheEvict(value = "feedbackStats", allEntries = true)
+    public FeedbackResponse saveFeedback(FeedbackRequest request) {
+        log.info("Guardando feedback para mensaje: {}", request.getMensajeId());
+        
+        /**
+         * Verificar que no exista feedback previo para este mensaje
+         */
+        Optional<ChatFeedback> existing = feedbackRepository
+                .findByMensajeId(request.getMensajeId());
+        
+        if (existing.isPresent()) {
+            /**
+             * Actualizar feedback existente
+             */
+            ChatFeedback feedback = existing.get();
+            feedback.setUtil(request.getUtil());
+            feedback.setComentario(request.getComentario());
+            feedback.setFecha(LocalDateTime.now());
+            feedback = feedbackRepository.save(feedback);
+            return toResponse(feedback);
+        }
+        
+        /**
+         * Crear nuevo feedback
+         */
         ChatFeedback feedback = ChatFeedback.builder()
                 .conversacionId(request.getConversacionId())
-                .usuarioId(userId)
+                .usuarioId(request.getUsuarioId())
                 .mensajeId(request.getMensajeId())
                 .util(request.getUtil())
                 .comentario(request.getComentario())
                 .fecha(LocalDateTime.now())
                 .build();
-
+        
         feedback = feedbackRepository.save(feedback);
-        log.info("Feedback registrado - Usuario: {}, Útil: {}", userId, request.getUtil());
-
-        return convertToResponse(feedback);
+        log.info("Feedback guardado exitosamente para mensaje: {}", request.getMensajeId());
+        
+        return toResponse(feedback);
     }
 
     /**
-     * Obtener todos los feedbacks de un usuario
+     * Obtener feedback de una conversación
      */
-    public List<FeedbackResponse> getFeedbacksByUser(String userId) {
-        return feedbackRepository.findByUsuarioId(userId).stream()
-                .map(this::convertToResponse)
+    @Cacheable(value = "feedback", key = "#conversacionId")
+    public List<FeedbackResponse> getFeedbackByConversation(String conversacionId) {
+        log.info("Obteniendo feedback para conversación: {}", conversacionId);
+        
+        List<ChatFeedback> feedbacks = feedbackRepository
+                .findByConversacionId(conversacionId);
+        
+        return feedbacks.stream()
+                .map((ChatFeedback feedback) -> toResponse(feedback))
                 .collect(Collectors.toList());
     }
 
     /**
-     * Obtener feedbacks de una conversación específica
+     * Obtener estadísticas de feedback
      */
-    public List<FeedbackResponse> getFeedbacksByConversacion(String conversacionId) {
-        return feedbackRepository.findByConversacionId(conversacionId).stream()
-                .map(this::convertToResponse)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Obtener estadísticas de feedback (qué tan útil es el chatbot)
-     */
-    public FeedbackStats getFeedbackStats() {
-        List<ChatFeedback> allFeedbacks = feedbackRepository.findAll();
+    @Cacheable(value = "feedbackStats", key = "#usuarioId != null ? #usuarioId : 'global'")
+    public FeedbackStats getFeedbackStats(String usuarioId) {
+        log.info("Obteniendo estadísticas de feedback para usuario: {}", usuarioId);
         
-        long total = allFeedbacks.size();
-        long utilCount = allFeedbacks.stream().filter(ChatFeedback::getUtil).count();
+        List<ChatFeedback> feedbacks;
+        if (usuarioId != null && !usuarioId.isEmpty()) {
+            feedbacks = feedbackRepository.findByUsuarioId(usuarioId);
+        } else {
+            feedbacks = feedbackRepository.findAll();
+        }
         
-        double porcentajeUtil = total > 0 ? (utilCount * 100.0 / total) : 0.0;
+        if (feedbacks.isEmpty()) {
+            return buildEmptyStats();
+        }
+        
+        /**
+         * Estadísticas básicas
+         */
+        long total = feedbacks.size();
+        long useful = feedbacks.stream().filter(ChatFeedback::getUtil).count();
+        long notUseful = total - useful;
+        double usefulPercentage = total > 0 ? (double) useful / total * 100 : 0.0;
+        
+        /**
+         * Feedback por día
+         */
+        Map<String, Long> feedbackByDay = feedbacks.stream()
+                .collect(Collectors.groupingBy(
+                    f -> f.getFecha().truncatedTo(ChronoUnit.DAYS).toString(),
+                    Collectors.counting()
+                ));
+        
+        /**
+         * Feedback por hora
+         */
+        Map<String, Long> feedbackByHour = feedbacks.stream()
+                .collect(Collectors.groupingBy(
+                    f -> String.valueOf(f.getFecha().getHour()),
+                    Collectors.counting()
+                ));
+        
+        /**
+         * Top usuarios por feedback útil
+         */
+        Map<String, Long> topUsersByUseful = feedbacks.stream()
+                .filter(ChatFeedback::getUtil)
+                .collect(Collectors.groupingBy(
+                    ChatFeedback::getUsuarioId,
+                    Collectors.counting()
+                ));
+        
+        /**
+         * Calcular satisfacción (métrica simple basada en feedback útil)
+         */
+        double satisfactionScore = usefulPercentage / 100;
         
         return FeedbackStats.builder()
-                .totalFeedbacks(total)
-                .utilCount(utilCount)
-                .porcentajeUtil(Math.round(porcentajeUtil * 10) / 10.0)
+                .totalFeedback(total)
+                .usefulCount(useful)
+                .notUsefulCount(notUseful)
+                .usefulPercentage(usefulPercentage)
+                .feedbackByDay(feedbackByDay)
+                .feedbackByHour(feedbackByHour)
+                .topUsersByUseful(topUsersByUseful)
+                .averageRating(usefulPercentage / 20) /** Conversión a escala 1-5 */
+                .satisfactionScore(satisfactionScore)
+                .lastUpdated(LocalDateTime.now())
+                .period(usuarioId != null ? "USER" : "GLOBAL")
                 .build();
     }
 
-    private FeedbackResponse convertToResponse(ChatFeedback feedback) {
+    /**
+     * Construir estadísticas vacías
+     */
+    private FeedbackStats buildEmptyStats() {
+        return FeedbackStats.builder()
+                .totalFeedback(0L)
+                .usefulCount(0L)
+                .notUsefulCount(0L)
+                .usefulPercentage(0.0)
+                .averageRating(0.0)
+                .satisfactionScore(0.0)
+                .lastUpdated(LocalDateTime.now())
+                .period("EMPTY")
+                .build();
+    }
+
+    /**
+     * Convertir a FeedbackResponse
+     */
+    private FeedbackResponse toResponse(ChatFeedback feedback) {
+        String feedbackType = "NEUTRO";
+        if (feedback.getUtil() != null) {
+            feedbackType = feedback.getUtil() ? "POSITIVO" : "NEGATIVO";
+        }
+        
         return FeedbackResponse.builder()
                 .id(feedback.getId())
                 .conversacionId(feedback.getConversacionId())
@@ -84,6 +190,7 @@ public class FeedbackService {
                 .util(feedback.getUtil())
                 .comentario(feedback.getComentario())
                 .fecha(feedback.getFecha())
+                .feedbackType(feedbackType)
                 .build();
     }
 }
