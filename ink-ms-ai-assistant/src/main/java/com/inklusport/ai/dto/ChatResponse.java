@@ -23,15 +23,15 @@ public class ChatResponse {
     private LocalDateTime timestamp;
 
     /**
+     * Información de seguimiento (si se necesita)
+     */
+    private Boolean needsMoreInfo;
+    private String followUpQuestion;
+
+    /**
      * Metadatos adicionales
      */
     private Map<String, Object> metadata;
     private List<String> sugerencias;
     private Double confidence; /** Confianza de la respuesta (0-1) */
-
-    /**
-     * Si necesita más información
-     */
-    private Boolean needsMoreInfo;
-    private String followUpQuestion;
 }

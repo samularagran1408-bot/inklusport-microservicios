@@ -64,7 +64,7 @@ public class FeedbackController {
             @Parameter(hidden = true) @AuthenticationPrincipal String userId,
             @Valid @RequestBody FeedbackRequest request) {
         
-        log.info("💬 Guardando feedback de usuario: {}", userId);
+        log.info("Guardando feedback de usuario: {}", userId);
         
         // Asignar usuario autenticado
         request.setUsuarioId(userId);
@@ -85,7 +85,7 @@ public class FeedbackController {
             @Parameter(description = "ID de la conversación") 
             @PathVariable String conversationId) {
         
-        log.info("📋 Obteniendo feedback para conversación: {}", conversationId);
+        log.info("Obteniendo feedback para conversación: {}", conversationId);
         
         List<FeedbackResponse> response = 
             feedbackService.getFeedbackByConversation(conversationId);
@@ -105,7 +105,7 @@ public class FeedbackController {
             @Parameter(hidden = true) @AuthenticationPrincipal String userId,
             @RequestParam(required = false) Boolean global) {
         
-        log.info("📊 Obteniendo estadísticas de feedback para usuario: {}", userId);
+        log.info("Obteniendo estadísticas de feedback para usuario: {}", userId);
         
         // Si global es true, obtener estadísticas globales
         String targetUserId = global != null && global ? null : userId;
