@@ -38,9 +38,6 @@ public class EventReminderService {
         
         log.info("Buscando eventos para mañana: {}", tomorrow);
         
-        /**
-         * Buscar eventos activos que ocurren mañana
-         */
         List<Event> events = eventRepository.findByEventDateAndStatus(tomorrow, EventStatus.active);
         
         if (events.isEmpty()) {
@@ -56,7 +53,8 @@ public class EventReminderService {
     }
     
     /**
-     * Envía recordatorios a todos los inscritos de un evento
+     * Envia recordatorios para un evento
+     * @param event Evento
      */
     private void sendRemindersForEvent(Event event) {
         List<EventRegistration> registrations = registrationRepository.findByEventId(event.getId());
@@ -74,7 +72,9 @@ public class EventReminderService {
     }
     
     /**
-     * Envía la notificación a un usuario específico
+     * Envia notificación para un usuario
+     * @param userId ID del usuario
+     * @param event Evento
      */
     private void sendNotification(String userId, Event event) {
         try {

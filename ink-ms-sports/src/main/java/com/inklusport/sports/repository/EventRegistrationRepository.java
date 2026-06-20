@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 public interface EventRegistrationRepository extends JpaRepository<EventRegistration, String> {
     
@@ -42,4 +43,22 @@ public interface EventRegistrationRepository extends JpaRepository<EventRegistra
     @Transactional
     @Query("UPDATE EventRegistration er SET er.waitlistPosition = NULL WHERE er.userId = :userId AND er.eventId = :eventId")
     void updateWaitlistToConfirmed(@Param("userId") String userId, @Param("eventId") String eventId);
+
+    /**
+     * Elimina registros anteriores a la fecha
+     */
+    long deleteByRegistrationDateBefore(LocalDateTime fecha);
+
+    /**
+     * Cuenta registros anteriores a la fecha
+     */
+    long countByRegistrationDateBefore(LocalDateTime fecha);
+
+    /**
+     * Elimina registros antiguos con un evento finalizado
+     */
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM EventRegistration r WHERE r.eventId IN (SELECT e.id FROM Event e WHERE e.status = 'finished')")
+    int deleteByEventFinished();
 }

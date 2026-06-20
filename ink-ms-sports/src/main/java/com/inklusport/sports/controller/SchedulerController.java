@@ -1,6 +1,7 @@
 package com.inklusport.sports.controller;
 
 import com.inklusport.sports.service.EventReminderService;
+import com.inklusport.sports.service.EventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,21 @@ import java.util.Map;
 public class SchedulerController {
 
     private final EventReminderService reminderService;
+    private final EventService eventService;
+
+    /**
+     * Endpoint para probar manualmente la transición de estados de eventos.
+     * POST /api/scheduler/process-events
+     */
+    @PostMapping("/process-events")
+    public ResponseEntity<?> processEvents() {
+        log.info("Ejecutando procesamiento de estados de eventos manualmente");
+        eventService.procesarEstadosEventos();
+        return ResponseEntity.ok(Map.of(
+            "message", "Estados de eventos procesados",
+            "status", "success"
+        ));
+    }
 
     /**
      * Endpoint para probar manualmente el envío de recordatorios
