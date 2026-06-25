@@ -1,4 +1,4 @@
-package com.inklusport.admin.dto.;
+package com.inklusport.admin.dto;
 
 import lombok.Builder;
 import lombok.Data;

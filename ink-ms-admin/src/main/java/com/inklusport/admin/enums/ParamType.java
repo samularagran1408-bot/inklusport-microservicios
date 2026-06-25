@@ -1,5 +1,5 @@
 package com.inklusport.admin.enums;
 
 public enum ParamType {
-    integer, boolean, string
+    integer, bool, string
 }
