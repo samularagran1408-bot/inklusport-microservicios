@@ -4,11 +4,7 @@ spring:
   
   data:
     mongodb:
-      uri: mongodb://localhost:27017/accessibility_notifications_db
-      auto-index-creation: true
-  
-  main:
-    allow-bean-definition-overriding: true
+      auto-index-creation: false
 
 server:
   port: 3004
@@ -20,4 +16,3 @@ jwt:
 logging:
   level:
     com.inklusport.accessibility: DEBUG
-    org.mongodb.driver: DEBUG

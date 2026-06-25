@@ -21,7 +21,7 @@ spring:
         - id: sports-ms
           uri: http://localhost:3003
           predicates:
-            - Path=/api/sports/**, /api/events/**, /api/disabilities/**, /api/registrations/**, /api/calendar/**, /api/scheduler/**, /api/attendance/**
+            - Path=/api/sports/**, /api/events/**, /api/disabilities/**, /api/sport-disabilities/**, /api/registrations/**, /api/calendar/**, /api/scheduler/**, /api/attendance/**
         
         # 4. Accessibility MS 
         - id: accessibility-ms
