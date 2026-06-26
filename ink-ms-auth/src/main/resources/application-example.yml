@@ -21,9 +21,9 @@ spring:
             class: javax.net.ssl.SSLSocketFactory
   
   datasource:
-    url: jdbc:mysql://${DB_HOST:mysql-auth}:${DB_PORT:3306}/${DB_NAME:auth_ms}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    url: ${DB_URL:jdbc:mysql://localhost:3306/auth_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root123}
+    password: ${DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
   
   jpa:
@@ -44,13 +44,13 @@ jwt:
 
 app:
   password-reset:
-    mail-enabled: ${MAIL_ENABLED:false}
+    mail-enabled: ${MAIL_ENABLED:true}
     expose-token-in-response: ${EXPOSE_TOKEN:false}
     token-expiry-hours: ${TOKEN_EXPIRY_HOURS:24}
 
 users:
   service:
-    url: ${USERS_SERVICE_URL:http://ink-ms-users:3002}
+    url: ${USERS_SERVICE_URL:http://localhost:3002}
 
 feign:
   circuitbreaker:
