@@ -1,4 +1,4 @@
-package com.inklusport.accessibility.security;
+package com.inklusport.accessibility.securtity;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

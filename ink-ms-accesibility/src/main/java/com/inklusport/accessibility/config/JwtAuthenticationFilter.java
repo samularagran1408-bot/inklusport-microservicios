@@ -1,6 +1,6 @@
 package com.inklusport.accessibility.config;
 
-import com.inklusport.accessibility.security.JwtTokenProvider;
+import com.inklusport.accessibility.securtity.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
