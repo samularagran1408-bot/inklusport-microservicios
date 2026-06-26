@@ -8,11 +8,11 @@ spring:
     name: ink-ms-auth
   
   mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:465}
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
     username: ${MAIL_USERNAME}
     password: ${MAIL_PASSWORD}
-    protocol: ${MAIL_PROTOCOL:smtps}
+    protocol: ${MAIL_PROTOCOL}
     properties:
       mail:
         smtp:

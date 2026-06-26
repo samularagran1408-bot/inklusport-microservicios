@@ -6,9 +6,9 @@ spring:
   
   # Base de datos del módulo users (perfil, roles, actividad).
   datasource:
-    url: jdbc:mysql://localhost:3306/user_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
-    password: 
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   
   jpa:
@@ -21,18 +21,18 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
 
 server:
-  port: 3002
+  port: ${SERVER_PORT}
 
 # Debe coincidir con la secret de auth para validar tokens emitidos por ese MS.
 jwt:
-  secret: inklusport2024superSecretKeyForJWTtokenGenerationWith512bitsAlgorithmHS512
-  expiration: 86400000 # 24h en milisegundos.
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION} # 24h en milisegundos.
 
 logging:
   level:
-    com.inklusport.users: DEBUG
+    com.inklusport.users: ${LOG_LEVEL}
 
 # URL del Auth MS (para Feign Client)
 auth:
   service:
-    url: http://localhost:3001 # Usado para validaciones/consultas entre microservicios.
+    url: ${AUTH_SERVICE_URL} # Usado para validaciones/consultas entre microservicios.
