@@ -1,15 +1,18 @@
+# ============================================================
+# application.yml - ink-ms-auth
+# Configuración con variables de entorno
+# ============================================================
+
 spring:
   application:
     name: ink-ms-auth
   
-  # Config de correo para recuperar contraseña.
-  # Recomendado: mover username/password a variables de entorno en producción.
   mail:
-    host: smtp.gmail.com
-    port: 465
-    username: samularagran1408@gmail.com
-    password: brbs bgir vbrc ymlc
-    protocol: smtps
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:465}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    protocol: ${MAIL_PROTOCOL:smtps}
     properties:
       mail:
         smtp:
@@ -22,11 +25,10 @@ spring:
             port: 465
             class: javax.net.ssl.SSLSocketFactory
   
-  # Base de datos principal del módulo auth.
   datasource:
-    url: jdbc:mysql://localhost:3306/auth_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
-    password:   
+    url: ${DB_URL:jdbc:mysql://localhost:3306/auth_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
   
   jpa:
@@ -39,27 +41,26 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
 
 server:
-  port: 3001
+  port: ${SERVER_PORT:3001}
 
-# Config JWT compartida con MS que validan el token.
 jwt:
-  secret: inklusport2024superSecretKeyForJWTtokenGenerationWith512bitsAlgorithmHS512
-  expiration: 86400000 # 24h en milisegundos.
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000}
 
 app:
   password-reset:
-    mail-enabled: true # true: envía correo real. false: solo log de token para pruebas.
-    expose-token-in-response: false # true solo para testing local (no recomendado en producción).
-    token-expiry-hours: 24 # Tiempo de vida del token de recuperación.
+    mail-enabled: ${MAIL_ENABLED:true}
+    expose-token-in-response: ${EXPOSE_TOKEN:false}
+    token-expiry-hours: ${TOKEN_EXPIRY_HOURS:24}
 
 users:
   service:
-    url: http://localhost:3002 # Endpoint del MS Users para consultar roles.
+    url: ${USERS_SERVICE_URL:http://localhost:3002}
 
 feign:
   circuitbreaker:
-    enabled: true
+    enabled: ${FEIGN_CIRCUITBREAKER:true}
 
 logging:
   level:
-    com.inklusport.auth: DEBUG
+    com.inklusport.auth: ${LOG_LEVEL:DEBUG}
