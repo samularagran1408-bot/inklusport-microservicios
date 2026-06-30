@@ -46,7 +46,7 @@ public class UserController {
             
             // Actualiza campos opcionales si fueron enviados en el request.
             if (request.getPhone() != null || 
-                request.getProfilePicture() != null || request.getBio() != null) {
+                request.getProfilePicture() != null || request.getBio() != null || request.getDisability() != null) {
                 response = userService.updateUserProfile(email, request);
             }
             

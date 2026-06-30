@@ -43,3 +43,20 @@ CREATE TABLE user_activity (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES user_profile(id)
 );
+
+alter table user_profile add disability VARCHAR(100);
+
+describe user_profile;
+
+select * from user_profile;
+select * from role;
+select * from user_role;
+
+INSERT INTO role (id, name, description) VALUES 
+(3, 'ENTRENADOR', 'Especializado en ejercicios y prevención de lesiones'),
+(4, 'ORGANIZADOR', 'Encargado de asignar eventos');
+
+INSERT INTO user_role(user_id, role_id) VALUES ('b9d66506-a5a4-4bba-8213-6fe591994a84', 1);
+INSERT INTO user_role(user_id, role_id) VALUES ('e0e37e7b-e00b-43d9-b8fa-19bb38849247', 1);
+INSERT INTO user_role(user_id, role_id) VALUES ('8dab4173-7997-4074-9125-16e7371dfd29', 1);
+INSERT INTO user_role(user_id, role_id) VALUES ('7ac705cf-2186-4554-8ad3-f01497580c9a', 1);

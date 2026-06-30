@@ -3,7 +3,6 @@ package com.inklusport.sports.service;
 import com.inklusport.sports.dto.AttendanceRequest;
 import com.inklusport.sports.entity.EventAttendance;
 import com.inklusport.sports.enums.CheckInMethod;
-import com.inklusport.sports.enums.CheckInMethod;
 import com.inklusport.sports.repository.EventAttendanceRepository;
 import com.inklusport.sports.repository.EventRegistrationRepository;
 import lombok.RequiredArgsConstructor;

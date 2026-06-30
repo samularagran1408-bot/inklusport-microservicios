@@ -92,6 +92,10 @@ public class UserService {
             user.setBio(request.getBio());
         }
 
+        if (request.getDisability() != null) {
+            user.setDisability(request.getDisability());
+        }
+
         User updateUser = userRepository.save(user);
         log.info("Perfil actualizado: {}", email);
 
@@ -157,6 +161,7 @@ public class UserService {
                 .phone(user.getPhone())
                 .profilePicture(user.getProfilePicture())
                 .bio(user.getBio())
+                .disability(user.getDisability())
                 .isActive(user.isActive())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
