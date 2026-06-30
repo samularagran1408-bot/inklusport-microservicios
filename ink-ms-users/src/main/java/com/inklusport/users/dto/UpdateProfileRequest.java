@@ -15,4 +15,6 @@ public class UpdateProfileRequest {
     private String profilePicture;
 
     private String bio;
+
+    private String disability;
 }

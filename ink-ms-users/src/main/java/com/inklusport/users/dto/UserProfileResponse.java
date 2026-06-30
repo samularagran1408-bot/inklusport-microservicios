@@ -15,6 +15,7 @@ public class UserProfileResponse {
     private String phone;
     private String profilePicture;
     private String bio;
+    private String disability;
     private Boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

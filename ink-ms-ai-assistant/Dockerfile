@@ -1,11 +1,9 @@
-﻿FROM eclipse-temurin:17-jdk-alpine AS build
-WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-RUN apk add --no-cache maven && mvn -q -B package -DskipTests && rm -rf /root/.m2
+﻿FROM openjdk:17-jdk-slim
 
-FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-COPY --from=build /app/target/ai-assistant-ms-*.jar app.jar
-EXPOSE 8087
+
+COPY target/ink-ms-ai-assistant.jar app.jar
+
+EXPOSE 3008
+
 ENTRYPOINT ["java", "-jar", "app.jar"]

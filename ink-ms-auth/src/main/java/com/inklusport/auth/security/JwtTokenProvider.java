@@ -1,7 +1,9 @@
 package com.inklusport.auth.security;
 
+import com.inklusport.auth.service.TokenRevocationService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -11,8 +13,11 @@ import java.util.Date;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class JwtTokenProvider {
+
+  private final TokenRevocationService tokenRevocationService;
 
   /** Configuración de JWT */
   @Value("${jwt.secret}")
@@ -85,6 +90,11 @@ public class JwtTokenProvider {
    * @return
    */
   public boolean validateToken(String token) {
+    if (tokenRevocationService.isRevoked(token)) {
+      log.warn("Intento de uso de token revocado");
+      return false;
+    }
+
     try {
       Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(token);
       return true;

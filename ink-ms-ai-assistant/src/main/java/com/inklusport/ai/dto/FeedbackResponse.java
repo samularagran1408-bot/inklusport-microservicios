@@ -1,9 +1,9 @@
 package com.inklusport.ai.dto;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -14,17 +14,8 @@ import java.time.LocalDateTime;
 public class FeedbackResponse {
 
     private String id;
-    private String conversacionId;
-    private String usuarioId;
     private String mensajeId;
     private Boolean util;
     private String comentario;
     private LocalDateTime fecha;
-
-    /**
-     * Estadísticas adicionales
-     */
-    private Boolean processed;
-    private String feedbackType; /** POSITIVO, NEGATIVO, NEUTRO */
-    private LocalDateTime processedAt;
 }
