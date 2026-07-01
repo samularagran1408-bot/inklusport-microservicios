@@ -5,6 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
+/** Este microservicio funciona */
+
 @SpringBootApplication
 @EnableFeignClients
 @EntityScan("com.inklusport.users.entity")

@@ -3,10 +3,7 @@ package com.inklusport.accessibility.service;
 import com.inklusport.accessibility.dto.NotificationRequest;
 import com.inklusport.accessibility.dto.NotificationResponse;
 import com.inklusport.accessibility.model.Notification;
-import com.inklusport.accessibility.model.NotificationLog;
-import com.inklusport.accessibility.repository.NotificationLogRepository;
 import com.inklusport.accessibility.repository.NotificationRepository;
-import com.inklusport.accessibility.repository.NotificationPreferenceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,8 +20,6 @@ import java.util.stream.Collectors;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
-    private final NotificationLogRepository notificationLogRepository;
-    private final NotificationPreferenceRepository preferenceRepository;
 
     public NotificationResponse createNotification(String userId, NotificationRequest request) {
         Notification notification = Notification.builder()

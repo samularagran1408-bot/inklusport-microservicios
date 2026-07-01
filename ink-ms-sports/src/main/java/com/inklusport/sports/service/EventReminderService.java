@@ -28,25 +28,34 @@ public class EventReminderService {
     private final NotificationServiceClient notificationClient;
 
     /**
-     * Ejecuta todos los días a las 8:00 AM
-     * Envía recordatorios para eventos que ocurren MAÑANA
+     * Ejecuta cada minuto y envía recordatorios para eventos que comienzan dentro de 2 horas.
      */
-    @Scheduled(cron = "0 0 8 * * *")
+    @Scheduled(cron = "0 * * * * *")
     @Transactional
     public void sendEventReminders() {
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        
-        log.info("Buscando eventos para mañana: {}", tomorrow);
-        
-        List<Event> events = eventRepository.findByEventDateAndStatus(tomorrow, EventStatus.active);
-        
+        sendEventReminders(LocalDateTime.now());
+    }
+
+    @Transactional
+    void sendEventReminders(LocalDateTime now) {
+        LocalDate targetDate = now.toLocalDate();
+        LocalTime targetTime = now.toLocalTime().plusHours(2);
+
+        log.info("Buscando eventos que comienzan dentro de 2 horas a partir de {}", now);
+
+        List<Event> events = eventRepository.findByStatus(EventStatus.active).stream()
+                .filter(event -> event.getEventDate().equals(targetDate))
+                .filter(event -> !event.getEventTime().isBefore(now.toLocalTime()))
+                .filter(event -> !event.getEventTime().isAfter(targetTime))
+                .toList();
+
         if (events.isEmpty()) {
-            log.info("No hay eventos programados para mañana");
+            log.info("No hay eventos programados para las próximas 2 horas");
             return;
         }
-        
-        log.info("Encontrados {} eventos para mañana", events.size());
-        
+
+        log.info("Encontrados {} eventos para las próximas 2 horas", events.size());
+
         for (Event event : events) {
             sendRemindersForEvent(event);
         }
@@ -81,11 +90,11 @@ public class EventReminderService {
             NotificationRequest request = new NotificationRequest();
             request.setUserId(userId);
             request.setType("event_reminder");
-            request.setTitle("Recordatorio: Evento mañana");
+            request.setTitle("Recordatorio: Tu evento empieza pronto");
             request.setBody(String.format(
-                "Recuerda que mañana a las %s tienes el evento '%s' en %s. ¡Te esperamos!",
-                event.getEventTime().toString(),
+                "Recuerda que tu evento '%s' comienza a las %s en %s. Falta poco para que empiece. ¡Te esperamos!",
                 event.getName(),
+                event.getEventTime().toString(),
                 event.getLocation() != null ? event.getLocation() : "nuestra sede"
             ));
             request.setEventId(event.getId());

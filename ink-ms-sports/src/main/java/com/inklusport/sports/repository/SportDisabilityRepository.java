@@ -1,9 +1,7 @@
 package com.inklusport.sports.repository;
 
 import com.inklusport.sports.entity.SportDisability;
-import com.inklusport.sports.entity.SportDisability.SportDisabilityId;
 import com.inklusport.sports.entity.Disability;
-import com.inklusport.sports.entity.SportDisability.SportDisabilityId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
