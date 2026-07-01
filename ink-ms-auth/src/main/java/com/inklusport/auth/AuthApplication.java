@@ -10,6 +10,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EntityScan("com.inklusport.auth.entity")
 public class AuthApplication {
 
+  /** Este microservicio funciona */
+
   public static void main(String[] args) {
       SpringApplication.run(AuthApplication.class, args);
   }

@@ -1,16 +1,13 @@
-# src/main/resources/application.yml
-
 spring:
   application:
     name: ink-ms-users
-  
-  # Base de datos del módulo users (perfil, roles, actividad).
+
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://localhost:3306/user_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: 
     driver-class-name: com.mysql.cj.jdbc.Driver
-  
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -21,18 +18,16 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
 
 server:
-  port: ${SERVER_PORT}
+  port: 3002
 
-# Debe coincidir con la secret de auth para validar tokens emitidos por ese MS.
 jwt:
-  secret: ${JWT_SECRET}
-  expiration: ${JWT_EXPIRATION} # 24h en milisegundos.
+  secret: inklusport2024superSecretKeyForJWTtokenGenerationWith512bitsAlgorithmHS512
+  expiration: 86400000
 
 logging:
   level:
-    com.inklusport.users: ${LOG_LEVEL}
+    com.inklusport.users: DEBUG
 
-# URL del Auth MS (para Feign Client)
 auth:
   service:
-    url: ${AUTH_SERVICE_URL} # Usado para validaciones/consultas entre microservicios.
+    url: http://localhost:3001
