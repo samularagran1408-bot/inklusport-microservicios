@@ -50,6 +50,7 @@ public class GeminiService {
 
     public String getAIResponse(String userMessage, List<Mensaje> historial) {
         try {
+            log.info("Configuración Gemini: modelo={}, temperatura={}, maxTokens={}", model, temperature, maxTokens);
             log.info("Enviando petición a Google Gemini (modelo: {})...", model);
 
             List<Content> contents = buildContents(historial, userMessage);
