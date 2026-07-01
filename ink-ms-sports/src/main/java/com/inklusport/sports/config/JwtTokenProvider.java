@@ -23,6 +23,7 @@ import java.util.Map;
 @Slf4j
 public class JwtTokenProvider {
 
+    // 
     @Value("${jwt.secret}")
     private String jwtSecret;
 
