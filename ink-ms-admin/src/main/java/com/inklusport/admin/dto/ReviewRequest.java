@@ -13,4 +13,6 @@ public class ReviewRequest {
     private String decision; /** approved, rejected */
     
     private String notes;
+
+    private String reviewedBy;
 }

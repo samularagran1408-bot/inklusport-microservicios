@@ -21,9 +21,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PermissionService {
 
-    /**
-     * inyección de dependencias
-     */
     private final PermissionRepository permissionRepository;
     private final RolePermissionRepository rolePermissionRepository;
 
@@ -35,6 +32,16 @@ public class PermissionService {
         return permissionRepository.findAll().stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Busca un permiso por ID
+     */
+    @Transactional(readOnly = true)
+    public PermissionResponse getPermissionById(Integer id) {
+        Permission permission = permissionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Permiso no encontrado con ID: " + id));
+        return convertToResponse(permission);
     }
 
     /**
@@ -69,17 +76,46 @@ public class PermissionService {
     }
 
     /**
+     * Actualiza un permiso existente
+     */
+    @Transactional
+    public PermissionResponse updatePermission(Integer id, PermissionRequest request) {
+        Permission permission = permissionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Permiso no encontrado con ID: " + id));
+
+        permission.setName(request.getName());
+        permission.setResource(request.getResource());
+        permission.setAction(PermissionAction.valueOf(request.getAction()));
+        permission.setDescription(request.getDescription());
+
+        Permission updated = permissionRepository.save(permission);
+        log.info("Permiso actualizado: {}", updated.getName());
+        return convertToResponse(updated);
+    }
+
+    /**
+     * Obtiene los permisos asignados a un rol
+     */
+    @Transactional(readOnly = true)
+    public List<PermissionResponse> getPermissionsByRole(Integer roleId) {
+        return rolePermissionRepository.findByIdRoleId(roleId).stream()
+                .map(RolePermission::getPermission)
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Asigna un permiso a un rol
      */
     @Transactional
-    public void assignPermissionToRole(Integer roleId, Integer permissionId, String assignedBy) {
-        if (!rolePermissionRepository.existsById(new RolePermissionId(roleId, permissionId))) {
+    public void assignPermissionToRole(Integer roleId, Integer permissionId) {
+        RolePermissionId id = new RolePermissionId(roleId, permissionId);
+        if (!rolePermissionRepository.existsById(id)) {
             RolePermission rolePermission = RolePermission.builder()
-                    .id(new RolePermissionId(roleId, permissionId))
-                    .assignedBy(assignedBy)
+                    .id(id)
                     .build();
             rolePermissionRepository.save(rolePermission);
-            log.info("Permiso {} asignado al rol {} por {}", permissionId, roleId, assignedBy);
+            log.info("Permiso {} asignado al rol {}", permissionId, roleId);
         }
     }
 
@@ -94,11 +130,26 @@ public class PermissionService {
     }
 
     /**
-     * Busca los permisos asignados a un rol
+     * Busca los permisos asignados a un rol (retorna solo nombres)
      */
     @Transactional(readOnly = true)
     public List<String> getRolePermissions(Integer roleId) {
         return rolePermissionRepository.findPermissionNamesByRoleId(roleId);
+    }
+
+    /**
+     * Asigna un permiso a un rol (version antigua para compatibilidad)
+     */
+    @Transactional
+    public void assignPermissionToRole(Integer roleId, Integer permissionId, String assignedBy) {
+        RolePermissionId id = new RolePermissionId(roleId, permissionId);
+        if (!rolePermissionRepository.existsById(id)) {
+            RolePermission rolePermission = RolePermission.builder()
+                    .id(id)
+                    .build();
+            rolePermissionRepository.save(rolePermission);
+            log.info("Permiso {} asignado al rol {} por {}", permissionId, roleId, assignedBy);
+        }
     }
 
     /**

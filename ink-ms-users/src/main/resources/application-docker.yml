@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:mysql://${DB_HOST:mysql-user}:${DB_PORT:3306}/${DB_NAME:user_ms}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root123}
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
 
 auth:
   service:
-    url: ${AUTH_SERVICE_URL:http://ink-ms-auth:3001}
+    url: ${AUTH_SERVICE_URL}

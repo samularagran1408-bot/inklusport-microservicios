@@ -1,19 +1,27 @@
 spring:
   application:
     name: ink-ms-ai-assistant
-  
+
   data:
     mongodb:
-      uri: mongodb://localhost:27017/inclusport_training_ia
+      uri: ${MONGODB_URI:mongodb://localhost:27017/ai_chatbot_db}
       auto-index-creation: true
 
 server:
-  port: 3008
+  port: ${SERVER_PORT:3008}
 
 jwt:
-  secret: inklusport2024superSecretKeyForJWTtokenGenerationWith512bitsAlgorithmHS512
-  expiration: 86400000
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY}
+    model: ${GEMINI_MODEL:gemini-2.0-flash}
+    temperature: ${GEMINI_TEMPERATURE:0.7}
+    max-tokens: ${GEMINI_MAX_TOKENS:500}
 
 logging:
   level:
-    com.inklusport.ai: DEBUG
+    com.inklusport.ai: ${LOG_LEVEL:DEBUG}
+    org.springframework.security: INFO

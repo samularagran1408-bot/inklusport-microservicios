@@ -9,6 +9,7 @@ import com.inklusport.common.dto.response.ErrorResponse;
 import com.inklusport.auth.security.JwtTokenProvider;
 import com.inklusport.auth.service.AuthService;
 import com.inklusport.auth.service.PasswordResetService;
+import com.inklusport.auth.service.TokenRevocationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class AuthController {
   private final AuthService authService;
   private final PasswordResetService passwordResetService;
   private final JwtTokenProvider jwtTokenProvider;
+  private final TokenRevocationService tokenRevocationService;
 
   
   /**
@@ -66,8 +68,14 @@ public class AuthController {
    * Endpoint de salida de sesion sin invalidacion persistente de token.
    */
   @PostMapping("/logout")
-  public ResponseEntity<?> logout() {
-    return ResponseEntity.ok().build();
+  public ResponseEntity<?> logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+      return ResponseEntity.badRequest().body(Map.of("message", "Token no proporcionado"));
+    }
+
+    String token = authHeader.substring(7);
+    tokenRevocationService.revokeToken(token);
+    return ResponseEntity.ok(Map.of("message", "Logout exitoso"));
   }
 
   /**

@@ -1,18 +1,15 @@
 package com.inklusport.ai.exception;
 
-public final class CustomExceptions {
+public class CustomExceptions {
 
-    private CustomExceptions() {
-    }
-
-    public static class InvalidRequestException extends RuntimeException {
-        public InvalidRequestException(String message) {
+    public static class ResourceNotFoundException extends RuntimeException {
+        public ResourceNotFoundException(String message) {
             super(message);
         }
     }
 
-    public static class ResourceNotFoundException extends RuntimeException {
-        public ResourceNotFoundException(String message) {
+    public static class InvalidRequestException extends RuntimeException {
+        public InvalidRequestException(String message) {
             super(message);
         }
     }

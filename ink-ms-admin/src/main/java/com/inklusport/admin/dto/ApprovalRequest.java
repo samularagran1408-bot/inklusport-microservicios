@@ -11,4 +11,6 @@ public class ApprovalRequest {
     
     @NotNull(message = "Los datos son obligatorios")
     private Object targetData;
+
+    private String requestedBy;
 }

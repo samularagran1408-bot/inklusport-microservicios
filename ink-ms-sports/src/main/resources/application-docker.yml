@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:mysql://${DB_HOST:mysql-sports}:${DB_PORT:3306}/${DB_NAME:sports_events_ms}?useSSL=false&serverTimezone=America/Bogota&allowPublicKeyRetrieval=true
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root123}
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=false&serverTimezone=America/Bogota&allowPublicKeyRetrieval=true
+    username: ${USER_NAME}
+    password: ${USER_PASSWORD}
 
 users:
   service:
-    url: ${USERS_SERVICE_URL:http://ink-ms-users:3002}
+    url: ${USERS_SERVICE_URL}

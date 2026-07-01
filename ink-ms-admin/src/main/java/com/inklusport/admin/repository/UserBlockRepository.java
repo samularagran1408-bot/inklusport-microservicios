@@ -22,7 +22,7 @@ public interface UserBlockRepository extends JpaRepository<UserBlock, String> {
     
     Page<UserBlock> findByIsActiveTrue(Pageable pageable);
     
-    Page<UserBlock> findByBlockType(BlockType blockType, Pageable pageable);
+    Page<UserBlock> findByBlockTypeAndIsActiveTrue(BlockType blockType, Pageable pageable);
     
     /**
      * Busca bloqueos temporales que han expirado

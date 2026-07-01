@@ -6,6 +6,9 @@ spring:
     mongodb:
       uri: mongodb://localhost:27017/accessibility_notifications_db
       auto-index-creation: true
+  
+  main:
+    allow-bean-definition-overriding: true
 
 server:
   port: 3004

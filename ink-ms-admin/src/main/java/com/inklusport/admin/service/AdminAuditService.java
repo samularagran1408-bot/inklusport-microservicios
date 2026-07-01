@@ -7,6 +7,7 @@ import com.inklusport.admin.entity.AdminAuditLog;
 import com.inklusport.admin.repository.AdminAuditLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,11 +20,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class AdminAuditService {
-    
+
     private final AdminAuditLogRepository auditLogRepository;
     private final UserServiceClient userServiceClient;
-    
     /**
      * Registra una acción administrativa en el log de auditoría.  
      * La acción se registra con el ID de usuario del administrador que realizó la acción, 
@@ -31,7 +33,7 @@ public class AdminAuditService {
      */
     @Transactional
     public void logAction(String adminId, AdminActionRequest request) {
-        AdminAuditLog log = AdminAuditLog.builder()
+        AdminAuditLog auditLog = AdminAuditLog.builder()
                 .id(UUID.randomUUID().toString())
                 .adminId(adminId)
                 .action(request.getAction())
@@ -41,7 +43,7 @@ public class AdminAuditService {
                 .ipAddress(request.getIpAddress())
                 .build();
 
-        auditLogRepository.save(log);
+        auditLogRepository.save(auditLog);
         log.info("Acción registrada: {} por admin {}", request.getAction(), adminId);
     }
 
@@ -90,30 +92,30 @@ public class AdminAuditService {
     /**
      * Convierte un objeto de la base de datos a un objeto de respuesta
      */
-    private AdminAuditResponse convertToResponse(AdminAuditLog log) {
+    private AdminAuditResponse convertToResponse(AdminAuditLog auditLog) {
         String adminEmail = null;
         String adminName = null;
         try {
-            Map<String, Object> user = userServiceClient.getUserById(log.getAdminId());
+            Map<String, Object> user = userServiceClient.getUserById(auditLog.getAdminId());
             if (user != null) {
                 adminEmail = (String) user.get("email");
                 adminName = (String) user.get("name");
             }
         } catch (Exception e) {
-            log.warn("No se pudo obtener información del admin: {}", log.getAdminId());
+            log.warn("No se pudo obtener información del admin: {}", auditLog.getAdminId());
         }
 
         return AdminAuditResponse.builder()
-                .id(log.getId())
-                .adminId(log.getAdminId())
+                .id(auditLog.getId())
+                .adminId(auditLog.getAdminId())
                 .adminEmail(adminEmail)
                 .adminName(adminName)
-                .action(log.getAction())
-                .targetType(log.getTargetType())
-                .targetId(log.getTargetId())
-                .details(log.getDetails())
-                .ipAddress(log.getIpAddress())
-                .createdAt(log.getCreatedAt())
+                .action(auditLog.getAction())
+                .targetType(auditLog.getTargetType())
+                .targetId(auditLog.getTargetId())
+                .details(auditLog.getDetails())
+                .ipAddress(auditLog.getIpAddress())
+                .createdAt(auditLog.getCreatedAt())
                 .build();
     }
 }

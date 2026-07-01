@@ -6,25 +6,20 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.5</version>
-        <relativePath/>
+        <groupId>com.inklusport</groupId>
+        <artifactId>inklusport-microservicios</artifactId>
+        <version>1.0.0</version>
     </parent>
 
-    <groupId>com.inklusport</groupId>
     <artifactId>ink-ms-admin</artifactId>
-    <version>1.0.0</version>
     <name>ink-ms-admin</name>
-    <description>Microservicio de Administración para InkluSport</description>
-
-    <properties>
-        <java.version>17</java.version>
-        <spring-cloud.version>2022.0.4</spring-cloud.version>
-    </properties>
+    <description>Microservicio de Administracion para InkluSport</description>
 
     <dependencies>
-        <!-- Spring Boot Starters -->
+        <dependency>
+            <groupId>com.inklusport</groupId>
+            <artifactId>ink-ms-common</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>

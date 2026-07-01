@@ -2,6 +2,8 @@ package com.inklusport.admin.repository;
 
 import com.inklusport.admin.entity.ScheduledReport;
 import com.inklusport.admin.enums.ReportType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,7 +19,7 @@ public interface ScheduledReportRepository extends JpaRepository<ScheduledReport
     
     List<ScheduledReport> findByIsActiveTrue();
     
-    List<ScheduledReport> findByType(ReportType type);
+    Page<ScheduledReport> findByType(ReportType type, Pageable pageable);
     
     /**
      * Busca reportes programados que deben ejecutarse

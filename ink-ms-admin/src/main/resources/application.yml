@@ -1,7 +1,5 @@
 server:
-  port: 3005 
-  servlet:
-    context-path: /api/v1/admin 
+  port: 3005
 
 spring:
   application:
@@ -20,7 +18,7 @@ spring:
       connection-timeout: 20000
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     show-sql: true 
     open-in-view: false 
     properties:

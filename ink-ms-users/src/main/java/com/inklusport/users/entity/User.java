@@ -41,6 +41,9 @@ public class User {
     @Column(name = "bio", columnDefinition = "TEXT")
     private String bio;
 
+    @Column(name = "disability", length = 100)
+    private String disability;
+
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
