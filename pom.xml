@@ -20,14 +20,15 @@
     <description>Monorepo Inklusport — microservicios y librería compartida</description>
 
     <modules>
-        <module>ink-ms-common</module>
-        <module>ink-ms-auth</module>
-        <module>ink-ms-users</module>
-        <module>ink-ms-gateway</module>
-        <module>ink-ms-reports</module>
-        <module>ink-ms-accesibility</module>
-        <module>ink-ms-ai-assistant</module>
-        <module>ink-ms-sports</module>
+        <module>backend/ink-ms-common</module>
+        <module>backend/ink-ms-auth</module>
+        <module>backend/ink-ms-users</module>
+        <module>backend/ink-ms-gateway</module>
+        <module>backend/ink-ms-admin</module>
+        <module>backend/ink-ms-reports</module>
+        <module>backend/ink-ms-accesibility</module>
+        <module>backend/ink-ms-ai-assistant</module>
+        <module>backend/ink-ms-sports</module>
     </modules>
 
     <properties>

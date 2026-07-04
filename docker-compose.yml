@@ -22,7 +22,7 @@ services:
     container_name: inklusport-mysql
     restart: always
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: 
     volumes:
@@ -33,7 +33,7 @@ services:
   # 3. MICROSERVICIO DE AUTENTICACIÓN (PORT: 3001)
   auth-service:
     build:
-      context: ./ink-ms-auth
+      context: ./backend/ink-ms-auth
       dockerfile: Dockerfile
     container_name: ink-ms-auth
     restart: always
@@ -43,11 +43,11 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       DB_URL: jdbc:mysql://mysql:3306/auth_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       DB_USERNAME: root
-      DB_PASSWORD: root123
+      DB_PASSWORD: 
       MAIL_HOST: ${MAIL_HOST}
       MAIL_PORT: ${MAIL_PORT}
       MAIL_USERNAME: ${MAIL_USERNAME}
-      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_PASSWORD: 
       MAIL_PROTOCOL: ${MAIL_PROTOCOL}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
@@ -66,7 +66,7 @@ services:
   # 4. MICROSERVICIO DE USUARIOS (PORT: 3002)
   users-service:
     build:
-      context: ./ink-ms-users
+      context: ./backend/ink-ms-users
       dockerfile: Dockerfile
     container_name: ink-ms-users
     restart: always
@@ -76,7 +76,7 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       DB_URL: jdbc:mysql://mysql:3306/users_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       DB_USERNAME: root
-      DB_PASSWORD: root123
+      DB_PASSWORD: 
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
       SERVER_PORT: 3002
@@ -90,7 +90,7 @@ services:
   # 5. MICROSERVICIO DE DEPORTES (PORT: 3003)
   sports-service:
     build:
-      context: ./ink-ms-sports
+      context: ./backend/ink-ms-sports
       dockerfile: Dockerfile
     container_name: ink-ms-sports
     restart: always
@@ -100,7 +100,7 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       DB_URL: jdbc:mysql://mysql:3306/sports_events_ms?useSSL=false&serverTimezone=America/Bogota&allowPublicKeyRetrieval=true
       DB_USERNAME: root
-      DB_PASSWORD: root123
+      DB_PASSWORD: 
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
       SERVER_PORT: 3003
@@ -114,9 +114,9 @@ services:
   # 6. MICROSERVICIO DE ACCESIBILIDAD (PORT: 3004)
   accessibility-service:
     build:
-      context: ./ink-ms-accessibility
+      context: ./backend/ink-ms-accesibility
       dockerfile: Dockerfile
-    container_name: ink-ms-accessibility
+    container_name: ink-ms-accesibility
     restart: always
     ports:
       - "3004:3004"
@@ -135,7 +135,7 @@ services:
   # 7. MICROSERVICIO DE ADMINISTRACIÓN (PORT: 3005)
   admin-service:
     build:
-      context: ./ink-ms-admin
+      context: ./backend/ink-ms-admin
       dockerfile: Dockerfile
     container_name: ink-ms-admin
     restart: always
@@ -145,7 +145,7 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       DB_URL: jdbc:mysql://mysql:3306/admin_ms?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
       DB_USERNAME: root
-      DB_PASSWORD: root123
+      DB_PASSWORD: 
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
       SERVER_PORT: 3005
@@ -159,7 +159,7 @@ services:
   # 8. MICROSERVICIO DE REPORTES (PORT: 3006)
   reports-service:
     build:
-      context: ./ink-ms-reports
+      context: ./backend/ink-ms-reports
       dockerfile: Dockerfile
     container_name: ink-ms-reports
     restart: always
@@ -169,7 +169,7 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       DB_URL: jdbc:mysql://mysql:3306/analytics_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       DB_USERNAME: root
-      DB_PASSWORD: root123
+      DB_PASSWORD: 
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
       SERVER_PORT: 3006
@@ -185,7 +185,7 @@ services:
   # 9. MICROSERVICIO DE IA (PORT: 3008)
   ai-service:
     build:
-      context: ./ink-ms-ai-assistant
+      context: ./backend/ink-ms-ai-assistant
       dockerfile: Dockerfile
     container_name: ink-ms-ai-assistant
     restart: always
@@ -207,7 +207,7 @@ services:
   # 10. API GATEWAY (PORT: 8080)
   gateway-service:
     build:
-      context: ./ink-ms-gateway
+      context: ./backend/ink-ms-gateway
       dockerfile: Dockerfile
     container_name: ink-ms-gateway
     restart: always
