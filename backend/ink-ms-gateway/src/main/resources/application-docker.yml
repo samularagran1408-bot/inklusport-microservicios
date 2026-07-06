@@ -39,6 +39,6 @@ spring:
             - Path=/api/accessibility/**
 
         - id: ai-assistant-ms
-          uri: ${AI_SERVICE_URL:http://ai-assistant-ms:8087}
+          uri: ${AI_SERVICE_URL:http://ink-ms-ai-assistant:3008}
           predicates:
-            - Path=/api/ia/**
+            - Path=/api/ai/**,/api/ia/**

@@ -35,9 +35,10 @@ public class ChatService {
         saveMessage(session, request.getMessage(), "usuario");
 
         /**
-         * 3. Obtener respuesta de Gemini
+         * 3. Obtener respuesta de Gemini (con historial de la sesión)
          */
-        String response = geminiService.getAIResponse(request.getMessage());
+        String history = buildConversationHistory(session);
+        String response = geminiService.getAIResponseWithHistory(request.getMessage(), history);
 
         /** 4. Guardar respuesta del asistente */
         saveMessage(session, response, "asistente");
@@ -84,5 +85,36 @@ public class ChatService {
                 .fecha(LocalDateTime.now())
                 .build();
         session.getMensajes().add(mensaje);
+    }
+
+    private String buildConversationHistory(ChatSession session) {
+        if (session.getMensajes() == null || session.getMensajes().size() <= 1) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        var messages = session.getMensajes();
+        int start = Math.max(0, messages.size() - 11);
+        for (int i = start; i < messages.size() - 1; i++) {
+            Mensaje m = messages.get(i);
+            sb.append(m.getRemitente()).append(": ").append(m.getMensaje()).append("\n");
+        }
+        return sb.toString();
+    }
+
+    public java.util.List<ChatSession> getUserSessions(String userId) {
+        return chatSessionRepository.findByUsuarioIdOrderByUltimaInteraccionDesc(userId);
+    }
+
+    public ChatSession getSession(String sessionId) {
+        return chatSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new com.inklusport.ai.exception.CustomExceptions.ResourceNotFoundException(
+                        "Sesión no encontrada: " + sessionId));
+    }
+
+    public void closeSession(String sessionId) {
+        ChatSession session = getSession(sessionId);
+        session.setEstado("cerrada");
+        session.setUltimaInteraccion(LocalDateTime.now());
+        chatSessionRepository.save(session);
     }
 }
