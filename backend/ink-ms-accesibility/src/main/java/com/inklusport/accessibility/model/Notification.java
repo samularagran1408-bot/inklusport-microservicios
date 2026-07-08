@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,25 +26,41 @@ public class Notification {
     @Id
     private String id;
 
+    @Field("user_id") 
     @Indexed
     private String userId;
 
-    private String type;
+    private String type;  
+
+    @Field("title")
     private String title;
+
+    @Field("body")
     private String body;
+
+    @Field("event_id")
     private String eventId;
+
     private String priority;
 
     private Map<String, Object> adaptations;
     private List<String> deliveryMethods;
 
+    @Field("read")
     private Boolean read;
+
+    @Field("read_at")
     private LocalDateTime readAt;
+
     private Map<String, Boolean> deliveryStatus;
 
     @CreatedDate
+    @Field("created_at")
     private LocalDateTime createdAt;
 
+    @Field("scheduled_for")
     private LocalDateTime scheduledFor;
+
+    @Field("expires_at")
     private LocalDateTime expiresAt;
 }

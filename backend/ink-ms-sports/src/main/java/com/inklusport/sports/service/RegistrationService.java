@@ -96,13 +96,16 @@ public class RegistrationService {
 
             if (nextInLine.isPresent()) {
                 EventRegistration promotedReg = nextInLine.get();
-                
                 promotedReg.setWaitlistPosition(null);
                 registrationRepository.save(promotedReg);
-                
+
                 log.info("Usuario {} promovido automáticamente al evento.", promotedReg.getUserId());
-                
+                notifyPromotedWaitlistUser(eventId, promotedReg);
+
                 reorderWaitlist(eventId);
+                Optional<EventRegistration> newFirstAfterPromotion = registrationRepository
+                        .findFirstByEventIdAndWaitlistPositionIsNotNullOrderByWaitlistPositionAsc(eventId);
+                newFirstAfterPromotion.ifPresent(next -> notifyNewWaitlistFirstPosition(eventId, next));
             } else {
                 Event event = eventRepository.findById(eventId)
                         .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
@@ -110,6 +113,11 @@ public class RegistrationService {
                 eventRepository.save(event);
             }
         } else {
+            if (posicionEliminada == 1) {
+                Optional<EventRegistration> nextFirst = registrationRepository
+                        .findFirstByEventIdAndWaitlistPositionIsNotNullOrderByWaitlistPositionAsc(eventId);
+                nextFirst.ifPresent(next -> notifyNewWaitlistFirstPosition(eventId, next));
+            }
             reorderWaitlist(eventId);
         }
     }
@@ -138,24 +146,40 @@ public class RegistrationService {
     }
 
     @Transactional
-    public void notifyWaitlistUser(String eventId, String userId, int position) {
-        String notificationType = "waitlist_offer";
-        String notificationTitle = "¡Cupo disponible!";
-        String notificationBody = "Ha quedado un cupo disponible para el evento. Tienes 24 horas para confirmar tu asistencia.";
-        
-        sendNotification(userId, notificationType, notificationTitle, notificationBody, eventId);
+    public void notifyPromotedWaitlistUser(String eventId, EventRegistration promotedReg) {
+        String notificationType = "waitlist_promoted";
+        String notificationTitle = "¡Ya estás inscrito al evento!";
+        String notificationBody = "Felicidades. Has pasado de la lista de espera y ahora estás inscrito al evento: "
+                + getEventName(eventId) + ".";
+
+        sendNotification(promotedReg.getUserId(), notificationType, notificationTitle, notificationBody, eventId);
+    }
+
+    @Transactional
+    public void notifyNewWaitlistFirstPosition(String eventId, EventRegistration newFirst) {
+        String notificationType = "waitlist_position_update";
+        String notificationTitle = "¡Avanzaste en la lista de espera!";
+        String notificationBody = "Has pasado a la posición 1 en la lista de espera del evento: "
+                + getEventName(eventId) + ". Si se libera un cupo, serás el siguiente en inscribirte.";
+
+        sendNotification(newFirst.getUserId(), notificationType, notificationTitle, notificationBody, eventId);
     }
 
     @Transactional
     public void confirmWaitlistOffer(String userId, String eventId) {
-        // Usuario acepta el cupo de la lista de espera
         registrationRepository.updateWaitlistToConfirmed(userId, eventId);
-        
+
         String notificationType = "waitlist_confirmed";
         String notificationTitle = "¡Cupo confirmado!";
         String notificationBody = "Has confirmado tu asistencia al evento. ¡Te esperamos!";
-        
+
         sendNotification(userId, notificationType, notificationTitle, notificationBody, eventId);
+    }
+
+    private String getEventName(String eventId) {
+        return eventRepository.findById(eventId)
+                .map(Event::getName)
+                .orElse("el evento");
     }
 
     private void reorderWaitlist(String eventId) {
