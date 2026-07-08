@@ -1,7 +1,13 @@
-version: '3.8'
+version: "3.8"
+
+networks:
+  inklusport-network:
+    driver: bridge
 
 services:
-  # 1. BASE DE DATOS - MONGODB (para IA, Accesibilidad, Users)
+  # ==========================================
+  # 1. BASES DE DATOS
+  # ==========================================
   mongodb:
     image: mongo:6.0
     container_name: inklusport-mongodb
@@ -10,229 +16,116 @@ services:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: 
-    volumes:
-      - mongodb_data:/data/db
+      MONGO_INITDB_ROOT_PASSWORD: admin123
     networks:
       - inklusport-network
 
-  # 2. BASE DE DATOS - MYSQL (para Auth, Sports, Admin, Reports)
   mysql:
-    image: mysql:8.0
-    container_name: inklusport-mysql
-    restart: always
-    ports:
-      - "3307:3306"
-    environment:
-      #MYSQL_ROOT_PASSWORD: 
-      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - inklusport-network
+   image: mysql:8.0
+   container_name: inklusport-mysql
+   restart: always
+   ports:
+    - "3306:3306"
+   environment:
+    MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+   volumes:
+    - ./init-mysql:/docker-entrypoint-initdb.d
+   networks:
+    - inklusport-network
 
-  # 3. MICROSERVICIO DE AUTENTICACIÓN (PORT: 3001)
-  auth-service:
-    build:
-      context: ./backend/ink-ms-auth
-      dockerfile: Dockerfile
-    container_name: ink-ms-auth
-    restart: always
-    ports:
-      - "3001:3001"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      DB_URL: jdbc:mysql://mysql:3306/auth_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      DB_USERNAME: root
-      DB_PASSWORD: 
-      MAIL_HOST: ${MAIL_HOST}
-      MAIL_PORT: ${MAIL_PORT}
-      MAIL_USERNAME: ${MAIL_USERNAME}
-      MAIL_PASSWORD: 
-      MAIL_PROTOCOL: ${MAIL_PROTOCOL}
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRATION: ${JWT_EXPIRATION}
-      SERVER_PORT: 3001
-      MAIL_ENABLED: ${MAIL_ENABLED}
-      EXPOSE_TOKEN: ${EXPOSE_TOKEN}
-      TOKEN_EXPIRY_HOURS: ${TOKEN_EXPIRY_HOURS}
-      USERS_SERVICE_URL: http://users-service:3002
-      FEIGN_CIRCUITBREAKER: ${FEIGN_CIRCUITBREAKER}
-      LOG_LEVEL: ${LOG_LEVEL}
-    depends_on:
-      - mysql
-    networks:
-      - inklusport-network
-
-  # 4. MICROSERVICIO DE USUARIOS (PORT: 3002)
-  users-service:
-    build:
-      context: ./backend/ink-ms-users
-      dockerfile: Dockerfile
-    container_name: ink-ms-users
-    restart: always
-    ports:
-      - "3002:3002"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      DB_URL: jdbc:mysql://mysql:3306/users_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      DB_USERNAME: root
-      DB_PASSWORD: 
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRATION: ${JWT_EXPIRATION}
-      SERVER_PORT: 3002
-      LOG_LEVEL: ${LOG_LEVEL}
-      AUTH_SERVICE_URL: http://auth-service:3001
-    depends_on:
-      - mysql
-    networks:
-      - inklusport-network
-
-  # 5. MICROSERVICIO DE DEPORTES (PORT: 3003)
-  sports-service:
-    build:
-      context: ./backend/ink-ms-sports
-      dockerfile: Dockerfile
-    container_name: ink-ms-sports
-    restart: always
-    ports:
-      - "3003:3003"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      DB_URL: jdbc:mysql://mysql:3306/sports_events_ms?useSSL=false&serverTimezone=America/Bogota&allowPublicKeyRetrieval=true
-      DB_USERNAME: root
-      DB_PASSWORD: 
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRATION: ${JWT_EXPIRATION}
-      SERVER_PORT: 3003
-      USERS_SERVICE_URL: http://users-service:3002
-      LOG_LEVEL: ${LOG_LEVEL}
-    depends_on:
-      - mysql
-    networks:
-      - inklusport-network
-
-  # 6. MICROSERVICIO DE ACCESIBILIDAD (PORT: 3004)
-  accessibility-service:
-    build:
-      context: ./backend/ink-ms-accesibility
-      dockerfile: Dockerfile
-    container_name: ink-ms-accesibility
-    restart: always
-    ports:
-      - "3004:3004"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      MONGODB_URI: mongodb://admin:admin123@mongodb:27017/accessibility_notifications_db?authSource=admin
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRATION: ${JWT_EXPIRATION}
-      SERVER_PORT: 3004
-      LOG_LEVEL: ${LOG_LEVEL}
-    depends_on:
-      - mongodb
-    networks:
-      - inklusport-network
-
-  # 7. MICROSERVICIO DE ADMINISTRACIÓN (PORT: 3005)
-  admin-service:
-    build:
-      context: ./backend/ink-ms-admin
-      dockerfile: Dockerfile
-    container_name: ink-ms-admin
-    restart: always
-    ports:
-      - "3005:3005"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      DB_URL: jdbc:mysql://mysql:3306/admin_ms?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
-      DB_USERNAME: root
-      DB_PASSWORD: 
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRATION: ${JWT_EXPIRATION}
-      SERVER_PORT: 3005
-      USERS_SERVICE_URL: http://users-service:3002
-      LOG_LEVEL: ${LOG_LEVEL}
-    depends_on:
-      - mysql
-    networks:
-      - inklusport-network
-
-  # 8. MICROSERVICIO DE REPORTES (PORT: 3006)
-  reports-service:
-    build:
-      context: ./backend/ink-ms-reports
-      dockerfile: Dockerfile
-    container_name: ink-ms-reports
-    restart: always
-    ports:
-      - "3006:3006"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      DB_URL: jdbc:mysql://mysql:3306/analytics_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      DB_USERNAME: root
-      DB_PASSWORD: 
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRATION: ${JWT_EXPIRATION}
-      SERVER_PORT: 3006
-      USERS_SERVICE_URL: http://users-service:3002
-      SPORTS_SERVICE_URL: http://sports-service:3003
-      ACCESSIBILITY_SERVICE_URL: http://accessibility-service:3004
-      LOG_LEVEL: ${LOG_LEVEL}
-    depends_on:
-      - mysql
-    networks:
-      - inklusport-network
-
-  # 9. MICROSERVICIO DE IA (PORT: 3008)
-  ai-service:
-    build:
-      context: ./backend/ink-ms-ai-assistant
-      dockerfile: Dockerfile
-    container_name: ink-ms-ai-assistant
-    restart: always
-    ports:
-      - "3008:3008"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      MONGODB_URI: mongodb://admin:admin123@mongodb:27017/ai_chatbot_db?authSource=admin
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRATION: ${JWT_EXPIRATION}
-      SERVER_PORT: 3008
-      GEMINI_API_KEY: ${GEMINI_API_KEY}
-      LOG_LEVEL: ${LOG_LEVEL}
-    depends_on:
-      - mongodb
-    networks:
-      - inklusport-network
-
-  # 10. API GATEWAY (PORT: 8080)
+  # ==========================================
+  # 2. MICROSERVICIOS DE SPRING BOOT
+  # ==========================================
   gateway-service:
     build:
       context: ./backend/ink-ms-gateway
       dockerfile: Dockerfile
     container_name: ink-ms-gateway
-    restart: always
     ports:
       - "8080:8080"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      LOG_LEVEL: ${LOG_LEVEL}
     depends_on:
       - auth-service
-      - users-service
-      - sports-service
-      - accessibility-service
-      - reports-service
-      - ai-service
     networks:
       - inklusport-network
-# 11. REDES Y VOLÚMENE
-networks:
-  inklusport-network:
-    driver: bridge
 
-volumes:
-  mongodb_data:
-    driver: local
-  mysql_data:
-    driver: local
+  auth-service:
+    build:
+      context: ./backend/ink-ms-auth
+      dockerfile: Dockerfile
+    container_name: ink-ms-auth
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mysql
+    networks:
+      - inklusport-network
+
+  users-service:
+    build:
+      context: ./backend/ink-ms-users
+      dockerfile: Dockerfile
+    container_name: ink-ms-users
+    ports:
+      - "3002:3002"
+    depends_on:
+      - mysql
+    networks:
+      - inklusport-network
+
+  admin-service:
+    build:
+      context: ./backend/ink-ms-admin
+      dockerfile: Dockerfile
+    container_name: ink-ms-admin
+    ports:
+      - "3004:3004"
+    depends_on:
+      - mysql
+    networks:
+      - inklusport-network
+
+  sports-service:
+    build:
+      context: ./backend/ink-ms-sports
+      dockerfile: Dockerfile
+    container_name: ink-ms-sports
+    ports:
+      - "3003:3003"
+    depends_on:
+      - mysql
+    networks:
+      - inklusport-network
+
+  accessibility-service:
+    build:
+      context: ./backend/ink-ms-accesibility
+      dockerfile: Dockerfile
+    container_name: ink-ms-accessibility
+    ports:
+      - "3006:3006"
+    depends_on:
+      - mongodb
+    networks:
+      - inklusport-network
+
+  reports-service:
+    build:
+      context: ./backend/ink-ms-reports
+      dockerfile: Dockerfile
+    container_name: ink-ms-reports
+    ports:
+      - "3007:3007"
+    depends_on:
+      - mysql
+    networks:
+      - inklusport-network
+
+  ai-service:
+    build:
+      context: ./backend/ink-ms-ai-assistant
+      dockerfile: Dockerfile
+    container_name: ink-ms-ai
+    ports:
+      - "3008:3008"
+    networks:
+      - inklusport-network
