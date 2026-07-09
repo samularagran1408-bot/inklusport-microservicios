@@ -1,25 +1,42 @@
+// src/routes.jsx
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
-import Home from './pages/Home'
-import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
-import Sports from './pages/Sports'
-import Events from './pages/Events'
-import Chat from './pages/Chat'
-import Profile from './pages/Profile'
-import Register from './pages/Register'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import Login from './ui/pages/Login'
+import Register from './ui/pages/Register'
+import ForgotPassword from './ui/pages/ForgotPassword'
+import ResetPassword from './ui/pages/ResetPassword'
+import Dashboard from './ui/pages/Dashboard'
+
+// ✅ Componente para rutas protegidas
+const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem('token')
+  if (!token) {
+    return <Navigate to="/login" replace />
+  }
+  return children
+}
 
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      {/* Redirigir raíz a login */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      
+      {/* Rutas públicas */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/sports" element={<Sports />} />
-      <Route path="/events" element={<Events />} />
-      <Route path="/chat" element={<Chat />} />
-      <Route path="/profile" element={<Profile />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
+      
+      {/* ✅ Ruta protegida: Dashboard */}
+      <Route 
+        path="/dashboard" 
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } 
+      />
     </Routes>
   )
 }
