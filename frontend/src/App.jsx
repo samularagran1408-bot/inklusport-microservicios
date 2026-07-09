@@ -1,9 +1,8 @@
-// src/App.jsx
 import React from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import AppRoutes from './routes'
-import { AuthProvider } from './contexts/AuthContext'
-import { ChatProvider } from './contexts/ChatContext'
+import { AuthProvider } from './domain/contexts/AuthContext'  
+import { ChatProvider } from './domain/contexts/ChatContext'  
 
 function App() {
   return (
