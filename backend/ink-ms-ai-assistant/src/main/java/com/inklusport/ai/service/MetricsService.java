@@ -10,11 +10,19 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class MetricsService {
 
+    private final HuggingFaceService huggingFaceService;
+
     public MetricsDashboardResponse getDashboard(String userId) {
         log.info("Generando dashboard para usuario {}", userId);
+
+        String summary = huggingFaceService.generate(
+                "Eres un analista de datos deportivos de Inklusport.",
+                "Genera un resumen ejecutivo de métricas de rendimiento para el usuario " + userId
+                        + " en deportes adaptados. Incluye asistencia, progreso y participación.");
+
         return MetricsDashboardResponse.builder()
                 .userId(userId)
-                .summary("Métricas del rendimiento disponibles")
+                .summary(summary)
                 .build();
     }
 }

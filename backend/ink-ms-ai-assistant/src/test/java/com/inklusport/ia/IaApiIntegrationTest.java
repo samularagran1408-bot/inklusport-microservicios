@@ -2,7 +2,7 @@ package com.inklusport.ia;
 
 import com.inklusport.ai.repository.ChatFeedbackRepository;
 import com.inklusport.ai.repository.ChatSessionRepository;
-import com.inklusport.ai.service.GeminiService;
+import com.inklusport.ai.service.HuggingFaceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = com.inklusport.ai.AiApplication.class)
+@SpringBootTest(classes = {com.inklusport.ai.AiApplication.class, TestSecurityConfig.class})
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class AiApiIntegrationTest {
@@ -38,13 +38,15 @@ class AiApiIntegrationTest {
     private ChatFeedbackRepository chatFeedbackRepository;
 
     @MockBean
-    private GeminiService geminiService;
+    private HuggingFaceService huggingFaceService;
 
     @BeforeEach
     void limpiarColecciones() {
         chatSessionRepository.deleteAll();
         chatFeedbackRepository.deleteAll();
-        when(geminiService.getAIResponse(anyString()))
+        when(huggingFaceService.getAIResponse(anyString()))
+                .thenReturn("Respuesta de prueba del asistente");
+        when(huggingFaceService.getAIResponseWithHistory(anyString(), anyString()))
                 .thenReturn("Respuesta de prueba del asistente");
     }
 

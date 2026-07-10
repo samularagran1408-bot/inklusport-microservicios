@@ -11,8 +11,18 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CompetitionService {
 
+    private final HuggingFaceService huggingFaceService;
+
     public CompetitionResponse prepare(CompetitionRequest request) {
         log.info("Preparando modo competencia para usuario {}", request.getUserId());
+
+        huggingFaceService.generate(
+                "Eres un coach de competición en deportes adaptados.",
+                String.format("Prepara estrategia de competición para usuario %s. Evento: %s. Nivel: %s.",
+                        request.getUserId(),
+                        request.getEventType() != null ? request.getEventType() : "No especificado",
+                        request.getLevel() != null ? request.getLevel() : "Intermedio"));
+
         return CompetitionResponse.builder()
                 .mode("competition")
                 .status("ready")
