@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AiFeatureService {
 
-    private final GeminiService geminiService;
+    private final HuggingFaceService huggingFaceService;
     private final BiomechanicalAnalysisRepository biomechanicalRepository;
     private final TrainingPlanRepository trainingPlanRepository;
 
@@ -51,7 +51,7 @@ public class AiFeatureService {
                 nullSafe(req.getDeportePracticado(), "General"),
                 nullSafe(req.getNotasAdicionales(), "Ninguna"));
 
-        String aiAnalysis = geminiService.generate(
+        String aiAnalysis = huggingFaceService.generate(
                 "Eres un especialista en biomecánica deportiva adaptada para personas con discapacidad.",
                 prompt);
 
@@ -84,7 +84,7 @@ public class AiFeatureService {
     public AiFeatureResponse exerciseAdaptation(AiContextRequest req) {
         String prompt = buildContextPrompt(req, "ejercicio a adaptar");
         return buildResponse("exercise_adaptation", req.getUsuarioId(),
-                geminiService.generate(
+                huggingFaceService.generate(
                         "Eres experto en adaptación de ejercicios para deportes inclusivos. " +
                         "Sugiere modificaciones, equipamiento adaptado y progresiones seguras.",
                         prompt));
@@ -93,7 +93,7 @@ public class AiFeatureService {
     public AiFeatureResponse injuryRiskPrediction(AiContextRequest req) {
         String prompt = buildContextPrompt(req, "datos del deportista");
         return buildResponse("injury_prediction", req.getUsuarioId(),
-                geminiService.generate(
+                huggingFaceService.generate(
                         "Eres un fisioterapeuta deportivo especializado en prevención de lesiones " +
                         "en deportistas con discapacidad. Evalúa riesgos y da recomendaciones preventivas.",
                         prompt));
@@ -119,7 +119,7 @@ public class AiFeatureService {
                 joinList(req.getDeportesPreferidos()),
                 joinList(req.getRestricciones()));
 
-        String plan = geminiService.generate(
+        String plan = huggingFaceService.generate(
                 "Eres un entrenador certificado en deportes adaptados e inclusivos.",
                 prompt);
 
@@ -151,7 +151,7 @@ public class AiFeatureService {
 
     public AiFeatureResponse fatigueDetection(AiContextRequest req) {
         return buildResponse("fatigue_detection", req.getUsuarioId(),
-                geminiService.generate(
+                huggingFaceService.generate(
                         "Eres un monitor de rendimiento deportivo. Analiza datos de fatiga en tiempo real " +
                         "(frecuencia cardíaca, velocidad, repeticiones, RPE) y determina nivel de fatiga.",
                         buildContextPrompt(req, "datos de rendimiento en tiempo real")));
@@ -160,7 +160,7 @@ public class AiFeatureService {
     public AiFeatureResponse voiceAssistant(AiContextRequest req) {
         String input = nullSafe(req.getInput(), "Consulta general");
         return buildResponse("voice_assistant", req.getUsuarioId(),
-                geminiService.generate(
+                huggingFaceService.generate(
                         "Eres un asistente de voz adaptado para personas con discapacidad. " +
                         "Responde de forma breve, clara y fácil de leer en voz alta. " +
                         "Usa frases cortas y evita jerga técnica.",
@@ -169,7 +169,7 @@ public class AiFeatureService {
 
     public AiFeatureResponse metricsDashboard(AiContextRequest req) {
         return buildResponse("metrics_dashboard", req.getUsuarioId(),
-                geminiService.generate(
+                huggingFaceService.generate(
                         "Eres un analista de datos deportivos. Interpreta métricas avanzadas " +
                         "(asistencia, progreso, rendimiento, participación) y genera un resumen ejecutivo.",
                         buildContextPrompt(req, "métricas del usuario")));
@@ -190,14 +190,14 @@ public class AiFeatureService {
                 + formatContext(req.getContext()) + "\n\nCompara evolución, tendencias y recomendaciones.";
 
         return buildResponse("history_comparison", req.getUsuarioId(),
-                geminiService.generate(
+                huggingFaceService.generate(
                         "Eres un analista de progreso deportivo adaptado. Compara datos históricos con actuales.",
                         prompt));
     }
 
     public AiFeatureResponse eventRecommendations(AiContextRequest req) {
         return buildResponse("event_recommendations", req.getUsuarioId(),
-                geminiService.generate(
+                huggingFaceService.generate(
                         "Eres un recomendador de eventos deportivos inclusivos. " +
                         "Sugiere eventos según perfil, ubicación, discapacidad y preferencias.",
                         buildContextPrompt(req, "perfil y eventos disponibles")));
@@ -205,7 +205,7 @@ public class AiFeatureService {
 
     public AiFeatureResponse profileRecommendations(AiContextRequest req) {
         return buildResponse("profile_recommendations", req.getUsuarioId(),
-                geminiService.generate(
+                huggingFaceService.generate(
                         "Eres un asesor deportivo inclusivo. Recomienda actividades, deportes y recursos " +
                         "personalizados según el perfil completo del usuario.",
                         buildContextPrompt(req, "perfil del usuario")));
@@ -213,7 +213,7 @@ public class AiFeatureService {
 
     public AiFeatureResponse sportFiltering(AiContextRequest req) {
         return buildResponse("sport_filtering", req.getUsuarioId(),
-                geminiService.generate(
+                huggingFaceService.generate(
                         "Eres un experto en deportes adaptados. Filtra y clasifica deportes según " +
                         "tipo de discapacidad, nivel de habilidad, preferencias y restricciones médicas.",
                         buildContextPrompt(req, "criterios de filtrado y catálogo de deportes")));
@@ -221,7 +221,7 @@ public class AiFeatureService {
 
     public AiFeatureResponse disabilityDetection(AiContextRequest req) {
         return buildResponse("disability_detection", req.getUsuarioId(),
-                geminiService.generate(
+                huggingFaceService.generate(
                         "Eres un asistente de evaluación inicial para deportes adaptados. " +
                         "Basándote en la descripción del usuario, sugiere posibles categorías de discapacidad " +
                         "para orientar la selección de deportes. SIEMPRE recomienda evaluación profesional. " +
@@ -231,7 +231,7 @@ public class AiFeatureService {
 
     public AiFeatureResponse competitionMode(AiContextRequest req) {
         return buildResponse("competition_mode", req.getUsuarioId(),
-                geminiService.generate(
+                huggingFaceService.generate(
                         "Eres un coach de competición en deportes adaptados. Proporciona estrategias, " +
                         "preparación mental, tácticas y plan de competición personalizado.",
                         buildContextPrompt(req, "datos de la competición")));
@@ -239,7 +239,7 @@ public class AiFeatureService {
 
     public AiFeatureResponse wearablesIntegration(AiContextRequest req) {
         return buildResponse("wearables_integration", req.getUsuarioId(),
-                geminiService.generate(
+                huggingFaceService.generate(
                         "Eres un analista de datos de wearables (smartwatch, sensores IMU, pulsómetros). " +
                         "Interpreta datos de dispositivos wearables y genera insights accionables " +
                         "para entrenamiento adaptado.",
@@ -248,7 +248,7 @@ public class AiFeatureService {
 
     public AiFeatureResponse trainerAlerts(AiContextRequest req) {
         return buildResponse("trainer_alerts", req.getUsuarioId(),
-                geminiService.generate(
+                huggingFaceService.generate(
                         "Eres un sistema de alertas inteligentes para entrenadores de deportes adaptados. " +
                         "Analiza datos de atletas y genera alertas prioritizadas (riesgo lesión, fatiga, " +
                         "baja asistencia, progreso estancado). Formato: ALERTA [PRIORIDAD]: descripción + acción.",

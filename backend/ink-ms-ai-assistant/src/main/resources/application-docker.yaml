@@ -14,12 +14,13 @@ jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION:86400000}
 
-gemini:
+huggingface:
   api:
-    key: ${GEMINI_API_KEY}
-    model: ${GEMINI_MODEL:gemini-2.0-flash}
-    temperature: ${GEMINI_TEMPERATURE:0.7}
-    max-tokens: ${GEMINI_MAX_TOKENS:500}
+    key: ${HUGGINGFACE_API_KEY:}
+    model: ${HUGGINGFACE_MODEL:meta-llama/Llama-3.1-8B-Instruct:fastest}
+    temperature: ${HUGGINGFACE_TEMPERATURE:0.7}
+    max-tokens: ${HUGGINGFACE_MAX_TOKENS:500}
+    base-url: ${HUGGINGFACE_BASE_URL:https://router.huggingface.co/v1}
 
 logging:
   level:

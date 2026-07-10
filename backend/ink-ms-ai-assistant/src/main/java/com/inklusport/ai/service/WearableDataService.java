@@ -11,10 +11,21 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class WearableDataService {
 
+    private final HuggingFaceService huggingFaceService;
+
     public AlertResponse ingest(WearableDataRequest request) {
         log.info("Recibiendo datos de wearable para usuario {}", request.getUserId());
+
+        String analysis = huggingFaceService.generate(
+                "Eres un analista de datos de wearables para deportes adaptados.",
+                String.format("Interpreta datos de wearable del usuario %s. Frecuencia cardíaca: %.0f bpm. Pasos: %.0f. " +
+                                "Genera insight accionable en español.",
+                        request.getUserId(),
+                        request.getHeartRate(),
+                        request.getSteps()));
+
         return AlertResponse.builder()
-                .message("Datos de wearable registrados")
+                .message(analysis)
                 .severity("info")
                 .build();
     }

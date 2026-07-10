@@ -11,12 +11,32 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class BiomechanicalAnalysisService {
 
+    private final HuggingFaceService huggingFaceService;
+
     public BiomechanicalResponse analyze(BiomechanicalRequest request) {
         log.info("Recibido análisis biomecánico para usuario {}", request.getUserId());
+
+        String prompt = String.format("""
+                Analiza el movimiento biomecánico de un deportista adaptado:
+                - Usuario: %s
+                - Tipo de movimiento: %s
+                - Video URL: %s
+
+                Responde en español con: 1) resumen breve, 2) nivel de riesgo (low/medium/high),
+                3) recomendación principal. Formato conciso.
+                """,
+                request.getUserId(),
+                request.getMovementType() != null ? request.getMovementType() : "No especificado",
+                request.getVideoUrl() != null ? request.getVideoUrl() : "No proporcionado");
+
+        String analysis = huggingFaceService.generate(
+                "Eres un especialista en biomecánica deportiva adaptada.",
+                prompt);
+
         return BiomechanicalResponse.builder()
-                .summary("Análisis biomecánico inicial preparado")
+                .summary(analysis)
                 .riskLevel("medium")
-                .recommendation("Revisar técnica y monitorear carga")
+                .recommendation("Ver análisis completo en el campo summary")
                 .build();
     }
 }

@@ -1,6 +1,6 @@
 package com.inklusport.ai.controller;
 
-import com.inklusport.ai.service.GeminiService;
+import com.inklusport.ai.service.HuggingFaceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.Map;
 @Tag(name = "Health", description = "Health check endpoints")
 public class HealthController {
 
-    private final GeminiService geminiService;
+    private final HuggingFaceService huggingFaceService;
 
     @Operation(summary = "Verificar estado del servicio")
     @GetMapping
@@ -28,10 +28,10 @@ public class HealthController {
         response.put("status", "UP");
         response.put("service", "Inklusport AI Assistant");
         response.put("version", "2.1.0");
-        response.put("geminiConfigured", geminiService.isConfigured());
+        response.put("huggingfaceConfigured", huggingFaceService.isConfigured());
         response.put("timestamp", LocalDateTime.now().toString());
-        if (!geminiService.isConfigured()) {
-            response.put("warning", "GEMINI_API_KEY no configurada o inválida. Obtén una en https://aistudio.google.com/apikey");
+        if (!huggingFaceService.isConfigured()) {
+            response.put("warning", "HUGGINGFACE_API_KEY no configurada o inválida. Obtén una en https://huggingface.co/settings/tokens");
         }
         return ResponseEntity.ok(response);
     }

@@ -19,7 +19,7 @@ import java.util.UUID;
 public class ChatService {
 
     private final ChatSessionRepository chatSessionRepository;
-    private final GeminiService geminiService;
+    private final HuggingFaceService huggingFaceService;
 
     public ChatResponse processMessage(String userId, ChatRequest request) {
         log.info(" Procesando mensaje para usuario: {}", userId);
@@ -35,10 +35,10 @@ public class ChatService {
         saveMessage(session, request.getMessage(), "usuario");
 
         /**
-         * 3. Obtener respuesta de Gemini (con historial de la sesión)
+         * 3. Obtener respuesta de Hugging Face (con historial de la sesión)
          */
         String history = buildConversationHistory(session);
-        String response = geminiService.getAIResponseWithHistory(request.getMessage(), history);
+        String response = huggingFaceService.getAIResponseWithHistory(request.getMessage(), history);
 
         /** 4. Guardar respuesta del asistente */
         saveMessage(session, response, "asistente");
