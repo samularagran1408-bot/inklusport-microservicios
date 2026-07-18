@@ -11,7 +11,7 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_DATABASE: auth_ms  # BD por defecto
+      MYSQL_DATABASE: auth_ms
     volumes:
       - ./init-mysql:/docker-entrypoint-initdb.d
       - mysql_data:/var/lib/mysql
@@ -44,6 +44,27 @@ services:
       - SPRING_DATASOURCE_PASSWORD=
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SERVER_PORT=3002
+      - AUTH_SERVICE_URL=http://auth-service:3001
+    depends_on:
+      - mysql
+      - auth-service
+    networks:
+      - inklusport-network
+
+  sports-service:
+    build:
+      context: ./backend/ink-ms-sports
+      dockerfile: Dockerfile
+    container_name: ink-ms-sports
+    ports:
+      - "3003:3003"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/sports_events_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SERVER_PORT=3003
       - AUTH_SERVICE_URL=http://auth-service:3001
     depends_on:
       - mysql
