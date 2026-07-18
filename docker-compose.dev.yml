@@ -1,0 +1,55 @@
+networks:
+  inklusport-network:
+    driver: bridge
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: inklusport-mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: auth_ms  # BD por defecto
+    volumes:
+      - ./init-mysql:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+    networks:
+      - inklusport-network
+
+  auth-service:
+    build:
+      context: ./backend/ink-ms-auth
+      dockerfile: Dockerfile
+    container_name: ink-ms-auth
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mysql
+    networks:
+      - inklusport-network
+
+  users-service:
+    build:
+      context: ./backend/ink-ms-users
+      dockerfile: Dockerfile
+    container_name: ink-ms-users
+    ports:
+      - "3002:3002"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/user_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SERVER_PORT=3002
+      - AUTH_SERVICE_URL=http://auth-service:3001
+    depends_on:
+      - mysql
+      - auth-service
+    networks:
+      - inklusport-network
+
+volumes:
+  mysql_data:

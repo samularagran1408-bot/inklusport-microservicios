@@ -13,48 +13,47 @@ services:
     container_name: inklusport-mongodb
     restart: always
     ports:
-      - "27017:27017"
+      - "${MONGO_PORT}:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - mongodb_data:/data/db
     networks:
       - inklusport-network
 
   mysql:
-   image: mysql:8.0
-   container_name: inklusport-mysql
-   restart: always
-   ports:
-    - "3306:3306"
-   environment:
-    MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-   volumes:
-    - ./init-mysql:/docker-entrypoint-initdb.d
-   networks:
-    - inklusport-network
-
-  # ==========================================
-  # 2. MICROSERVICIOS DE SPRING BOOT
-  # ==========================================
-  gateway-service:
-    build:
-      context: ./backend/ink-ms-gateway
-      dockerfile: Dockerfile
-    container_name: ink-ms-gateway
+    image: mysql:8.0
+    container_name: inklusport-mysql
+    restart: always
     ports:
-      - "8080:8080"
-    depends_on:
-      - auth-service
+      - "${MYSQL_PORT}:3306"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init-mysql:/docker-entrypoint-initdb.d
     networks:
       - inklusport-network
 
+  # ==========================================
+  # 2. MICROSERVICIOS
+  # ==========================================
   auth-service:
     build:
       context: ./backend/ink-ms-auth
       dockerfile: Dockerfile
     container_name: ink-ms-auth
     ports:
-      - "3001:3001"
+      - "${AUTH_PORT}:3001"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
     depends_on:
       - mysql
     networks:
@@ -66,19 +65,12 @@ services:
       dockerfile: Dockerfile
     container_name: ink-ms-users
     ports:
-      - "3002:3002"
-    depends_on:
-      - mysql
-    networks:
-      - inklusport-network
-
-  admin-service:
-    build:
-      context: ./backend/ink-ms-admin
-      dockerfile: Dockerfile
-    container_name: ink-ms-admin
-    ports:
-      - "3004:3004"
+      - "${USERS_PORT}:3002"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
     depends_on:
       - mysql
     networks:
@@ -90,7 +82,12 @@ services:
       dockerfile: Dockerfile
     container_name: ink-ms-sports
     ports:
-      - "3003:3003"
+      - "${SPORTS_PORT}:3003"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
     depends_on:
       - mysql
     networks:
@@ -102,7 +99,11 @@ services:
       dockerfile: Dockerfile
     container_name: ink-ms-accessibility
     ports:
-      - "3006:3006"
+      - "${ACCESSIBILITY_PORT}:3004"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATA_MONGODB_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin
+      SPRING_DATA_MONGODB_DATABASE: ${MONGO_DATABASE}
     depends_on:
       - mongodb
     networks:
@@ -114,7 +115,12 @@ services:
       dockerfile: Dockerfile
     container_name: ink-ms-reports
     ports:
-      - "3007:3007"
+      - "${REPORTS_PORT}:3006"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
     depends_on:
       - mysql
     networks:
@@ -126,6 +132,36 @@ services:
       dockerfile: Dockerfile
     container_name: ink-ms-ai
     ports:
-      - "3008:3008"
+      - "${AI_PORT}:3008"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
     networks:
       - inklusport-network
+
+  gateway-service:
+    build:
+      context: ./backend/ink-ms-gateway
+      dockerfile: Dockerfile
+    container_name: ink-ms-gateway
+    ports:
+      - "${GATEWAY_PORT}:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CLOUD_GATEWAY_ROUTES_0_ID: auth-service
+      SPRING_CLOUD_GATEWAY_ROUTES_0_URI: http://auth-service:3001
+      SPRING_CLOUD_GATEWAY_ROUTES_0_PREDICATES_0: Path=/api/auth/**
+      SPRING_CLOUD_GATEWAY_ROUTES_1_ID: users-service
+      SPRING_CLOUD_GATEWAY_ROUTES_1_URI: http://users-service:3002
+      SPRING_CLOUD_GATEWAY_ROUTES_1_PREDICATES_0: Path=/api/users/**
+    depends_on:
+      - auth-service
+      - users-service
+    networks:
+      - inklusport-network
+
+# ==========================================
+# VOLUMENES PERSISTENTES
+# ==========================================
+volumes:
+  mysql_data:
+  mongodb_data:
