@@ -1,13 +1,24 @@
-**/.git
-**/.idea
-**/.vscode
-**/target
-**/*.iml
-**/.classpath
-**/.project
-**/.settings
-**/node_modules
-**/.cursor
-**/agent-transcripts
-**/*.md
-!DOCKER.md
+# Ignorar archivos de compilación
+target/
+*.jar
+*.war
+*.ear
+
+# Ignorar archivos de IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# Ignorar logs
+*.log
+logs/
+
+# Ignorar archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar node_modules (frontend)
+node_modules/
