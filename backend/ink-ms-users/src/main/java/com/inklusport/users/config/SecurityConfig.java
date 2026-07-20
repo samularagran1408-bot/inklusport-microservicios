@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,13 +28,21 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final ObjectMapper objectMapper;
 
-    /**
-     * Configuración de seguridad para endpoints punlicos o no autenticados
-     * @param http
-     * @return
-     * @throws Exception
-     */
     @Bean
+    @Profile("docker")
+    public SecurityFilterChain filterChainDocker(HttpSecurity http) throws Exception {
+        return http
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()
+                )
+                .build();
+    }
+
+    @Bean
+    @Profile("!docker")
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
@@ -58,15 +67,6 @@ public class SecurityConfig {
                 .build();
     }
 
-    /**
-     * Escribe un error en el response con formato JSON
-     * @param response
-     * @param path
-     * @param status
-     * @param error
-     * @param message
-     * @throws java.io.IOException
-     */
     private void writeError(HttpServletResponse response, String path, int status,
                             String error, String message) throws java.io.IOException {
         response.setStatus(status);

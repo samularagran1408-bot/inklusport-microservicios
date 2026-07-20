@@ -17,16 +17,44 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       - inklusport-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "--silent"]
+      timeout: 10s
+      retries: 10
+
+  mongodb:
+    image: mongo:6.0
+    container_name: inklusport-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_DATABASE: accessibility_notifications_db
+    volumes:
+      - ./init-mongodb:/docker-entrypoint-initdb.d
+      - mongodb_data:/data/db
+    networks:
+      - inklusport-network
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --eval 'db.runCommand(\"ping\").ok' localhost:27017/test --quiet"]
+      timeout: 10s
+      retries: 10
 
   auth-service:
     build:
       context: ./backend/ink-ms-auth
       dockerfile: Dockerfile
     container_name: ink-ms-auth
+    restart: always
     ports:
       - "3001:3001"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     networks:
       - inklusport-network
 
@@ -35,16 +63,11 @@ services:
       context: ./backend/ink-ms-users
       dockerfile: Dockerfile
     container_name: ink-ms-users
+    restart: always
     ports:
       - "3002:3002"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/user_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - SERVER_PORT=3002
-      - AUTH_SERVICE_URL=http://auth-service:3001
     depends_on:
       - mysql
       - auth-service
@@ -56,21 +79,51 @@ services:
       context: ./backend/ink-ms-sports
       dockerfile: Dockerfile
     container_name: ink-ms-sports
+    restart: always
     ports:
       - "3003:3003"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/sports_events_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - SERVER_PORT=3003
-      - AUTH_SERVICE_URL=http://auth-service:3001
     depends_on:
       - mysql
       - auth-service
     networks:
       - inklusport-network
 
+  accessibility-service:
+    build:
+      context: ./backend/ink-ms-accesibility
+      dockerfile: Dockerfile
+    container_name: ink-ms-accessibility
+    restart: always
+    ports:
+      - "3004:3004"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - mongodb
+      - auth-service
+    networks:
+      - inklusport-network
+
+  gateway-service:
+    build:
+      context: ./backend/ink-ms-gateway
+      dockerfile: Dockerfile
+    container_name: ink-ms-gateway
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - auth-service
+      - users-service
+      - sports-service
+      - accessibility-service
+    networks:
+      - inklusport-network
+
 volumes:
   mysql_data:
+  mongodb_data:
