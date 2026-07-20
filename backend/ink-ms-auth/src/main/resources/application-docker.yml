@@ -2,28 +2,8 @@ spring:
   application:
     name: ink-ms-auth
   
-  # CONFIGURACIÓN DE CORREO (igual que en local)
-  mail:
-    host: smtp.gmail.com
-    port: 465
-    username: samularagran1408@gmail.com
-    password: brbs bgir vbrc ymlc
-    protocol: smtps
-    properties:
-      mail:
-        smtp:
-          auth: true
-          ssl:
-            enable: true
-          starttls:
-            enable: false
-          socketFactory:
-            port: 465
-            class: javax.net.ssl.SSLSocketFactory
-  
-  # CONEXIÓN A MYSQL EN DOCKER
   datasource:
-    url: jdbc:mysql://mysql:3306/auth_ms?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://mysql:3306/auth_ms?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: root
     password: 
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -50,14 +30,13 @@ app:
     expose-token-in-response: false
     token-expiry-hours: 24
 
-# USERS SERVICE EN DOCKER
 users:
   service:
-    url: http://users-service:3002  #  CAMBIADO para Docker
+    url: http://users-service:3002
 
-feign:
-  circuitbreaker:
-    enabled: true
+security:
+  basic:
+    enabled: false
 
 logging:
   level:

@@ -2,4 +2,4 @@ FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
 COPY target/*.jar app.jar
 EXPOSE 3004
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=docker", "-jar", "app.jar"]
