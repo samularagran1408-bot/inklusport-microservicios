@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -52,13 +53,14 @@ class RegistrationServiceTest {
         when(registrationRepository.findById("reg-confirmed"))
                 .thenReturn(Optional.of(canceledRegistration));
         when(registrationRepository.findFirstByEventIdAndWaitlistPositionIsNotNullOrderByWaitlistPositionAsc("event-1"))
-                .thenReturn(Optional.of(promotedRegistration));
+                .thenReturn(Optional.of(promotedRegistration))
+                .thenReturn(Optional.empty());
         when(registrationRepository.save(promotedRegistration)).thenReturn(promotedRegistration);
         when(registrationRepository.findByEventIdAndWaitlistPositionIsNotNullOrderByWaitlistPositionAsc("event-1"))
                 .thenReturn(java.util.Collections.emptyList());
 
         registrationService.cancelRegistration("reg-confirmed");
 
-        verify(notificationClient).createNotification(eq("waitlist-user-1"), any(NotificationRequest.class));
+        verify(notificationClient, times(1)).createNotification(eq("waitlist-user-1"), any(NotificationRequest.class));
     }
 }

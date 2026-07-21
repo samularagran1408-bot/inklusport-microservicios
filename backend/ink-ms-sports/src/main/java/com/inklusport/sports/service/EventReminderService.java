@@ -13,9 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -38,15 +36,15 @@ public class EventReminderService {
 
     @Transactional
     void sendEventReminders(LocalDateTime now) {
-        LocalDate targetDate = now.toLocalDate();
-        LocalTime targetTime = now.toLocalTime().plusHours(2);
+        LocalDateTime windowEnd = now.plusHours(2);
 
-        log.info("Buscando eventos que comienzan dentro de 2 horas a partir de {}", now);
+        log.info("Buscando eventos que comienzan entre {} y {}", now, windowEnd);
 
         List<Event> events = eventRepository.findByStatus(EventStatus.active).stream()
-                .filter(event -> event.getEventDate().equals(targetDate))
-                .filter(event -> !event.getEventTime().isBefore(now.toLocalTime()))
-                .filter(event -> !event.getEventTime().isAfter(targetTime))
+                .filter(event -> {
+                    LocalDateTime eventStart = LocalDateTime.of(event.getEventDate(), event.getEventTime());
+                    return !eventStart.isBefore(now) && !eventStart.isAfter(windowEnd);
+                })
                 .toList();
 
         if (events.isEmpty()) {
@@ -60,37 +58,31 @@ public class EventReminderService {
             sendRemindersForEvent(event);
         }
     }
-    
-    /**
-     * Envia recordatorios para un evento
-     * @param event Evento
-     */
+
     private void sendRemindersForEvent(Event event) {
-        List<EventRegistration> registrations = registrationRepository.findByEventId(event.getId());
-        
+        List<EventRegistration> registrations = registrationRepository
+                .findByEventIdAndWaitlistPositionIsNullAndReminderSentAtIsNull(event.getId());
+
         if (registrations.isEmpty()) {
-            log.info("No hay inscritos para el evento: {}", event.getName());
+            log.info("No hay inscritos pendientes de recordatorio para el evento: {}", event.getName());
             return;
         }
-        
-        log.info("Enviando recordatorios para '{}' a {} usuarios", event.getName(), registrations.size());
-        
+
+        log.info("Enviando recordatorios para '{}' a {} usuarios inscritos", event.getName(), registrations.size());
+
         for (EventRegistration registration : registrations) {
             sendNotification(registration.getUserId(), event);
+            registration.setReminderSentAt(LocalDateTime.now());
+            registrationRepository.save(registration);
         }
     }
-    
-    /**
-     * Envia notificación para un usuario
-     * @param userId ID del usuario
-     * @param event Evento
-     */
+
     private void sendNotification(String userId, Event event) {
         try {
             NotificationRequest request = new NotificationRequest();
             request.setUserId(userId);
             request.setType("event_reminder");
-            request.setTitle("Recordatorio: Tu evento empieza pronto");
+            request.setTitle("Recordatorio: Tu evento empieza en 2 horas");
             request.setBody(String.format(
                 "Recuerda que tu evento '%s' comienza a las %s en %s. Falta poco para que empiece. ¡Te esperamos!",
                 event.getName(),
@@ -99,7 +91,7 @@ public class EventReminderService {
             ));
             request.setEventId(event.getId());
             request.setPriority("high");
-            
+
             notificationClient.createNotification(userId, request);
             log.info("Recordatorio enviado a: {}", userId);
         } catch (Exception e) {
