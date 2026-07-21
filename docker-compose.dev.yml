@@ -106,6 +106,22 @@ services:
     networks:
       - inklusport-network
 
+  reports-service:
+    build:
+      context: ./backend/ink-ms-reports
+      dockerfile: Dockerfile
+    container_name: ink-ms-reports
+    restart: always
+    ports:
+      - "3006:3006"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - mysql
+      - auth-service
+    networks:
+      - inklusport-network
+
   gateway-service:
     build:
       context: ./backend/ink-ms-gateway
