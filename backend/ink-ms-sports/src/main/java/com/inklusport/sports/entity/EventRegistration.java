@@ -41,6 +41,9 @@ public class EventRegistration {
     @Column(name = "qr_code", columnDefinition = "TEXT")
     private String qrCode;
 
+    @Column(name = "reminder_sent_at")
+    private LocalDateTime reminderSentAt;
+
     @PrePersist
     protected void onCreate() {
         if (id == null) id = UUID.randomUUID().toString();

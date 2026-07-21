@@ -16,6 +16,10 @@ public interface EventRegistrationRepository extends JpaRepository<EventRegistra
     List<EventRegistration> findByUserId(String userId);
     
     List<EventRegistration> findByEventId(String eventId);
+
+    List<EventRegistration> findByEventIdAndWaitlistPositionIsNull(String eventId);
+
+    List<EventRegistration> findByEventIdAndWaitlistPositionIsNullAndReminderSentAtIsNull(String eventId);
     
     Optional<EventRegistration> findByUserIdAndEventId(String userId, String eventId);
     

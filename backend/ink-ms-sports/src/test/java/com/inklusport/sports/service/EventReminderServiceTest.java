@@ -65,18 +65,51 @@ class EventReminderServiceTest {
                 .availableCapacity(20)
                 .build();
 
-        EventRegistration registration = EventRegistration.builder()
+        EventRegistration confirmedRegistration = EventRegistration.builder()
                 .id("reg-1")
                 .userId("user-1")
                 .eventId("event-1")
                 .waitlistPosition(null)
                 .build();
 
+        EventRegistration waitlistRegistration = EventRegistration.builder()
+                .id("reg-2")
+                .userId("user-2")
+                .eventId("event-1")
+                .waitlistPosition(1)
+                .build();
+
         when(eventRepository.findByStatus(EventStatus.active)).thenReturn(List.of(dueEvent, tooFarEvent));
-        when(registrationRepository.findByEventId("event-1")).thenReturn(List.of(registration));
+        when(registrationRepository.findByEventIdAndWaitlistPositionIsNullAndReminderSentAtIsNull("event-1"))
+                .thenReturn(List.of(confirmedRegistration));
 
         eventReminderService.sendEventReminders(now);
 
         verify(notificationClient).createNotification(eq("user-1"), any(NotificationRequest.class));
+        verify(notificationClient, never()).createNotification(eq("user-2"), any(NotificationRequest.class));
+    }
+
+    @Test
+    void shouldNotSendDuplicateReminders() {
+        LocalDateTime now = LocalDateTime.of(2026, 7, 1, 8, 0);
+
+        Event dueEvent = Event.builder()
+                .id("event-1")
+                .name("Taller de movilidad")
+                .eventDate(LocalDate.of(2026, 7, 1))
+                .eventTime(LocalTime.of(10, 0))
+                .location("Sede central")
+                .status(EventStatus.active)
+                .maxCapacity(20)
+                .availableCapacity(20)
+                .build();
+
+        when(eventRepository.findByStatus(EventStatus.active)).thenReturn(List.of(dueEvent));
+        when(registrationRepository.findByEventIdAndWaitlistPositionIsNullAndReminderSentAtIsNull("event-1"))
+                .thenReturn(List.of());
+
+        eventReminderService.sendEventReminders(now);
+
+        verify(notificationClient, never()).createNotification(any(), any(NotificationRequest.class));
     }
 }

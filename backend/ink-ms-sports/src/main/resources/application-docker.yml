@@ -28,6 +28,10 @@ security:
   basic:
     enabled: false
 
+accessibility:
+  service:
+    url: http://accessibility-service:3004
+
 logging:
   level:
     com.inklusport.sports: DEBUG

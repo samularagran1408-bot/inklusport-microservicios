@@ -75,7 +75,11 @@ public class RegistrationService {
 
         EventRegistration saved = registrationRepository.save(registration);
 
-        sendNotification(request.getUserId(), notificationType, notificationTitle, notificationBody, request.getEventId());
+        if (registration.getWaitlistPosition() != null && registration.getWaitlistPosition() == 1) {
+            notifyNewWaitlistFirstPosition(request.getEventId(), saved);
+        } else {
+            sendNotification(userEmail, notificationType, notificationTitle, notificationBody, request.getEventId());
+        }
         
         return convertToResponse(saved, statusMessage, event.getName());
     }
@@ -123,9 +127,7 @@ public class RegistrationService {
     }
 
     private void sendNotification(String userId, String type, String title, String body, String eventId) {
-
         log.info("Enviando notificación - Usuario: {}, Título: {}", userId, title);
-        log.info("URL: http://localhost:8080/api/notifications/admin/create");
 
         try {
             NotificationRequest notificationRequest = new NotificationRequest();
@@ -136,8 +138,6 @@ public class RegistrationService {
             notificationRequest.setEventId(eventId);
             notificationRequest.setPriority("high");
 
-             log.info("Body: {}", notificationRequest);
-            
             notificationClient.createNotification(userId, notificationRequest);
             log.info("Notificación enviada correctamente");
         } catch (Exception e) {
@@ -150,7 +150,7 @@ public class RegistrationService {
         String notificationType = "waitlist_promoted";
         String notificationTitle = "¡Ya estás inscrito al evento!";
         String notificationBody = "Felicidades. Has pasado de la lista de espera y ahora estás inscrito al evento: "
-                + getEventName(eventId) + ".";
+                + getEventName(eventId) + ". ¡Cupo asegurado!";
 
         sendNotification(promotedReg.getUserId(), notificationType, notificationTitle, notificationBody, eventId);
     }
