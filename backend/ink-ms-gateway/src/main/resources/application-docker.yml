@@ -18,6 +18,7 @@ spring:
           uri: http://users-service:3002
           predicates:
             - Path=/api/users/**
+            - Path=/api/admin/**
           filters:
             - StripPrefix=0
 
@@ -88,15 +89,9 @@ spring:
 
         # 5. Reports Service
         - id: reports-ms
-          uri: http://reports-service:3007
+          uri: http://reports-service:3006
           predicates:
             - Path=/api/analytics/**
-          filters:
-            - StripPrefix=0
-
-        - id: dashboard-ms
-          uri: http://reports-service:3007
-          predicates:
             - Path=/api/dashboard/**
           filters:
             - StripPrefix=0

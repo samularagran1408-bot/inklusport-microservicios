@@ -15,7 +15,8 @@ spring:
         - id: users-ms
           uri: http://localhost:3002
           predicates:
-            - Path=/api/users/**, /api/admin/**
+            - Path=/api/users/**
+            - Path=/api/admin/**
         
         # 3. Sports MS
         - id: sports-ms
@@ -33,8 +34,9 @@ spring:
         - id: reports-ms
           uri: http://localhost:3006
           predicates:
-            - Path=/api/analytics/**, /api/dashboard/**, /api/reports/**
-
+            - Path=/api/analytics/**
+            - Path=/api/dashboard/**
+            - Path=/api/reports/**
 server:
   port: 8080
 
