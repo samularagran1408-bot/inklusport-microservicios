@@ -10,94 +10,45 @@ spring:
           uri: http://auth-service:3001
           predicates:
             - Path=/api/auth/**
-          filters:
-            - StripPrefix=0
 
-        # 2. Users Service
+        # 2. Users Service (Path con comas = OR; líneas separadas = AND y rompe /api/admin)
         - id: users-ms
           uri: http://users-service:3002
           predicates:
-            - Path=/api/users/**
-            - Path=/api/admin/**
-          filters:
-            - StripPrefix=0
+            - Path=/api/users/**,/api/admin/**,/api/internal/**
 
         # 3. Sports Service
         - id: sports-ms
           uri: http://sports-service:3003
           predicates:
-            - Path=/api/sports/**
-          filters:
-            - StripPrefix=0
-
-        - id: events-ms
-          uri: http://sports-service:3003
-          predicates:
-            - Path=/api/events/**
-          filters:
-            - StripPrefix=0
-
-        - id: disabilities-ms
-          uri: http://sports-service:3003
-          predicates:
-            - Path=/api/disabilities/**
-          filters:
-            - StripPrefix=0
-
-        - id: SportsDisabilities-ms
-          uri: http://sports-service:3003
-          predicates:
-            - Path=/api/sport-disabilities/**
-          filters:
-            - StripPrefix=0
-
-        - id: registrations-ms
-          uri: http://sports-service:3003
-          predicates:
-            - Path=/api/registrations/**
-          filters:
-            - StripPrefix=0
-
-        - id: calendar-ms
-          uri: http://sports-service:3003
-          predicates:
-            - Path=/api/calendar/**
-          filters:
-            - StripPrefix=0
-
-        - id: attendance-ms
-          uri: http://sports-service:3003
-          predicates:
-            - Path=/api/attendance/**
-          filters:
-            - StripPrefix=0
+            - Path=/api/sports/**,/api/events/**,/api/disabilities/**,/api/sport-disabilities/**,/api/registrations/**,/api/calendar/**,/api/scheduler/**,/api/attendance/**
 
         # 4. Accessibility Service
         - id: accessibility-ms
           uri: http://accessibility-service:3004
           predicates:
-            - Path=/api/preferences/**
-          filters:
-            - StripPrefix=0
-
-        - id: notifications-ms
-          uri: http://accessibility-service:3004
-          predicates:
-            - Path=/api/notifications/**
-          filters:
-            - StripPrefix=0
+            - Path=/api/preferences/**,/api/notifications/**
 
         # 5. Reports Service
         - id: reports-ms
           uri: http://reports-service:3006
           predicates:
-            - Path=/api/analytics/**
-            - Path=/api/dashboard/**
-          filters:
-            - StripPrefix=0
+            - Path=/api/analytics/**,/api/dashboard/**,/api/reports/**
+
+        # 6. AI Assistant Service (FastAPI)
+        - id: ai-ms
+          uri: http://ai-service:3008
+          predicates:
+            - Path=/api/ai/**
 
 server:
   port: 8080
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
 
 security:
   basic:
@@ -105,6 +56,4 @@ security:
 
 logging:
   level:
-    org.springframework.cloud.gateway: DEBUG
-    org.springframework.web: DEBUG
-    reactor.netty: DEBUG
+    org.springframework.cloud.gateway: INFO

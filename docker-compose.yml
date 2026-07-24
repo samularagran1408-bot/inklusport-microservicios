@@ -132,9 +132,20 @@ services:
       dockerfile: Dockerfile
     container_name: ink-ms-ai
     ports:
-      - "${AI_PORT}:3008"
+      - "${AI_PORT:-3008}:3008"
     environment:
-      SPRING_PROFILES_ACTIVE: docker
+      MONGODB_URI: mongodb://admin:admin123@mongodb:27017/
+      MONGODB_DB: inclusport_training_ia
+      AUTH_SERVICE_URL: http://auth-service:3001
+      USERS_SERVICE_URL: http://users-service:3002
+      SPORTS_SERVICE_URL: http://sports-service:3003
+      GROK_API_KEY: ${GROK_API_KEY:-}
+      GROK_MODEL: ${GROK_MODEL:-grok-4.5}
+      GROK_API_URL: ${GROK_API_URL:-https://api.x.ai/v1/chat/completions}
+    depends_on:
+      - mongodb
+      - users-service
+      - sports-service
     networks:
       - inklusport-network
 

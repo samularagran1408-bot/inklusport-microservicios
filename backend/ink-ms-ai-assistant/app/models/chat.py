@@ -3,7 +3,7 @@ from typing import Optional, List
 from datetime import datetime
 
 class ChatRequest(BaseModel):
-    usuario_id: str
+    usuario_id: Optional[str] = None
     mensaje: str
     disability_type: str = "visual"
     conversacion_id: Optional[str] = None

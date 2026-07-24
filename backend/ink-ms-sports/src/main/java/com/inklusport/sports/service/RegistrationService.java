@@ -209,6 +209,23 @@ public class RegistrationService {
                 .toList();
     }
 
+    /**
+     * Inscripciones de un usuario (por userId/email en event_registration).
+     * Consumido por ink-ms-ai-assistant para el agente de competencia.
+     */
+    @Transactional(readOnly = true)
+    public List<RegistrationResponse> getRegistrationsByUser(String userId) {
+        return registrationRepository.findByUserId(userId).stream()
+                .map(reg -> {
+                    String eventName = eventRepository.findById(reg.getEventId())
+                            .map(Event::getName)
+                            .orElse("Evento");
+                    String status = reg.getWaitlistPosition() != null ? "WAITLIST" : "CONFIRMED";
+                    return convertToResponse(reg, status, eventName);
+                })
+                .toList();
+    }
+
     private RegistrationResponse convertToResponse(EventRegistration reg, String statusMessage, String eventName) {
         return RegistrationResponse.builder()
                 .id(reg.getId())
