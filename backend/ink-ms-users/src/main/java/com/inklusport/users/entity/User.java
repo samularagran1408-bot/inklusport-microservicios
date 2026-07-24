@@ -44,6 +44,73 @@ public class User {
     @Column(name = "disability", length = 100)
     private String disability;
 
+    /**
+     * CAMPOS DE VERIFICACIÓN
+     */
+
+    /**
+     * Verificación básica
+     */
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified = false;
+
+    @Column(name = "phone_verified", nullable = false)
+    private boolean phoneVerified = false;
+
+    // Organizador
+    @Column(name = "events_attended")
+    private int eventsAttended = 0;
+
+    @Column(name = "events_created")
+    private int eventsCreated = 0;
+
+    @Column(name = "platform_days")
+    private int platformDays = 0;
+
+    @Column(name = "test_event_created")
+    private boolean testEventCreated = false;
+
+    @Column(name = "organizer_quiz_score")
+    private Double organizerQuizScore;
+
+    @Column(name = "organizer_quiz_passed")
+    private boolean organizerQuizPassed = false;
+
+    @Column(name = "organizer_verification_status")
+    @Enumerated(EnumType.STRING)
+    private VerificationStatus organizerVerificationStatus = VerificationStatus.pending;
+
+    /**
+     * Entrenador
+     */
+    @Column(name = "certification_file")
+    private String certificationFile;
+
+    @Column(name = "experience_months")
+    private int experienceMonths = 0;
+
+    @Column(name = "events_as_trainer")
+    private int eventsAsTrainer = 0;
+
+    @Column(name = "trainer_quiz_score")
+    private Double trainerQuizScore;
+
+    @Column(name = "trainer_quiz_passed")
+    private boolean trainerQuizPassed = false;
+
+    @Column(name = "identity_document")
+    private String identityDocument;
+
+    @Column(name = "trainer_verification_status")
+    @Enumerated(EnumType.STRING)
+    private VerificationStatus trainerVerificationStatus = VerificationStatus.pending;
+
+    @Column(name = "verified_roles")
+    private String verifiedRoles = "";
+
+    /**
+     * Campos de auditoría
+     */
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -52,9 +119,19 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    /**
+     * Relaciones
+     */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserRole> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserActivity> activities = new ArrayList<>();
+
+    /**
+     * ENUM INTERNO
+     */
+    public enum VerificationStatus {
+        pending, approved, rejected
+    }
 }

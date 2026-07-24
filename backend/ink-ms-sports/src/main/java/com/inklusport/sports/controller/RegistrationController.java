@@ -66,9 +66,19 @@ public class RegistrationController {
     }
 
     /**
+     * Inscripciones de un usuario (consumo interno / AI assistant).
+     * Debe ir antes de {eventId}/waitlist para evitar ambigüedad de rutas.
+     */
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<List<RegistrationResponse>> getRegistrationsByUser(@PathVariable String userId) {
+        return ResponseEntity.ok(registrationService.getRegistrationsByUser(userId));
+    }
+
+    /**
      * Consulta la waitlist asociada a un evento.
      */
-    @GetMapping("{eventId}/waitlist")
+    @GetMapping("/{eventId}/waitlist")
     public ResponseEntity<List<RegistrationResponse>> getWaitlist(@PathVariable String eventId) {
         return ResponseEntity.ok(registrationService.getWaitlistForEvent(eventId));
     }

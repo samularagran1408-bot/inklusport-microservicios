@@ -1,5 +1,15 @@
-﻿FROM eclipse-temurin:17-jdk-alpine
+﻿FROM python:3.11-slim
+
 WORKDIR /app
-COPY target/*.jar app.jar
+
+COPY requirements.txt .
+
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY app/ ./app/
+COPY scripts/ ./scripts/
+
 EXPOSE 3008
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3008"]

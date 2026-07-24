@@ -122,6 +122,32 @@ services:
     networks:
       - inklusport-network
 
+  ai-service:
+    build:
+      context: ./backend/ink-ms-ai-assistant
+      dockerfile: Dockerfile
+    container_name: ink-ms-ai-python
+    restart: always
+    ports:
+      - "3008:3008"
+    env_file:
+      - ./backend/ink-ms-ai-assistant/.env
+    environment:
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/
+      - MONGODB_DB=inclusport_training_ia
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - USERS_SERVICE_URL=http://users-service:3002
+      - SPORTS_SERVICE_URL=http://sports-service:3003
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      users-service:
+        condition: service_started
+      sports-service:
+        condition: service_started
+    networks:
+      - inklusport-network
+
   gateway-service:
     build:
       context: ./backend/ink-ms-gateway
@@ -137,6 +163,8 @@ services:
       - users-service
       - sports-service
       - accessibility-service
+      - reports-service
+      - ai-service
     networks:
       - inklusport-network
 
